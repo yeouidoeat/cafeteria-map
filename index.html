@@ -164,12 +164,65 @@ function setFilter(f,el){
   render();
 }
 
+const SUPABASE_URL = 'https://gokynemjexaigmcbmqkq.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_PnEIiBPZEipsAxGTcxgi_A_P6iXS4GI';
+
 function openModal(){document.getElementById('moverlay').classList.add('open');}
 function closeModal(){document.getElementById('moverlay').classList.remove('open');}
-function submitReport(){
-  if(!document.getElementById('fn').value){alert('식당 이름은 필수예요!');return;}
-  alert('제보해주셔서 감사해요! 검토 후 반영할게요 🙏');
-  closeModal();
+
+async function submitReport(){
+  const name = document.getElementById('fn').value;
+  const menu = document.getElementById('fm').value;
+  const price = document.getElementById('fp').value;
+  const crowd = document.getElementById('fc').value;
+  const open = document.getElementById('fo').value;
+  const comment = document.querySelector('#modal textarea').value;
+
+  if(!name){alert('식당 이름은 필수예요!');return;}
+
+  const btn = document.querySelector('.msubmit');
+  btn.textContent = '제보 중...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/reports', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        cafeteria_name: name,
+        menu: menu,
+        price: price,
+        crowd: crowd,
+        comment: (open ? '일반인출입:' + open + ' ' : '') + comment
+      })
+    });
+
+    if(res.ok || res.status === 201){
+      alert('제보해주셔서 감사해요! 검토 후 반영할게요 🙏');
+      document.getElementById('fn').value = '';
+      document.getElementById('fm').value = '';
+      document.getElementById('fp').value = '';
+      document.getElementById('fc').value = '';
+      document.getElementById('fo').value = '';
+      document.querySelector('#modal textarea').value = '';
+      closeModal();
+    } else {
+      const err = await res.text();
+      console.error(err);
+      alert('제보 중 오류가 발생했어요. 다시 시도해주세요.');
+    }
+  } catch(e) {
+    console.error(e);
+    alert('네트워크 오류가 발생했어요. 다시 시도해주세요.');
+  } finally {
+    btn.textContent = '제보하기';
+    btn.disabled = false;
+  }
 }
 
 kakao.maps.load(function(){
