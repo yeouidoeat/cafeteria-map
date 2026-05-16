@@ -281,8 +281,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 
 <div id="moverlay" onclick="if(event.target===this)closeModal()">
   <div id="modal">
-    <h2>💬 제보하기</h2>
-    <p>직접 방문해서 확인한 정보를 알려주세요 🙏</p>
+    <h2 style="display:flex;align-items:center;gap:7px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a9e6e" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> 제보하기</h2>
+    <p>직접 방문해서 확인한 정보를 알려주세요</p>
     <div class="fg"><label>식당 이름</label><input type="text" id="fn" placeholder="예: KBS 구내식당"/></div>
     <div class="fg"><label>가격</label><input type="text" id="fp" placeholder="예: 5,500원"/></div>
     <div class="fg"><label>혼잡도</label>
@@ -538,7 +538,7 @@ async function submitReport(){
       body: JSON.stringify({ cafeteria_name:name, menu, price, crowd, comment:(open?'일반인출입:'+open+' ':'')+comment })
     });
     if(res.ok||res.status===201){
-      showToast('제보해주셔서 감사해요! 🙏');
+      showToast('제보해주셔서 감사해요!');
       document.getElementById('fn').value='';
       document.getElementById('fm').value='';
       document.getElementById('fp').value='';
