@@ -88,7 +88,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 .share-btn:active{transform:scale(0.95);}
 
 /* 댓글 섹션 */
-.comment-section{padding:0 20px 8px;}
+.comment-section{padding:0 20px 4px;}
 .comment-title{font-size:13px;font-weight:800;color:var(--slate-800);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
 .comment-login-btn{display:flex;align-items:center;gap:6px;background:#FEE500;color:#1a1a1a;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-family:"Nanum Gothic",sans-serif;font-weight:700;cursor:pointer;width:100%;justify-content:center;margin-bottom:12px;}
 .comment-input-wrap{display:flex;gap:8px;margin-bottom:12px;}
@@ -97,7 +97,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 .comment-input{flex:1;border:1.5px solid var(--slate-200);border-radius:12px;padding:8px 12px;font-size:13px;font-family:"Nanum Gothic",sans-serif;outline:none;resize:none;height:38px;}
 .comment-input:focus{border-color:var(--green);}
 .comment-send-btn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:8px 12px;font-size:12px;font-family:"Nanum Gothic",sans-serif;font-weight:700;cursor:pointer;flex-shrink:0;}
-.comment-list{display:flex;flex-direction:column;gap:10px;max-height:180px;overflow-y:auto;margin-top:12px;}
+.comment-list{display:flex;flex-direction:column;gap:6px;max-height:140px;overflow-y:auto;margin-top:8px;}
 .comment-item{display:flex;align-items:flex-start;}
 .comment-item img{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;}
 .comment-bubble{background:var(--slate-50);border-radius:12px;padding:8px 12px;flex:1;}
@@ -155,8 +155,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
   <div style="display:flex;align-items:center;gap:8px;padding:8px 16px 10px;">
     <div class="filters" style="flex:1;padding:0;">
       <button class="chip active" onclick="setFilter('all',this)">전체</button>
-      <button class="chip" onclick="setFilter('cheap',this)"><span class="dot-green" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#059669;margin-right:5px;vertical-align:middle;"></span>~5,000원</button>
-      <button class="chip" onclick="setFilter('mid',this)"><span class="dot-orange" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f97316;margin-right:5px;vertical-align:middle;"></span>~6,000원</button>
+      <button class="chip" onclick="setFilter('cheap',this)"><span class="dot-green" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#059669;margin-right:5px;vertical-align:middle;"></span>~6,000원</button>
+      <button class="chip" onclick="setFilter('mid',this)"><span class="dot-orange" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f97316;margin-right:5px;vertical-align:middle;"></span>~8,000원</button>
     </div>
     <span id="result-count" style="font-size:11px;color:var(--slate-400);font-weight:700;white-space:nowrap;flex-shrink:0;">17개</span>
   </div>
@@ -210,26 +210,24 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       </div>
     </div>
 
-    <div style="padding:10px 0;margin-bottom:12px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <span style="font-size:13px;font-weight:700;color:var(--slate-800);">혼잡도</span>
-        <span id="pcrowd-label" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"></span>
-      </div>
-      <div class="crowd-bar-track">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <span style="font-size:12px;color:var(--slate-500);white-space:nowrap;">혼잡도</span>
+      <div class="crowd-bar-track" style="flex:1;">
         <div class="crowd-bar-fill" id="pcrowd-bar"></div>
       </div>
+      <span id="pcrowd-label" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;white-space:nowrap;"></span>
     </div>
 
     <div class="divider"></div>
     <div class="comment-section">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <div style="display:flex;align-items:center;gap:6px;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#059669;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
           <span style="font-size:15px;font-weight:800;color:var(--slate-900);">댓글</span>
         </div>
         <span id="comment-count" style="font-size:12px;color:var(--slate-500);background:var(--slate-100);padding:2px 10px;border-radius:20px;"></span>
       </div>
-      <div style="background:var(--slate-50);border:1px solid var(--slate-100);border-radius:14px;padding:12px;margin-bottom:12px;">
+      <div style="background:var(--slate-50);border:1px solid var(--slate-100);border-radius:14px;padding:10px;margin-bottom:8px;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--slate-200);">
           <input type="text" id="comment-nickname" placeholder="닉네임 (선택)" style="border:none;background:transparent;font-size:13px;font-family:'Nanum Gothic',sans-serif;outline:none;flex:1;color:var(--slate-900);"/>
           <div id="star-rating" style="display:flex;gap:3px;flex-shrink:0;">
@@ -317,8 +315,8 @@ function showToast(msg) {
 }
 
 function getPinColor(c) {
-  if (c.price <= 5000) return '#059669';
-  if (c.price <= 6500) return '#f97316';
+  if (c.price <= 6000) return '#059669';
+  if (c.price <= 8000) return '#f97316';
   return '#ef4444';
 }
 
@@ -347,8 +345,8 @@ function updateDist(c) {
 
 function updateCount(data) {
   const filtered = data.filter(c => {
-    if(filter==='cheap') return c.price<=5000;
-    if(filter==='mid') return c.price<=6000;
+    if(filter==='cheap') return c.price<=6000;
+    if(filter==='mid') return c.price<=8000;
     return true;
   });
   const el = document.getElementById('result-count');
@@ -358,8 +356,8 @@ function updateCount(data) {
 function render(data) {
   overlays.forEach(o=>o.setMap(null)); overlays=[];
   const filtered = data.filter(c => {
-    if(filter==='cheap') return c.price<=5000;
-    if(filter==='mid') return c.price<=6000;
+    if(filter==='cheap') return c.price<=6000;
+    if(filter==='mid') return c.price<=8000;
     return true;
   });
   updateCount(data);
@@ -463,8 +461,8 @@ function renderList(data) {
   const filtered = data.filter(c => {
     const q = document.getElementById('search').value;
     if(q && !c.name.includes(q)) return false;
-    if(filter==='cheap') return c.price<=5000;
-    if(filter==='mid') return c.price<=6000;
+    if(filter==='cheap') return c.price<=6000;
+    if(filter==='mid') return c.price<=8000;
     return true;
   });
   const list = document.getElementById('list-view');
