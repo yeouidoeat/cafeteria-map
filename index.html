@@ -232,9 +232,9 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
             <span class="star-btn" onclick="setStar(5)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
           </div>
         </div>
-        <div style="display:flex;gap:6px;">
-          <textarea class="comment-input" id="comment-text" placeholder="댓글을 입력해주세요..." rows="1" style="flex:1;"></textarea>
-          <button class="comment-send-btn" onclick="submitComment()">등록</button>
+        <div style="display:flex;align-items:center;border:1.5px solid var(--slate-200);border-radius:12px;overflow:hidden;background:var(--white);">
+          <input type="text" id="comment-text" placeholder="댓글을 입력해주세요..." style="flex:1;border:none;outline:none;padding:9px 12px;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);background:transparent;"/>
+          <button class="comment-send-btn" onclick="submitComment()" style="border-radius:0;margin:4px;padding:6px 12px;">등록</button>
         </div>
       </div>
       <div class="comment-list" id="comment-list">
@@ -554,20 +554,20 @@ async function loadComments(cafeId) {
       ratingWrap.style.marginBottom = '4px';
     }
     count.textContent = data.length + '개';
+    const myComments = JSON.parse(localStorage.getItem('my_comments') || '[]');
     list.innerHTML = data.map(c => {
       const time = new Date(c.created_at);
       const diff = Math.floor((Date.now() - time) / 60000);
       const timeStr = diff < 1 ? '방금' : diff < 60 ? diff + '분 전' : Math.floor(diff/60) + '시간 전';
-      return `<div class="comment-item">
-
-        <div class="comment-bubble">
-          <div class="comment-meta">
-            ${c.rating ? '<span style="color:#f59e0b;font-size:12px;">' + '★'.repeat(c.rating) + '</span>' : ''}
-            <span class="comment-name">${c.nickname || '익명'}</span>
-            <span class="comment-time">${timeStr}</span>
-          </div>
-          <div class="comment-text">${c.content}</div>
+      const isMine = myComments.includes(c.id);
+      return `<div class="comment-item" id="comment-${c.id}" style="display:flex;align-items:flex-start;gap:6px;padding:7px 0;border-bottom:0.5px solid var(--slate-100);">
+        <div style="flex:1;font-size:13px;color:var(--slate-800);line-height:1.4;">
+          <span style="font-weight:700;color:var(--slate-700);margin-right:4px;">${c.nickname || '익명'}</span>
+          ${c.rating ? '<span style="color:#f59e0b;font-size:12px;margin-right:4px;">' + '★'.repeat(c.rating) + '</span>' : ''}
+          ${c.content}
+          <span style="color:var(--slate-400);font-size:11px;margin-left:4px;">${timeStr}</span>
         </div>
+        ${isMine ? `<button onclick="deleteComment(${c.id})" style="background:none;border:none;cursor:pointer;color:#cbd5e1;font-size:13px;padding:0;flex-shrink:0;">✕</button>` : ''}
       </div>`;
     }).join('');
   } catch(e) {
