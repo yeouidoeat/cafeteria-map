@@ -469,7 +469,7 @@
   </div>
 </div>
 
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=2a9cb37b21dd68ec0f21be70c2fe3ac1&libraries=services"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=2a9cb37b21dd68ec0f21be70c2fe3ac1&libraries=services&autoload=false"></script>
 <script>
 const cafeterias = [
   {
@@ -575,6 +575,17 @@ kakao.maps.load(() => {
   });
   renderMarkers();
 });
+
+window.onload = () => {
+  kakao.maps.load(() => {
+    const container = document.getElementById('map');
+    map = new kakao.maps.Map(container, {
+      center: new kakao.maps.LatLng(37.5240, 126.9235),
+      level: 4,
+    });
+    renderMarkers();
+  });
+};
 
 function getBadgeColor(price) {
   if (price <= 5000) return { bg: '#d8f3dc', border: '#2d6a4f', text: '#1b4332' };
