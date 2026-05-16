@@ -6,7 +6,7 @@
 <title>구내식당 맵</title>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap" rel="stylesheet"/>
 <link rel="icon" type="image/png" href="favicon.png"/>
-  <meta name="naver-site-verification" content="e098bbffb75c83432193ef396d99b0f952e19394" />
+<meta name="naver-site-verification" content="e098bbffb75c83432193ef396d99b0f952e19394" />
 <meta name="google-site-verification" content="JDKegZrFYI9hBEawqQDKDbGz38uCKZ0jQlpd4Uz66us"/>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-08JS0GEWXQ"></script>
@@ -526,7 +526,6 @@ function closeModal(){ document.getElementById('moverlay').classList.remove('ope
 
 async function submitReport(){
   const name = document.getElementById('fn').value;
-  const menu = document.getElementById('fm').value;
   const price = document.getElementById('fp').value;
   const crowd = document.getElementById('fc').value;
   const comment = document.querySelector('#modal textarea').value;
@@ -537,15 +536,13 @@ async function submitReport(){
     const res = await fetch(SUPABASE_URL+'/rest/v1/reports', {
       method:'POST',
       headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'},
-      body: JSON.stringify({ cafeteria_name:name, menu, price, crowd, comment:(open?'일반인출입:'+open+' ':'')+comment })
+      body: JSON.stringify({ cafeteria_name:name, price, crowd, comment:comment })
     });
     if(res.ok||res.status===201){
       showToast('제보해주셔서 감사해요!');
       document.getElementById('fn').value='';
-      document.getElementById('fm').value='';
       document.getElementById('fp').value='';
       document.getElementById('fc').value='';
-      document.getElementById('fo').value='';
       document.querySelector('#modal textarea').value='';
       closeModal();
     } else { alert('오류가 발생했어요. 다시 시도해주세요.'); }
