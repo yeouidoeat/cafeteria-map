@@ -6,6 +6,7 @@
 <title>구내식당 맵</title>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap" rel="stylesheet"/>
 <link rel="icon" type="image/png" href="favicon.png"/>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.6.0/kakao.min.js" crossorigin="anonymous"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -43,7 +44,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 /* 필터 */
 .filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;}
 .filters::-webkit-scrollbar{display:none;}
-.chip{background:var(--white);border:1.5px solid var(--slate-200);border-radius:999px;padding:6px 16px;font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;color:var(--slate-600);white-space:nowrap;transition:all .15s;}
+.chip{background:var(--white);border:1.5px solid var(--slate-200);border-radius:999px;padding:4px 12px;font-size:12px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;color:var(--slate-600);white-space:nowrap;transition:all .15s;}
 .chip.active{background:var(--green);border-color:var(--green);color:var(--white);box-shadow:0 4px 12px rgba(5,150,105,0.3);}
 .chip.active .dot-green,.chip.active .dot-orange{background:#fff !important;}
 
@@ -59,7 +60,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 .panel-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
 .panel-left h2{font-size:18px;font-weight:800;color:var(--slate-900);line-height:1.2;margin-bottom:2px;}
 .panel-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
-.panel-price{font-size:20px;font-weight:800;color:var(--green);}
+.panel-price{font-size:17px;font-weight:800;color:var(--green);}
 .close-btn{background:none;border:none;cursor:pointer;color:var(--slate-300);padding:2px;}
 .close-btn:hover{color:var(--slate-500);}
 
@@ -86,6 +87,27 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 .nav-btn:active{transform:scale(0.98);background:var(--green-dark);}
 .share-btn{width:46px;height:46px;background:var(--white);border:1.5px solid var(--slate-200);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--slate-500);transition:all .15s;flex-shrink:0;}
 .share-btn:active{transform:scale(0.95);}
+
+/* 댓글 섹션 */
+.comment-section{padding:0 20px 8px;}
+.comment-title{font-size:13px;font-weight:800;color:var(--slate-800);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.comment-login-btn{display:flex;align-items:center;gap:6px;background:#FEE500;color:#1a1a1a;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-family:"Nanum Gothic",sans-serif;font-weight:700;cursor:pointer;width:100%;justify-content:center;margin-bottom:12px;}
+.comment-input-wrap{display:flex;gap:8px;margin-bottom:12px;}
+.comment-avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.comment-avatar-placeholder{width:32px;height:32px;border-radius:50%;background:var(--slate-200);flex-shrink:0;}
+.comment-input{flex:1;border:1.5px solid var(--slate-200);border-radius:12px;padding:8px 12px;font-size:13px;font-family:"Nanum Gothic",sans-serif;outline:none;resize:none;height:38px;}
+.comment-input:focus{border-color:var(--green);}
+.comment-send-btn{background:var(--green);color:#fff;border:none;border-radius:10px;padding:8px 12px;font-size:12px;font-family:"Nanum Gothic",sans-serif;font-weight:700;cursor:pointer;flex-shrink:0;}
+.comment-list{display:flex;flex-direction:column;gap:10px;max-height:180px;overflow-y:auto;}
+.comment-item{display:flex;gap:8px;align-items:flex-start;}
+.comment-item img{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;}
+.comment-bubble{background:var(--slate-50);border-radius:12px;padding:8px 12px;flex:1;}
+.comment-meta{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+.comment-name{font-size:12px;font-weight:700;color:var(--slate-700);}
+.comment-time{font-size:11px;color:var(--slate-400);}
+.comment-text{font-size:13px;color:var(--slate-800);line-height:1.4;}
+.comment-empty{font-size:13px;color:var(--slate-400);text-align:center;padding:16px 0;}
+.divider{height:1px;background:var(--slate-100);margin:0 20px 12px;}
 
 /* 제보 모달 */
 #moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:flex-end;}
@@ -131,7 +153,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       <svg id="view-icon-map" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
     </button>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;padding:0 16px 10px;">
+  <div style="display:flex;align-items:center;gap:8px;padding:8px 16px 10px;">
     <div class="filters" style="flex:1;padding:0;">
       <button class="chip active" onclick="setFilter('all',this)">전체</button>
       <button class="chip" onclick="setFilter('cheap',this)"><span class="dot-green" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#059669;margin-right:5px;vertical-align:middle;"></span>~6,000원</button>
@@ -142,7 +164,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 </div>
 
 <div id="map"></div>
-<div id="list-view" style="display:none;flex:1;overflow-y:auto;background:var(--slate-50);padding:12px 16px 80px;">
+<div id="list-view" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;overflow-y:auto;background:var(--slate-50);padding:12px 16px 80px;z-index:10;">
 </div>
 
 <div id="panel">
@@ -208,6 +230,30 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       </div>
     </div>
 
+    <div class="divider"></div>
+    <div class="comment-section">
+      <div class="comment-title">
+        <span>💬 댓글</span>
+        <span id="comment-count" style="font-size:11px;color:var(--slate-400);"></span>
+      </div>
+      <div id="comment-login-area">
+        <button class="comment-login-btn" onclick="kakaoLogin()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.477 3 2 6.477 2 10.5c0 2.566 1.395 4.835 3.5 6.246V20l3.5-2.1c.983.203 2 .31 3 .31 5.523 0 10-3.477 10-7.71S17.523 3 12 3z"/></svg>
+          카카오로 로그인하고 댓글 남기기
+        </button>
+      </div>
+      <div id="comment-input-area" style="display:none;">
+        <div class="comment-input-wrap">
+          <img id="comment-avatar" class="comment-avatar" src="" alt="프로필"/>
+          <textarea class="comment-input" id="comment-text" placeholder="댓글을 입력해주세요..." rows="1"></textarea>
+          <button class="comment-send-btn" onclick="submitComment()">등록</button>
+        </div>
+      </div>
+      <div class="comment-list" id="comment-list">
+        <div class="comment-empty">첫 번째 댓글을 남겨보세요!</div>
+      </div>
+    </div>
+    <div class="divider"></div>
     <div class="action-btns">
       <button class="nav-btn" onclick="startNav()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
@@ -364,6 +410,15 @@ function openPanel(id) {
   lblHigh.style.color = c.crowd >= 70 ? '#ef4444' : '#94a3b8';
 
   document.getElementById('panel').classList.add('open');
+  loadComments(c.id);
+  // 로그인 상태에 따라 입력창 표시
+  if(kakaoUser) {
+    document.getElementById('comment-login-area').style.display = 'none';
+    document.getElementById('comment-input-area').style.display = 'block';
+  } else {
+    document.getElementById('comment-login-area').style.display = 'block';
+    document.getElementById('comment-input-area').style.display = 'none';
+  }
   map.panTo(new kakao.maps.LatLng(c.lat, c.lng));
 }
 
@@ -405,9 +460,11 @@ function toggleView() {
   const list = document.getElementById('list-view');
   const iconList = document.getElementById('view-icon-list');
   const iconMap = document.getElementById('view-icon-map');
+  const headerH = document.getElementById('header').offsetHeight;
   if(viewMode === 'list') {
     map.style.display = 'none';
     list.style.display = 'block';
+    list.style.paddingTop = (headerH + 12) + 'px';
     iconList.style.display = 'none';
     iconMap.style.display = 'block';
     renderList(resolvedData);
@@ -492,6 +549,117 @@ async function submitReport(){
     } else { alert('오류가 발생했어요. 다시 시도해주세요.'); }
   } catch(e) { alert('네트워크 오류가 발생했어요.'); }
   finally { btn.textContent='제보하기'; btn.disabled=false; }
+}
+
+// 카카오 로그인 초기화
+const KAKAO_JS_KEY = '979537335115a57fb498aaaab5f482eb';
+let kakaoUser = null;
+
+function initKakao() {
+  if(window.Kakao && !Kakao.isInitialized()) {
+    Kakao.init(KAKAO_JS_KEY);
+  }
+}
+
+function kakaoLogin() {
+  initKakao();
+  Kakao.Auth.login({
+    success: function(authObj) {
+      Kakao.API.request({
+        url: '/v2/user/me',
+        success: function(res) {
+          kakaoUser = {
+            id: res.id,
+            nickname: res.kakao_account?.profile?.nickname || '익명',
+            profile_image: res.kakao_account?.profile?.profile_image_url || ''
+          };
+          document.getElementById('comment-login-area').style.display = 'none';
+          document.getElementById('comment-input-area').style.display = 'block';
+          const avatar = document.getElementById('comment-avatar');
+          if(kakaoUser.profile_image) {
+            avatar.src = kakaoUser.profile_image;
+          } else {
+            avatar.style.display = 'none';
+          }
+          showToast(kakaoUser.nickname + '님 환영해요! 😊');
+        }
+      });
+    },
+    fail: function(err) {
+      showToast('로그인에 실패했어요.');
+    }
+  });
+}
+
+async function loadComments(cafeId) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/comments?cafeteria_id=eq.${cafeId}&order=created_at.desc&limit=20`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    const data = await res.json();
+    const list = document.getElementById('comment-list');
+    const count = document.getElementById('comment-count');
+    if(!data || data.length === 0) {
+      list.innerHTML = '<div class="comment-empty">첫 번째 댓글을 남겨보세요!</div>';
+      count.textContent = '';
+      return;
+    }
+    count.textContent = data.length + '개';
+    list.innerHTML = data.map(c => {
+      const time = new Date(c.created_at);
+      const diff = Math.floor((Date.now() - time) / 60000);
+      const timeStr = diff < 1 ? '방금' : diff < 60 ? diff + '분 전' : Math.floor(diff/60) + '시간 전';
+      return `<div class="comment-item">
+        ${c.profile_image ? `<img src="${c.profile_image}" alt="프로필" onerror="this.style.display='none'"/>` : '<div style="width:28px;height:28px;border-radius:50%;background:#e2e8f0;flex-shrink:0;"></div>'}
+        <div class="comment-bubble">
+          <div class="comment-meta">
+            <span class="comment-name">${c.nickname || '익명'}</span>
+            <span class="comment-time">${timeStr}</span>
+          </div>
+          <div class="comment-text">${c.content}</div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+async function submitComment() {
+  if(!kakaoUser) { showToast('로그인이 필요해요!'); return; }
+  const text = document.getElementById('comment-text').value.trim();
+  if(!text) { showToast('댓글을 입력해주세요!'); return; }
+  if(!currentCafe) return;
+
+  const btn = document.querySelector('.comment-send-btn');
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/comments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        cafeteria_id: currentCafe.id,
+        nickname: kakaoUser.nickname,
+        content: text,
+        profile_image: kakaoUser.profile_image
+      })
+    });
+    if(res.ok || res.status === 201) {
+      document.getElementById('comment-text').value = '';
+      await loadComments(currentCafe.id);
+      showToast('댓글이 등록되었어요! 😊');
+    }
+  } catch(e) {
+    showToast('오류가 발생했어요.');
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 kakao.maps.load(function(){
