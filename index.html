@@ -23,14 +23,14 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 
 /* 헤더 */
 #header{background:var(--white);padding:14px 16px 12px;box-shadow:0 1px 4px rgba(0,0,0,0.06);z-index:20;flex-shrink:0;}
-.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;}
+.header-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2px;gap:8px;}
 .logo{display:flex;align-items:center;gap:8px;}
 .logo-icon-wrap{background:var(--green);padding:6px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
 .logo-icon{width:20px;height:20px;filter:brightness(0) invert(1);}
 .logo img.logo-img{width:36px;height:36px;border-radius:10px;object-fit:cover;}
 .logo-text h1{font-size:19px;font-weight:800;color:var(--green-text);letter-spacing:-0.5px;}
 .logo-text p{font-size:11px;color:var(--slate-400);margin-top:1px;}
-.report-btn{display:flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);border:none;border-radius:999px;padding:8px 14px;font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;}
+.report-btn{display:flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);border:none;border-radius:999px;padding:8px 12px;font-size:12px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
 .report-btn:active{transform:scale(0.95);}
 
 /* 검색 */
@@ -45,6 +45,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 .filters::-webkit-scrollbar{display:none;}
 .chip{background:var(--white);border:1.5px solid var(--slate-200);border-radius:999px;padding:6px 16px;font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;color:var(--slate-600);white-space:nowrap;transition:all .15s;}
 .chip.active{background:var(--green);border-color:var(--green);color:var(--white);box-shadow:0 4px 12px rgba(5,150,105,0.3);}
+.chip.active .dot-green,.chip.active .dot-orange{background:#fff !important;}
 
 /* 지도 */
 #map{flex:1;position:relative;}
@@ -126,8 +127,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
   </div>
   <div class="filters">
     <button class="chip active" onclick="setFilter('all',this)">전체</button>
-    <button class="chip" onclick="setFilter('cheap',this)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#059669;margin-right:5px;vertical-align:middle;"></span>~6,000원</button>
-    <button class="chip" onclick="setFilter('mid',this)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f97316;margin-right:5px;vertical-align:middle;"></span>~7,500원</button>
+    <button class="chip" onclick="setFilter('cheap',this)"><span class="dot-green" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#059669;margin-right:5px;vertical-align:middle;"></span>~6,000원</button>
+    <button class="chip" onclick="setFilter('mid',this)"><span class="dot-orange" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f97316;margin-right:5px;vertical-align:middle;"></span>~7,500원</button>
   </div>
 </div>
 
