@@ -8,8 +8,8 @@
 <link rel="icon" type="image/png" href="favicon.png"/>
 <meta property="og:title" content="구내식당 맵"/>
 <meta property="og:description" content="여의도 직장인을 위한 점심 위키 | 전국 서비스로 확대 중"/>
-<meta property="og:image" content="https://구내식당맵.kr/og-image.png"/>
-<meta property="og:url" content="https://구내식당맵.kr"/>
+<meta property="og:image" content="https://cafeteria-map.kr/og-image.png"/>
+<meta property="og:url" content="https://cafeteria-map.kr"/>
 <meta property="og:type" content="website"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -427,6 +427,7 @@ function setFilter(f, el) {
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
   render(resolvedData);
+  if(viewMode === 'list') renderList(resolvedData);
 }
 
 function searchCafeteria(q) {
@@ -461,8 +462,8 @@ function toggleView() {
 }
 
 function renderList(data) {
+  const q = document.getElementById('search').value;
   const filtered = data.filter(c => {
-    const q = document.getElementById('search').value;
     if(q && !c.name.includes(q)) return false;
     if(filter==='cheap') return c.price<=6000;
     if(filter==='mid') return c.price<=8000;
