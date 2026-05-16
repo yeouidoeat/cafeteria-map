@@ -121,9 +121,15 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       제보하기
     </button>
   </div>
-  <div class="search-wrap">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-    <input type="text" id="search" placeholder="식당명 또는 건물명 검색" oninput="searchCafeteria(this.value)"/>
+  <div style="display:flex;gap:8px;padding:0 16px;margin:10px 0 0;">
+    <div class="search-wrap" style="flex:1;margin:0;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="text" id="search" placeholder="식당명 또는 건물명 검색" oninput="searchCafeteria(this.value)"/>
+    </div>
+    <button id="view-toggle-btn" onclick="toggleView()" style="background:var(--white);border:1.5px solid var(--slate-200);border-radius:12px;width:46px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--slate-500);">
+      <svg id="view-icon-list" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+      <svg id="view-icon-map" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+    </button>
   </div>
   <div style="display:flex;align-items:center;gap:8px;padding:0 16px 10px;">
     <div class="filters" style="flex:1;padding:0;">
