@@ -163,6 +163,9 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 </div>
 
 <div id="map"></div>
+<div id="footer" style="position:fixed;bottom:0;left:0;right:0;padding:6px 16px;background:rgba(255,255,255,0.9);text-align:center;font-size:11px;color:#94a3b8;z-index:50;pointer-events:none;">
+  © 구내식당맵 · 문의: <a href="mailto:yeouido.eat@gmail.com" style="color:#94a3b8;text-decoration:none;pointer-events:auto;">yeouido.eat@gmail.com</a>
+</div>
 <div id="list-view" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;overflow-y:auto;background:var(--slate-50);padding:12px 16px 80px;z-index:10;">
 </div>
 
@@ -207,24 +210,29 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       </div>
     </div>
 
-    <div style="background:var(--slate-50);border:1px solid var(--slate-100);border-radius:12px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
-      <span style="font-size:12px;color:var(--slate-500);white-space:nowrap;">혼잡도</span>
-      <div class="crowd-bar-track" style="flex:1;">
+    <div style="padding:10px 0;margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:13px;font-weight:700;color:var(--slate-800);">혼잡도</span>
+        <span id="pcrowd-label" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;"></span>
+      </div>
+      <div class="crowd-bar-track">
         <div class="crowd-bar-fill" id="pcrowd-bar"></div>
       </div>
-      <span id="pcrowd-label" style="font-size:12px;font-weight:700;white-space:nowrap;"></span>
     </div>
 
     <div class="divider"></div>
     <div class="comment-section">
-      <div class="comment-title">
-        <span>💬 댓글</span>
-        <span id="comment-count" style="font-size:11px;color:var(--slate-400);"></span>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#059669;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <span style="font-size:15px;font-weight:800;color:var(--slate-900);">댓글</span>
+        </div>
+        <span id="comment-count" style="font-size:12px;color:var(--slate-500);background:var(--slate-100);padding:2px 10px;border-radius:20px;"></span>
       </div>
-      <div style="display:flex;flex-direction:column;gap:6px;">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <input type="text" id="comment-nickname" placeholder="닉네임 (선택)" style="border:1.5px solid var(--slate-200);border-radius:10px;padding:7px 12px;font-size:13px;font-family:'Nanum Gothic',sans-serif;outline:none;flex:1;"/>
-          <div id="star-rating" style="display:flex;gap:2px;flex-shrink:0;">
+      <div style="background:var(--slate-50);border:1px solid var(--slate-100);border-radius:14px;padding:12px;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--slate-200);">
+          <input type="text" id="comment-nickname" placeholder="닉네임 (선택)" style="border:none;background:transparent;font-size:13px;font-family:'Nanum Gothic',sans-serif;outline:none;flex:1;color:var(--slate-900);"/>
+          <div id="star-rating" style="display:flex;gap:3px;flex-shrink:0;">
             <span class="star-btn" onclick="setStar(1)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
             <span class="star-btn" onclick="setStar(2)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
             <span class="star-btn" onclick="setStar(3)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
@@ -232,9 +240,9 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
             <span class="star-btn" onclick="setStar(5)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
           </div>
         </div>
-        <div style="display:flex;align-items:center;border:1.5px solid var(--slate-200);border-radius:12px;overflow:hidden;background:var(--white);">
-          <input type="text" id="comment-text" placeholder="댓글을 입력해주세요..." style="flex:1;border:none;outline:none;padding:9px 12px;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);background:transparent;"/>
-          <button class="comment-send-btn" onclick="submitComment()" style="border-radius:0;margin:4px;padding:6px 12px;">등록</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="text" id="comment-text" placeholder="댓글을 입력해주세요..." style="flex:1;border:none;background:transparent;outline:none;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);"/>
+          <button class="comment-send-btn" onclick="submitComment()">등록</button>
         </div>
       </div>
       <div class="comment-list" id="comment-list">
@@ -383,16 +391,21 @@ function openPanel(id) {
   // 혼잡도
   const crowdLabel = document.getElementById('pcrowd-label');
   if(crowdLabel) {
-    crowdLabel.textContent = c.crowd < 40 ? '쾌적' : c.crowd < 70 ? '보통' : '혼잡';
-    crowdLabel.style.color = c.crowd < 40 ? '#059669' : c.crowd < 70 ? '#f97316' : '#ef4444';
+    const cl = c.crowd < 40 ? '쾌적' : c.crowd < 70 ? '보통' : '혼잡';
+    const cc = c.crowd < 40 ? '#059669' : c.crowd < 70 ? '#f97316' : '#ef4444';
+    crowdLabel.innerHTML = `<span style="width:8px;height:8px;border-radius:50%;background:${cc};display:inline-block;"></span> <span style="color:${cc};">${cl}</span>`;
   }
 
   document.getElementById('panel').classList.add('open');
+  document.getElementById('footer').style.display = 'none';
   loadComments(c.id);
   map.panTo(new kakao.maps.LatLng(c.lat, c.lng));
 }
 
-function closePanel() { document.getElementById('panel').classList.remove('open'); }
+function closePanel() {
+  document.getElementById('panel').classList.remove('open');
+  document.getElementById('footer').style.display = 'block';
+}
 
 function startNav() {
   if(!currentCafe) return;
