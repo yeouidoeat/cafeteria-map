@@ -6,6 +6,11 @@
 <title>구내식당 맵</title>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap" rel="stylesheet"/>
 <link rel="icon" type="image/png" href="favicon.png"/>
+<link rel="manifest" href="/manifest.json"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="구내식당맵"/>
+<link rel="apple-touch-icon" href="/logo.png"/>
 <meta property="og:title" content="구내식당 맵"/>
 <meta property="og:description" content="여의도 직장인을 위한 점심 위키 | 전국 서비스로 확대 중"/>
 <meta property="og:image" content="https://cafeteria-map.kr/og-image.png"/>
@@ -132,6 +137,15 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 <body>
 
 <div id="toast"></div>
+<div id="pwa-banner" style="display:none;position:fixed;bottom:80px;left:16px;right:16px;background:#1a1a1a;color:#fff;border-radius:16px;padding:14px 16px;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+    <span style="font-size:14px;font-weight:700;">📱 앱으로 설치하기</span>
+    <button onclick="document.getElementById('pwa-banner').style.display='none';localStorage.setItem('pwa-dismissed','1');" style="background:none;border:none;color:#94a3b8;font-size:18px;cursor:pointer;">✕</button>
+  </div>
+  <p style="font-size:12px;color:#94a3b8;margin-bottom:10px;">홈 화면에 추가하면 앱처럼 편리하게 사용할 수 있어요!</p>
+  <div id="pwa-ios" style="display:none;font-size:12px;color:#94a3b8;">Safari 하단 <b style="color:#fff;">공유 버튼</b> → <b style="color:#fff;">홈 화면에 추가</b></div>
+  <button id="pwa-install-btn" style="display:none;width:100%;background:#1a9e6e;color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;">홈 화면에 추가</button>
+</div>
 
 <div id="header">
   <div class="header-top">
@@ -701,6 +715,42 @@ kakao.maps.load(function(){
     }, { location: new kakao.maps.LatLng(37.5255, 126.9200), radius: 3000 });
   });
 });
+</script>
+<script>
+if('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if(!localStorage.getItem('pwa-dismissed')) {
+    setTimeout(() => {
+      document.getElementById('pwa-banner').style.display = 'block';
+      document.getElementById('pwa-install-btn').style.display = 'block';
+    }, 3000);
+  }
+});
+
+document.getElementById('pwa-install-btn')?.addEventListener('click', () => {
+  if(deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      document.getElementById('pwa-banner').style.display = 'none';
+      deferredPrompt = null;
+    });
+  }
+});
+
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const isInStandalone = window.matchMedia('(display-mode: standalone)').matches;
+if(isIOS && !isInStandalone && !localStorage.getItem('pwa-dismissed')) {
+  setTimeout(() => {
+    document.getElementById('pwa-banner').style.display = 'block';
+    document.getElementById('pwa-ios').style.display = 'block';
+  }, 3000);
+}
 </script>
 </body>
 </html>
