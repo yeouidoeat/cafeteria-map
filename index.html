@@ -6,6 +6,11 @@
 <title>구내식당 맵</title>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap" rel="stylesheet"/>
 <link rel="icon" type="image/png" href="favicon.png"/>
+<meta property="og:title" content="구내식당 맵"/>
+<meta property="og:description" content="여의도 직장인을 위한 점심 위키 | 전국 서비스로 확대 중"/>
+<meta property="og:image" content="https://cafeteria-map.vercel.app/logo.png"/>
+<meta property="og:url" content="https://cafeteria-map.vercel.app"/>
+<meta property="og:type" content="website"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -229,13 +234,13 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       </div>
       <div style="background:var(--slate-50);border:1px solid var(--slate-100);border-radius:14px;padding:10px;margin-bottom:8px;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--slate-200);">
-          <input type="text" id="comment-nickname" placeholder="닉네임 (선택)" style="border:none;background:transparent;font-size:13px;font-family:'Nanum Gothic',sans-serif;outline:none;flex:1;color:var(--slate-900);"/>
-          <div id="star-rating" style="display:flex;gap:3px;flex-shrink:0;">
-            <span class="star-btn" onclick="setStar(1)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
-            <span class="star-btn" onclick="setStar(2)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
-            <span class="star-btn" onclick="setStar(3)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
-            <span class="star-btn" onclick="setStar(4)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
-            <span class="star-btn" onclick="setStar(5)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
+          <input type="text" id="comment-nickname" placeholder="닉네임" style="border:none;background:transparent;font-size:13px;font-family:'Nanum Gothic',sans-serif;outline:none;flex:1;min-width:0;color:var(--slate-900);"/>
+          <div id="star-rating" style="display:flex;gap:2px;flex-shrink:0;">
+            <span class="star-btn" onclick="setStar(1)" style="font-size:18px;cursor:pointer;color:#e2e8f0;line-height:1;">★</span>
+            <span class="star-btn" onclick="setStar(2)" style="font-size:18px;cursor:pointer;color:#e2e8f0;line-height:1;">★</span>
+            <span class="star-btn" onclick="setStar(3)" style="font-size:18px;cursor:pointer;color:#e2e8f0;line-height:1;">★</span>
+            <span class="star-btn" onclick="setStar(4)" style="font-size:18px;cursor:pointer;color:#e2e8f0;line-height:1;">★</span>
+            <span class="star-btn" onclick="setStar(5)" style="font-size:18px;cursor:pointer;color:#e2e8f0;line-height:1;">★</span>
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
@@ -428,9 +433,10 @@ function setFilter(f, el) {
 }
 
 function searchCafeteria(q) {
-  if(!q) { render(resolvedData); return; }
+  if(!q) { render(resolvedData); if(viewMode==='list') renderList(resolvedData); return; }
   const result = resolvedData.filter(c => c.name.includes(q));
   render(result);
+  if(viewMode==='list') renderList(result);
 }
 
 let viewMode = 'map';
