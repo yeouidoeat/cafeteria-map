@@ -8,8 +8,8 @@
 <link rel="icon" type="image/png" href="favicon.png"/>
 <meta property="og:title" content="구내식당 맵"/>
 <meta property="og:description" content="여의도 직장인을 위한 점심 위키 | 전국 서비스로 확대 중"/>
-<meta property="og:image" content="https://cafeteria-map.vercel.app/og-image.png"/>
-<meta property="og:url" content="https://cafeteria-map.vercel.app"/>
+<meta property="og:image" content="https://구내식당맵.kr/og-image.png"/>
+<meta property="og:url" content="https://구내식당맵.kr"/>
 <meta property="og:type" content="website"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -288,20 +288,17 @@ const SUPABASE_URL = 'https://gokynemjexaigmcbmqkq.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_PnEIiBPZEipsAxGTcxgi_A_P6iXS4GI';
 
 const cafeterias = [
-  { id:1,  keyword:"KBS 본관 여의도", name:"KBS 본관 식당", price:5000, pl:"~5,000원", crowd:60, open:true, hours:"11:30~13:30", address:"서울 영등포구 여의공원로 13" },
-  { id:2,  keyword:"국회의사당 여의도", name:"국회의사당 식당", price:4000, pl:"~4,000원", crowd:70, open:true, hours:"11:30~14:00", address:"서울 영등포구 의사당대로 1" },
-  { id:3,  keyword:"한국거래소 여의도", name:"한국거래소 식당", price:5000, pl:"~5,000원", crowd:45, open:true, hours:"11:20~13:20", address:"서울 영등포구 여의나루로 76" },
-  { id:4,  keyword:"금융감독원 여의도", name:"금융감독원 식당", price:5000, pl:"~5,000원", crowd:50, open:true, hours:"11:30~13:30", address:"서울 영등포구 여의대로 38" },
-  { id:5,  keyword:"국민연금공단 여의도", name:"국민연금공단 식당", price:4500, pl:"~4,500원", crowd:35, open:true, hours:"11:30~13:30", address:"서울 영등포구 국제금융로8길 32" },
-  { id:6,  keyword:"서울특별시의회 여의도", name:"서울시의회 식당", price:4000, pl:"~4,000원", crowd:30, open:true, hours:"11:30~14:00", address:"서울 영등포구 의사당대로 1" },
-  { id:8,  keyword:"한국교직원공제회 여의도", name:"교직원공제회 식당", price:4500, pl:"~4,500원", crowd:40, open:true, hours:"11:30~13:30", address:"서울 영등포구 여의대로 88" },
-  { id:9,  keyword:"전국경제인연합회 여의도", name:"전경련회관 식당", price:6000, pl:"~6,000원", crowd:55, open:true, hours:"11:30~13:30", address:"서울 영등포구 여의대로 24" },
-  { id:11, keyword:"국회도서관 여의도", name:"국회도서관 식당", price:4000, pl:"~4,000원", crowd:25, open:true, hours:"11:30~14:00", address:"서울 영등포구 의사당대로 1" },
-  { id:12, keyword:"국회박물관 여의도", name:"국회박물관 식당", price:5000, pl:"~5,000원", crowd:20, open:true, hours:"11:30~14:00", address:"서울 영등포구 의사당대로 1" },
-  { id:13, keyword:"이룸센터 여의도", name:"이룸센터 식당", price:5500, pl:"~5,500원", crowd:50, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 22" },
-  { id:14, keyword:"일신빌딩 여의도", name:"일신빌딩 식당", price:5500, pl:"~5,500원", crowd:55, open:true, hours:"11:30~13:30", address:"서울 영등포구 국제금융로 10" },
-  { id:15, keyword:"태영빌딩 여의도", name:"태영빌딩 식당", price:5500, pl:"~5,500원", crowd:55, open:true, hours:"11:30~13:30", address:"서울 영등포구 여의공원로 111" },
-  { id:17, keyword:"금융투자협회 여의도", name:"금투센터 식당", price:6000, pl:"~6,000원", crowd:65, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 143" },
+  { id:1,  keyword:"KBS 본관 여의도", name:"KBS 본관 식당", price:5000, pl:"~5,000원", crowd:60, open:true, hours:"11:30~14:00", address:"서울 영등포구 여의공원로 13" },
+  { id:2,  keyword:"KBS 여의도 신관", name:"KBS 신관 식당", price:5000, pl:"~5,000원", crowd:55, open:true, hours:"11:20~14:00", address:"서울 영등포구 여의공원로 13" },
+  { id:3,  keyword:"한국교직원공제회 여의도", name:"교직원공제회 식당", price:8500, pl:"~8,500원", crowd:40, open:true, hours:"11:00~14:00", address:"서울 영등포구 여의나루로 50" },
+  { id:4,  keyword:"전국경제인연합회 여의도", name:"전경련회관 식당", price:7500, pl:"~7,500원", crowd:55, open:true, hours:"11:00~13:00", address:"서울 영등포구 여의대로 24" },
+  { id:5,  keyword:"국회도서관 여의도", name:"국회도서관 식당", price:5500, pl:"~5,500원", crowd:25, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1" },
+  { id:6,  keyword:"국회박물관 여의도", name:"국회박물관 식당", price:5500, pl:"~5,500원", crowd:20, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1" },
+  { id:7,  keyword:"일신빌딩 여의도", name:"일신빌딩 식당", price:8000, pl:"~8,000원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 영등포구 은행로 11 지하1층" },
+  { id:8,  keyword:"태영빌딩 여의도", name:"태영빌딩 식당", price:8500, pl:"~8,500원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 영등포구 여의공원로 111" },
+  { id:9,  keyword:"금융투자협회 여의도", name:"한국금융투자협회 식당", price:7700, pl:"~7,700원", crowd:65, open:true, hours:"11:30~13:00", address:"서울 영등포구 의사당대로 143 지하 1층" },
+  { id:10, keyword:"KT 여의도지사", name:"KT그룹희망나눔재단 식당", price:6500, pl:"~6,500원", crowd:50, open:true, hours:"11:40~13:30", address:"서울 영등포구 여의대로 14" },
+  { id:11, keyword:"하나증권 여의도", name:"하나증권 식당", price:8300, pl:"~8,300원", crowd:60, open:true, hours:"12:00~13:00", address:"서울 영등포구 의사당대로 82 23층" },
 ];
 
 let filter='all', map, overlays=[], resolvedData=[], currentCafe=null, userLat=null, userLng=null;
