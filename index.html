@@ -114,7 +114,7 @@ function openModal(){document.getElementById('modal-overlay').classList.add('ope
 function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
 function closeModalOutside(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
 function submitReport(){if(!document.getElementById('f-name').value||!document.getElementById('f-menu').value||!document.getElementById('f-price').value){alert('식당 이름, 메뉴, 가격은 필수예요!');return;}alert('제보해주셔서 감사해요! 검토 후 반영할게요 🙏');closeModal();}
-window.onload=function(){var s=document.createElement('script');s.src='//dapi.kakao.com/v2/maps/sdk.js?appkey=2a9cb37b21dd68ec0f21be70c2fe3ac1&autoload=false';s.onload=function(){kakao.maps.load(function(){map=new kakao.maps.Map(document.getElementById('map'),{center:new kakao.maps.LatLng(37.5240,126.9235),level:4});renderMarkers();});};document.head.appendChild(s);};
+window.onload=function(){var s=document.createElement('script');s.src='https://dapi.kakao.com/v2/maps/sdk.js?appkey=2a9cb37b21dd68ec0f21be70c2fe3ac1&autoload=false';s.onload=function(){kakao.maps.load(function(){map=new kakao.maps.Map(document.getElementById('map'),{center:new kakao.maps.LatLng(37.5240,126.9235),level:4});renderMarkers();});};document.head.appendChild(s);};
 </script>
 </body>
 </html>
