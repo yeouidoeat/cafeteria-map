@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>구내식당 맵</title>
+<title>구내식당맵</title>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap" rel="stylesheet"/>
 <link rel="icon" type="image/png" href="favicon.png"/>
 <meta name="naver-site-verification" content="e098bbffb75c83432193ef396d99b0f952e19394" />
@@ -21,8 +21,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
 <meta name="apple-mobile-web-app-title" content="구내식당맵"/>
 <link rel="apple-touch-icon" href="/logo.png"/>
-<meta property="og:title" content="구내식당 맵"/>
-<meta property="og:description" content="여의도 직장인을 위한 점심 위키 | 전국 서비스로 확대 중"/>
+<meta property="og:title" content="구내식당맵"/>
+<meta property="og:description" content="직장인을 위한 점심 위키 | 여의도에서 전국 확대 중"/>
 <meta property="og:image" content="https://cafeteria-map.kr/og-image.png"/>
 <meta property="og:url" content="https://cafeteria-map.kr"/>
 <meta property="og:type" content="website"/>
@@ -154,8 +154,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
     <div class="logo">
       <img src="logo.png" class="logo-img" alt="로고" onerror="this.style.display='none'"/>
       <div class="logo-text">
-        <h1>구내식당 맵</h1>
-        <p>여의도 직장인을 위한 점심 위키 | 전국 서비스로 확대 중</p>
+        <h1>구내식당맵</h1>
+        <p>직장인을 위한 점심 위키 | 여의도에서 전국 확대 중</p>
       </div>
     </div>
     <button class="report-btn" onclick="openModal()">
@@ -433,7 +433,7 @@ function shareLink() {
   if(!currentCafe) return;
   const url = window.location.origin + window.location.pathname + '?id=' + currentCafe.id;
   if(navigator.share) {
-    navigator.share({ title: currentCafe.name, text: currentCafe.name + ' | 구내식당 맵', url: url });
+    navigator.share({ title: currentCafe.name, text: currentCafe.name + ' | 구내식당맵', url: url });
   } else {
     navigator.clipboard.writeText(url);
     showToast('링크가 복사되었습니다!');
