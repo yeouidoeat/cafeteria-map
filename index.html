@@ -22,23 +22,23 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--gray);color:var(--te
 #map{flex:1;}
 #panel{background:var(--white);border-radius:20px 20px 0 0;border-top:1px solid #e5e7eb;padding:0 16px 24px;transform:translateY(100%);transition:transform .3s;flex-shrink:0;max-height:60vh;overflow-y:auto;}
 #panel.open{transform:translateY(0);}
-.handle{width:36px;height:4px;background:#e5e7eb;border-radius:2px;margin:12px auto 14px;}
-.ptop{display:flex;justify-content:space-between;margin-bottom:10px;}
+.handle{width:36px;height:4px;background:#e5e7eb;border-radius:2px;margin:12px auto 14px;cursor:pointer;}
+.ptop{display:flex;justify-content:space-between;margin-bottom:6px;}
 .pname{font-family:'Black Han Sans',sans-serif;font-size:18px;}
 .pprice{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--green);}
+.pbadge{display:inline-block;background:#fff3e0;color:#7c3800;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;margin-bottom:10px;}
 .prating{font-size:13px;color:var(--muted);margin-bottom:12px;}
+.pinfo-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.pinfo-chip{background:var(--gray);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--muted);}
 .clabel{font-size:12px;color:var(--muted);margin-bottom:4px;display:flex;justify-content:space-between;}
 .cbar{height:8px;background:#f3f4f6;border-radius:4px;overflow:hidden;margin-bottom:12px;}
 .cfill{height:100%;border-radius:4px;transition:width .5s;}
-.mlabel{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;}
-.mchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
-.mchip{background:var(--green-light);color:var(--green);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:700;}
-.mchip.today{background:var(--green);color:#fff;}
 .rbtn{width:100%;background:var(--green);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-family:'Black Han Sans',sans-serif;cursor:pointer;}
 #moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;}
 #moverlay.open{display:flex;}
-#modal{background:var(--white);border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-height:80vh;overflow-y:auto;}
-#modal h2{font-family:'Black Han Sans',sans-serif;font-size:18px;margin-bottom:16px;color:var(--green);}
+#modal{background:var(--white);border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-height:85vh;overflow-y:auto;}
+#modal h2{font-family:'Black Han Sans',sans-serif;font-size:18px;margin-bottom:4px;color:var(--green);}
+#modal p{font-size:12px;color:var(--muted);margin-bottom:16px;}
 .fg{margin-bottom:12px;}
 .fg label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px;}
 .fg input,.fg textarea,.fg select{width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Nanum Gothic',sans-serif;color:var(--text);background:var(--gray);}
@@ -46,13 +46,13 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--gray);color:var(--te
 .mbtns{display:flex;gap:8px;margin-top:16px;}
 .mcancel{flex:1;background:var(--gray);border:1px solid #e5e7eb;border-radius:12px;padding:13px;font-size:14px;font-family:'Nanum Gothic',sans-serif;cursor:pointer;}
 .msubmit{flex:2;background:var(--green);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-family:'Black Han Sans',sans-serif;cursor:pointer;}
+.unverified{background:#fff3e0;border-left:3px solid #e76f00;border-radius:0;padding:10px 12px;font-size:12px;color:#7c3800;margin-bottom:12px;}
 </style>
 </head>
 <body>
 <div id="header">
-  <div class="logo"><h1>구내식당 맵</h1><p>직장인 밥집 위키</p></div>
+  <div class="logo"><h1>구내식당 맵</h1><p>여의도 직장인 밥집 위키</p></div>
   <div class="hbtns">
-    <button class="hbtn" id="rankbtn" onclick="toggleRank()">🏆 랭킹</button>
     <button class="hbtn" onclick="openModal()">📢 제보하기</button>
   </div>
 </div>
@@ -60,90 +60,134 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--gray);color:var(--te
   <button class="chip active" onclick="setFilter('all',this)">전체</button>
   <button class="chip" onclick="setFilter('cheap',this)">~5,000원</button>
   <button class="chip" onclick="setFilter('mid',this)">~7,000원</button>
-  <button class="chip" onclick="setFilter('low',this)">여유있음</button>
-  <button class="chip" onclick="setFilter('high',this)">⭐ 4.5이상</button>
+  <button class="chip" onclick="setFilter('open',this)">일반인 가능</button>
 </div>
 <div id="map"></div>
 <div id="panel">
-  <div class="handle"></div>
-  <div class="ptop"><div class="pname" id="pname"></div><div class="pprice" id="pprice"></div></div>
-  <div class="prating" id="prating"></div>
-  <div class="clabel"><span>혼잡도</span><span id="pclabel"></span></div>
-  <div class="cbar"><div class="cfill" id="pcbar"></div></div>
-  <div class="mlabel">오늘의 메뉴</div>
-  <div class="mchips" id="pmenus"></div>
+  <div class="handle" onclick="document.getElementById('panel').classList.remove('open')"></div>
+  <div class="ptop">
+    <div class="pname" id="pname"></div>
+    <div class="pprice" id="pprice"></div>
+  </div>
+  <div id="punverified" class="unverified" style="display:none;">⚠️ 정보 미확인 — 방문 전 확인을 권장해요. 아시는 분은 제보해주세요!</div>
+  <div class="pinfo-row" id="pinfo"></div>
+  <div class="clabel"><span>혼잡도 (제보 기반)</span><span id="pclabel">정보없음</span></div>
+  <div class="cbar"><div class="cfill" id="pcbar" style="width:0%;background:#e5e7eb;"></div></div>
   <button class="rbtn" onclick="openModal()">📢 정보 제보하기</button>
 </div>
 <div id="moverlay" onclick="if(event.target===this)closeModal()">
   <div id="modal">
     <h2>📢 식당 정보 제보</h2>
-    <div class="fg"><label>식당 이름</label><input type="text" id="fn" placeholder="예: 테크밸리 A동 구내식당"/></div>
-    <div class="fg"><label>오늘의 메뉴</label><input type="text" id="fm" placeholder="예: 제육볶음, 된장찌개"/></div>
+    <p>직접 방문해서 확인한 정보를 알려주세요 🙏</p>
+    <div class="fg"><label>식당 이름</label><input type="text" id="fn" placeholder="예: KBS 구내식당"/></div>
+    <div class="fg"><label>오늘의 메뉴</label><input type="text" id="fm" placeholder="예: 제육볶음, 된장찌개, 공기밥"/></div>
     <div class="fg"><label>가격</label><input type="text" id="fp" placeholder="예: 5,500원"/></div>
-    <div class="fg"><label>혼잡도</label><select id="fc"><option value="">선택</option><option>여유</option><option>보통</option><option>혼잡</option></select></div>
-    <div class="fg"><label>추가 정보 (선택)</label><textarea placeholder="맛, 분위기 등 자유롭게"></textarea></div>
-    <div class="mbtns"><button class="mcancel" onclick="closeModal()">취소</button><button class="msubmit" onclick="submitReport()">제보하기</button></div>
+    <div class="fg"><label>혼잡도</label>
+      <select id="fc"><option value="">선택</option><option>여유</option><option>보통</option><option>혼잡</option></select>
+    </div>
+    <div class="fg"><label>일반인 출입 가능 여부</label>
+      <select id="fo"><option value="">선택</option><option>가능</option><option>불가능</option><option>모름</option></select>
+    </div>
+    <div class="fg"><label>추가 정보 (선택)</label><textarea placeholder="운영시간, 맛, 주의사항 등 자유롭게"></textarea></div>
+    <div class="mbtns">
+      <button class="mcancel" onclick="closeModal()">취소</button>
+      <button class="msubmit" onclick="submitReport()">제보하기</button>
+    </div>
   </div>
 </div>
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=979537335115a57fb498aaaab5f482eb&autoload=false"></script>
 <script>
 const data=[
-  {id:1,name:"테크밸리 A동 구내식당",lat:37.5245,lng:126.9220,price:4500,pl:"4,500원",crowd:35,cl:"여유",cc:"#2d6a4f",rating:4.8,rc:234,menus:["제육볶음 (오늘)","된장찌개","비빔밥"],rank:1},
-  {id:2,name:"이노파크 구내식당",lat:37.5265,lng:126.9250,price:5000,pl:"5,000원",crowd:42,cl:"여유",cc:"#2d6a4f",rating:4.6,rc:178,menus:["갈비탕 (오늘)","김치찌개","쌀국수"],rank:2},
-  {id:3,name:"중앙광장 구내식당",lat:37.5230,lng:126.9260,price:5500,pl:"5,500원",crowd:65,cl:"보통",cc:"#e76f00",rating:4.3,rc:121,menus:["불고기 (오늘)","미역국","잡채"],rank:3},
-  {id:4,name:"센터빌딩 4층 식당",lat:37.5255,lng:126.9195,price:6000,pl:"6,000원",crowd:75,cl:"보통",cc:"#e76f00",rating:4.1,rc:89,menus:["돈까스 (오늘)","순두부찌개","볶음밥"],rank:null},
-  {id:5,name:"그린파크 식당",lat:37.5215,lng:126.9235,price:4800,pl:"4,800원",crowd:28,cl:"여유",cc:"#2d6a4f",rating:4.0,rc:67,menus:["닭갈비 (오늘)","콩나물국","잡채"],rank:null},
-  {id:6,name:"글로벌타워 레스토랑",lat:37.5240,lng:126.9275,price:7500,pl:"7,500원",crowd:88,cl:"혼잡",cc:"#c1121f",rating:3.5,rc:45,menus:["스테이크 (오늘)","파스타","샐러드바"],rank:null},
+  {
+    id:1,
+    name:"KBS 구내식당",
+    lat:37.5213,
+    lng:126.9161,
+    price:5000,
+    pl:"~5,000원",
+    crowd:0,
+    cl:"정보없음",
+    cc:"#e5e7eb",
+    open:true,
+    hours:"평일 11:30~14:00",
+    verified:false,
+  },
+  {
+    id:2,
+    name:"국회의사당 구내식당",
+    lat:37.5301,
+    lng:126.9152,
+    price:5000,
+    pl:"~5,000원",
+    crowd:0,
+    cl:"정보없음",
+    cc:"#e5e7eb",
+    open:true,
+    hours:"평일 운영 (회기 중)",
+    verified:false,
+  },
 ];
-let filter='all',map,overlays=[];
-function bc(p){if(p<=5000)return{bg:'#d8f3dc',bd:'#2d6a4f',tx:'#1b4332'};if(p<=7000)return{bg:'#fff3e0',bd:'#e76f00',tx:'#7c3800'};return{bg:'#ffe8e8',bd:'#c1121f',tx:'#7f1d1d'};}
+
+let filter='all', map, overlays=[];
+
+function bc(p){
+  if(p<=5000)return{bg:'#d8f3dc',bd:'#2d6a4f',tx:'#1b4332'};
+  if(p<=7000)return{bg:'#fff3e0',bd:'#e76f00',tx:'#7c3800'};
+  return{bg:'#ffe8e8',bd:'#c1121f',tx:'#7f1d1d'};
+}
+
 function render(){
   overlays.forEach(o=>o.setMap(null));overlays=[];
   data.filter(c=>{
     if(filter==='cheap')return c.price<=5000;
     if(filter==='mid')return c.price<=7000;
-    if(filter==='low')return c.crowd<50;
-    if(filter==='high')return c.rating>=4.5;
+    if(filter==='open')return c.open;
     return true;
   }).forEach(c=>{
     const col=bc(c.price);
-    const rb=c.rank?`<div style="position:absolute;top:-22px;left:50%;transform:translateX(-50%);background:#185FA5;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;white-space:nowrap;">지역 ${c.rank}위</div>`:'';
-    const html=`<div style="position:relative;cursor:pointer;" onclick="openPanel(${c.id})">${rb}<div style="display:flex;align-items:center;gap:5px;padding:5px 10px;background:${col.bg};border:2px solid ${col.bd};border-radius:20px;font-size:13px;font-weight:700;color:${col.tx};white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.15);"><div style="width:7px;height:7px;border-radius:50%;background:${col.bd};"></div>${c.pl}</div></div>`;
+    const unverifiedBadge=c.verified?'':'<div style="position:absolute;top:-20px;left:50%;transform:translateX(-50%);background:#fff3e0;color:#7c3800;font-size:9px;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;border:1px solid #e76f00;">미확인</div>';
+    const html=`<div style="position:relative;cursor:pointer;" onclick="openPanel(${c.id})">${unverifiedBadge}<div style="display:flex;align-items:center;gap:5px;padding:5px 10px;background:${col.bg};border:2px solid ${col.bd};border-radius:20px;font-size:13px;font-weight:700;color:${col.tx};white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.15);"><div style="width:7px;height:7px;border-radius:50%;background:${col.bd};"></div>${c.pl}</div></div>`;
     const o=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(c.lat,c.lng),content:html,yAnchor:1.3});
     o.setMap(map);overlays.push(o);
   });
 }
+
 function openPanel(id){
   const c=data.find(x=>x.id===id);if(!c)return;
   document.getElementById('pname').textContent=c.name;
   document.getElementById('pprice').textContent=c.pl;
-  document.getElementById('prating').textContent='★'.repeat(Math.round(c.rating))+'☆'.repeat(5-Math.round(c.rating))+` ${c.rating} · 리뷰 ${c.rc}개`;
-  const bar=document.getElementById('pcbar');bar.style.width=c.crowd+'%';bar.style.background=c.cc;
+  document.getElementById('punverified').style.display=c.verified?'none':'block';
+  document.getElementById('pinfo').innerHTML=[
+    c.open?'<span class="pinfo-chip">✅ 일반인 가능</span>':'<span class="pinfo-chip">🔒 임직원 전용</span>',
+    `<span class="pinfo-chip">🕐 ${c.hours}</span>`,
+  ].join('');
+  const bar=document.getElementById('pcbar');
+  bar.style.width=c.crowd+'%';
+  bar.style.background=c.cc;
   document.getElementById('pclabel').textContent=c.cl;
-  document.getElementById('pmenus').innerHTML=c.menus.map(m=>m.includes('(오늘)')?`<span class="mchip today">${m.replace(' (오늘)','')}</span>`:`<span class="mchip">${m}</span>`).join('');
   document.getElementById('panel').classList.add('open');
   map.panTo(new kakao.maps.LatLng(c.lat,c.lng));
 }
-function setFilter(f,el){filter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');render();}
-function toggleRank(){
-  let p=document.getElementById('rankpanel');
-  if(p){p.remove();document.getElementById('rankbtn').classList.remove('active');return;}
-  p=document.createElement('div');p.id='rankpanel';
-  p.style.cssText='position:absolute;top:10px;left:10px;background:#fff;border-radius:14px;padding:12px 14px;z-index:150;min-width:200px;box-shadow:0 2px 12px rgba(0,0,0,.12);';
-  p.innerHTML=`<div style="font-family:\'Black Han Sans\',sans-serif;font-size:14px;color:#2d6a4f;margin-bottom:10px;">🏆 이 지역 TOP 3</div>`+data.filter(c=>c.rank).sort((a,b)=>a.rank-b.rank).map(c=>`<div onclick="openPanel(${c.id})" style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f3f4f6;cursor:pointer;"><div style="font-family:\'Black Han Sans\',sans-serif;font-size:16px;color:${c.rank===1?'#f4a100':c.rank===2?'#9ca3af':'#b45309'};width:20px;text-align:center;">${c.rank}</div><div style="flex:1;"><div style="font-size:13px;font-weight:700;">${c.name}</div><div style="font-size:11px;color:#6b7280;">${c.pl}</div></div><div style="font-size:12px;color:#2d6a4f;font-weight:700;">★${c.rating}</div></div>`).join('');
-  document.getElementById('map').appendChild(p);
-  document.getElementById('rankbtn').classList.add('active');
+
+function setFilter(f,el){
+  filter=f;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  render();
 }
+
 function openModal(){document.getElementById('moverlay').classList.add('open');}
 function closeModal(){document.getElementById('moverlay').classList.remove('open');}
 function submitReport(){
-  if(!document.getElementById('fn').value||!document.getElementById('fm').value||!document.getElementById('fp').value){alert('식당 이름, 메뉴, 가격은 필수예요!');return;}
-  alert('제보해주셔서 감사해요! 검토 후 반영할게요 🙏');closeModal();
+  if(!document.getElementById('fn').value){alert('식당 이름은 필수예요!');return;}
+  alert('제보해주셔서 감사해요! 검토 후 반영할게요 🙏');
+  closeModal();
 }
+
 kakao.maps.load(function(){
   map=new kakao.maps.Map(document.getElementById('map'),{
-    center:new kakao.maps.LatLng(37.5240,126.9235),
-    level:4
+    center:new kakao.maps.LatLng(37.5250,126.9160),
+    level:5
   });
   render();
 });
