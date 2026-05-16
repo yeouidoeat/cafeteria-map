@@ -414,10 +414,12 @@ function startNav() {
 }
 
 function shareLink() {
+  if(!currentCafe) return;
+  const url = window.location.origin + window.location.pathname + '?id=' + currentCafe.id;
   if(navigator.share) {
-    navigator.share({ title:'구내식당 맵', url: window.location.href });
+    navigator.share({ title: currentCafe.name, text: currentCafe.name + ' | 구내식당 맵', url: url });
   } else {
-    navigator.clipboard.writeText(window.location.href);
+    navigator.clipboard.writeText(url);
     showToast('링크가 복사되었습니다!');
   }
 }
@@ -665,6 +667,15 @@ async function submitComment() {
   }
 }
 
+function checkUrlParam() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  if(id && resolvedData.length > 0) {
+    const cafe = resolvedData.find(c => c.id === parseInt(id));
+    if(cafe) openPanel(cafe.id);
+  }
+}
+
 kakao.maps.load(function(){
   map = new kakao.maps.Map(document.getElementById('map'), {
     center: new kakao.maps.LatLng(37.5255, 126.9200),
@@ -683,7 +694,10 @@ kakao.maps.load(function(){
         cafe.lng = 126.9200 + (Math.random()-0.5)*0.01;
       }
       resolvedData.push(cafe);
-      if(done === cafeterias.length) render(resolvedData);
+      if(done === cafeterias.length) {
+        render(resolvedData);
+        setTimeout(checkUrlParam, 300);
+      }
     }, { location: new kakao.maps.LatLng(37.5255, 126.9200), radius: 3000 });
   });
 });
