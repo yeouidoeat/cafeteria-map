@@ -7,83 +7,156 @@
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-:root{--green:#2d6a4f;--green-light:#d8f3dc;--amber:#e76f00;--red:#c1121f;--gray:#f8f7f4;--text:#1a1a1a;--muted:#6b7280;--white:#fff;}
-body{font-family:'Nanum Gothic',sans-serif;background:var(--gray);color:var(--text);height:100dvh;overflow:hidden;display:flex;flex-direction:column;}
-#header{background:var(--white);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e5e7eb;flex-shrink:0;}
-.logo h1{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--green);}
-.logo p{font-size:11px;color:var(--muted);margin-top:2px;}
-.hbtns{display:flex;gap:8px;}
-.hbtn{background:none;border:1px solid #e5e7eb;border-radius:20px;padding:6px 12px;font-size:12px;font-family:'Nanum Gothic',sans-serif;cursor:pointer;color:var(--text);}
-#filters{background:var(--white);padding:8px 14px;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid #e5e7eb;flex-shrink:0;}
-#filters::-webkit-scrollbar{display:none;}
-.chip{background:var(--gray);border:1px solid #e5e7eb;border-radius:20px;padding:5px 12px;font-size:12px;font-family:'Nanum Gothic',sans-serif;cursor:pointer;white-space:nowrap;color:var(--text);}
-.chip.active{background:var(--green-light);border-color:var(--green);color:var(--green);font-weight:700;}
+:root{--green:#1a9e6e;--green-dark:#157a55;--green-light:#e8f7f0;--orange:#f97316;--red:#ef4444;--gray:#f4f6f8;--text:#1a1a1a;--muted:#6b7280;--white:#fff;--border:#e5e7eb;}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--white);color:var(--text);height:100dvh;overflow:hidden;display:flex;flex-direction:column;}
+
+/* 헤더 */
+#header{background:var(--white);padding:12px 16px 8px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.logo{display:flex;align-items:center;gap:8px;}
+.logo-icon{width:36px;height:36px;border-radius:10px;object-fit:cover;}
+.logo-text h1{font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--text);}
+.logo-text p{font-size:11px;color:var(--muted);margin-top:1px;}
+.report-btn{display:flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);border:none;border-radius:20px;padding:8px 14px;font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;}
+
+/* 검색바 */
+#search-wrap{padding:10px 16px 0;flex-shrink:0;}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--gray);border-radius:12px;padding:10px 14px;}
+.search-box input{background:none;border:none;outline:none;font-size:14px;font-family:'Nanum Gothic',sans-serif;color:var(--text);flex:1;}
+.search-box input::placeholder{color:#9ca3af;}
+
+/* 필터 */
+#filters{padding:10px 16px;display:flex;gap:8px;flex-shrink:0;}
+.chip{background:var(--white);border:1.5px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;font-family:'Nanum Gothic',sans-serif;cursor:pointer;white-space:nowrap;color:var(--muted);font-weight:700;}
+.chip.active{background:var(--green);border-color:var(--green);color:var(--white);}
+
+/* 지도 */
 #map{flex:1;}
-#panel{background:var(--white);border-radius:20px 20px 0 0;border-top:1px solid #e5e7eb;padding:0 16px 24px;position:fixed;bottom:0;left:0;right:0;transform:translateY(100%);transition:transform .3s;max-height:65vh;overflow-y:auto;z-index:200;}
+
+/* 하단 패널 */
+#panel{background:var(--white);border-radius:24px 24px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,0.1);position:fixed;bottom:0;left:0;right:0;transform:translateY(100%);transition:transform .3s ease;max-height:75vh;overflow-y:auto;z-index:200;}
 #panel.open{transform:translateY(0);}
-.handle{width:36px;height:4px;background:#e5e7eb;border-radius:2px;margin:12px auto 14px;cursor:pointer;}
-.ptop{display:flex;justify-content:space-between;margin-bottom:6px;}
-.pname{font-family:'Black Han Sans',sans-serif;font-size:18px;}
-.pprice{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--green);}
-.pinfo-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
-.pinfo-chip{background:var(--gray);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--muted);}
-.clabel{font-size:12px;color:var(--muted);margin-bottom:4px;display:flex;justify-content:space-between;}
-.cbar{height:8px;background:#f3f4f6;border-radius:4px;overflow:hidden;margin-bottom:4px;}
-.cfill{height:100%;border-radius:4px;transition:width .5s;}
-.crowd-note{font-size:11px;color:var(--muted);margin-bottom:12px;}
-.pdesc{font-size:13px;color:var(--text);line-height:1.6;margin-bottom:14px;background:var(--gray);border-radius:8px;padding:10px 12px;}
-.rbtn{width:100%;background:var(--green);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-family:'Black Han Sans',sans-serif;cursor:pointer;}
+.panel-handle{width:40px;height:4px;background:#e5e7eb;border-radius:2px;margin:12px auto 16px;}
+
+.panel-header{padding:0 20px 16px;}
+.panel-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.panel-name{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--text);}
+.panel-price{font-family:'Black Han Sans',sans-serif;font-size:24px;color:var(--green);}
+.panel-meta{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+
+.close-btn{background:none;border:none;cursor:pointer;color:#9ca3af;font-size:22px;padding:0;line-height:1;}
+
+/* 정보 카드들 */
+.info-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 16px;}
+.info-card{background:var(--gray);border-radius:14px;padding:12px 14px;}
+.info-card-label{font-size:11px;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:4px;}
+.info-card-value{font-size:14px;font-weight:700;color:var(--text);}
+
+/* 혼잡도 */
+.crowd-section{padding:0 20px 16px;}
+.crowd-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.crowd-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.crowd-time{font-size:11px;color:var(--muted);}
+.crowd-bar-wrap{background:#f3f4f6;border-radius:20px;height:12px;overflow:hidden;margin-bottom:8px;}
+.crowd-bar{height:100%;border-radius:20px;transition:width .5s;}
+.crowd-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);}
+.crowd-current{font-weight:700;}
+
+/* 길찾기 버튼 */
+.nav-btn{margin:0 20px 20px;width:calc(100% - 40px);background:var(--green);color:white;border:none;border-radius:16px;padding:16px;font-size:16px;font-family:'Black Han Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.nav-btn:active{background:var(--green-dark);}
+
+/* 제보 모달 */
 #moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;}
 #moverlay.open{display:flex;}
-#modal{background:var(--white);border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-height:85vh;overflow-y:auto;}
-#modal h2{font-family:'Black Han Sans',sans-serif;font-size:18px;margin-bottom:4px;color:var(--green);}
-#modal p{font-size:12px;color:var(--muted);margin-bottom:16px;}
-.fg{margin-bottom:12px;}
-.fg label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px;}
-.fg input,.fg textarea,.fg select{width:100%;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px;font-size:14px;font-family:'Nanum Gothic',sans-serif;color:var(--text);background:var(--gray);}
+#modal{background:var(--white);border-radius:24px 24px 0 0;padding:20px 20px 40px;width:100%;max-height:85vh;overflow-y:auto;}
+#modal h2{font-family:'Black Han Sans',sans-serif;font-size:20px;margin-bottom:4px;color:var(--text);}
+#modal p{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;}
+.fg input,.fg textarea,.fg select{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;font-size:14px;font-family:'Nanum Gothic',sans-serif;color:var(--text);background:var(--white);outline:none;}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--green);}
 .fg textarea{height:80px;resize:none;}
-.mbtns{display:flex;gap:8px;margin-top:16px;}
-.mcancel{flex:1;background:var(--gray);border:1px solid #e5e7eb;border-radius:12px;padding:13px;font-size:14px;font-family:'Nanum Gothic',sans-serif;cursor:pointer;}
-.msubmit{flex:2;background:var(--green);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-family:'Black Han Sans',sans-serif;cursor:pointer;}
-#loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:13px;color:var(--muted);text-align:center;}
+.mbtns{display:flex;gap:10px;margin-top:20px;}
+.mcancel{flex:1;background:var(--gray);border:none;border-radius:12px;padding:14px;font-size:14px;font-family:'Nanum Gothic',sans-serif;cursor:pointer;color:var(--muted);}
+.msubmit{flex:2;background:var(--green);color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-family:'Black Han Sans',sans-serif;cursor:pointer;}
 </style>
 </head>
 <body>
+
 <div id="header">
-  <div class="logo" style="display:flex;align-items:center;gap:8px;">
-    <img src="logo.jpg" style="width:36px;height:36px;border-radius:8px;object-fit:cover;" alt="구내식당맵 로고"/>
-    <div><h1>구내식당 맵</h1><p>여의도 직장인 밥집 위키</p></div>
-  </div>
-  <div class="hbtns">
-    <button class="hbtn" onclick="openModal()">📢 제보하기</button>
+  <div class="header-top">
+    <div class="logo">
+      <img src="logo.jpg" class="logo-icon" alt="로고"/>
+      <div class="logo-text">
+        <h1>구내식당 맵</h1>
+        <p>여의도 직장인을 위한 점심 위키 | 전국 서비스로 확대 중</p>
+      </div>
+    </div>
+    <button class="report-btn" onclick="openModal()">💬 제보하기</button>
   </div>
 </div>
+
+<div id="search-wrap">
+  <div class="search-box">
+    <span style="font-size:16px;color:#9ca3af;">🔍</span>
+    <input type="text" id="search" placeholder="식당명 또는 건물명 검색" oninput="searchCafeteria(this.value)"/>
+  </div>
+</div>
+
 <div id="filters">
   <button class="chip active" onclick="setFilter('all',this)">전체</button>
-  <button class="chip" onclick="setFilter('cheap',this)">~5,000원</button>
-  <button class="chip" onclick="setFilter('mid',this)">~7,000원</button>
-  <button class="chip" onclick="setFilter('open',this)">일반인 가능</button>
+  <button class="chip" onclick="setFilter('cheap',this)">~6,000원</button>
+  <button class="chip" onclick="setFilter('mid',this)">~7,500원</button>
 </div>
-<div id="map"><div id="loading">🍚 식당 정보 불러오는 중...</div></div>
+
+<div id="map"></div>
+
 <div id="panel">
-  <div class="handle" onclick="document.getElementById('panel').classList.remove('open')"></div>
-  <div class="ptop">
-    <div class="pname" id="pname"></div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <div class="pprice" id="pprice"></div>
-      <button onclick="document.getElementById('panel').classList.remove('open')" style="background:none;border:none;font-size:20px;cursor:pointer;color:#9ca3af;padding:0;line-height:1;">✕</button>
+  <div class="panel-handle"></div>
+  <div class="panel-header">
+    <div class="panel-top">
+      <div class="panel-name" id="pname"></div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="panel-price" id="pprice"></div>
+        <button class="close-btn" onclick="closePanel()">✕</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="info-cards">
+    <div class="info-card">
+      <div class="info-card-label">🕐 운영 시간</div>
+      <div class="info-card-value" id="phours"></div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-label">📍 현재 거리</div>
+      <div class="info-card-value" id="pdist">계산 중...</div>
     </div>
   </div>
-  <div class="pinfo-row" id="pinfo"></div>
-  <div class="pdesc" id="pdesc"></div>
-  <div class="clabel"><span>혼잡도 (점심시간 기준)</span><span id="pclabel"></span></div>
-  <div class="cbar"><div class="cfill" id="pcbar"></div></div>
-  <div class="crowd-note">💡 제보를 통해 실시간 혼잡도를 업데이트할 수 있어요</div>
-  <button class="rbtn" onclick="openModal()">📢 정보 제보하기</button>
+
+  <div class="crowd-section">
+    <div class="crowd-header">
+      <div class="crowd-title">👥 실시간 혼잡도</div>
+      <div class="crowd-time" id="pcrowd-time"></div>
+    </div>
+    <div class="crowd-bar-wrap">
+      <div class="crowd-bar" id="pcrowd-bar"></div>
+    </div>
+    <div class="crowd-labels">
+      <span>쾌적</span>
+      <span class="crowd-current" id="pcrowd-label"></span>
+      <span>혼잡</span>
+    </div>
+  </div>
+
+  <button class="nav-btn" id="nav-btn" onclick="startNav()">📍 길 찾기 시작</button>
 </div>
+
 <div id="moverlay" onclick="if(event.target===this)closeModal()">
   <div id="modal">
-    <h2>📢 식당 정보 제보</h2>
+    <h2>💬 제보하기</h2>
     <p>직접 방문해서 확인한 정보를 알려주세요 🙏</p>
     <div class="fg"><label>식당 이름</label><input type="text" id="fn" placeholder="예: KBS 구내식당"/></div>
     <div class="fg"><label>오늘의 메뉴</label><input type="text" id="fm" placeholder="예: 제육볶음, 된장찌개"/></div>
@@ -104,75 +177,133 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--gray);color:var(--te
 
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=979537335115a57fb498aaaab5f482eb&autoload=false&libraries=services"></script>
 <script>
+const SUPABASE_URL = 'https://gokynemjexaigmcbmqkq.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_PnEIiBPZEipsAxGTcxgi_A_P6iXS4GI';
+
 const cafeterias = [
-  { id:1,  keyword:"KBS 본관 여의도", name:"KBS 구내식당", price:5000, pl:"4,000~6,000원", crowd:60, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"KBS 본관 내 구내식당으로 일반인도 이용 가능해요. 저렴하고 양이 많기로 유명해요." },
-  { id:2,  keyword:"국회의사당 여의도", name:"국회의사당 구내식당", price:4000, pl:"3,000~5,000원", crowd:70, cl:"보통~혼잡", cc:"#e76f00", open:true, hours:"평일 11:30~14:00 (회기 중)", desc:"신분증 지참 후 방문객 출입증 받으면 일반인도 이용 가능해요. 매우 저렴한 편이에요." },
-  { id:3,  keyword:"한국거래소 여의도", name:"한국거래소(KRX) 구내식당", price:5000, pl:"4,000~6,000원", crowd:55, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"한국거래소 본사 구내식당이에요. 일반인도 이용 가능한 것으로 알려져 있어요." },
-  { id:4,  keyword:"금융감독원 여의도", name:"금융감독원 구내식당", price:5000, pl:"4,000~5,500원", crowd:50, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"금융감독원 본원 구내식당으로 저렴하게 이용할 수 있어요." },
-  { id:5,  keyword:"국민연금공단 여의도", name:"국민연금공단 구내식당", price:4500, pl:"3,500~5,000원", crowd:45, cl:"여유~보통", cc:"#2d6a4f", open:true, hours:"평일 11:30~13:30", desc:"공단 특성상 저렴한 가격을 유지하고 있어요." },
-  { id:6,  keyword:"서울특별시의회 여의도", name:"서울시의회 구내식당", price:4000, pl:"3,000~5,000원", crowd:40, cl:"여유", cc:"#2d6a4f", open:true, hours:"평일 11:30~14:00", desc:"공공기관 특성상 매우 저렴해요. 일반인도 이용 가능해요." },
-  { id:7,  keyword:"LG트윈타워 여의도", name:"LG트윈타워 구내식당", price:5500, pl:"5,000~6,500원", crowd:70, cl:"보통~혼잡", cc:"#e76f00", open:false, hours:"평일 11:30~13:30", desc:"LG 계열사 임직원 전용 구내식당이에요. 외부인 출입이 제한되어 있어요." },
-  { id:8,  keyword:"한국교직원공제회 여의도", name:"교직원공제회 구내식당", price:4500, pl:"3,500~5,000원", crowd:40, cl:"여유", cc:"#2d6a4f", open:true, hours:"평일 11:30~13:30", desc:"공제회 특성상 저렴한 가격에 이용할 수 있어요." },
-  { id:9,  keyword:"전국경제인연합회 여의도", name:"전경련회관 구내식당", price:6000, pl:"5,000~7,000원", crowd:55, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"전경련회관 구내식당으로 일반인도 이용 가능한 것으로 알려져 있어요." },
-  { id:10, keyword:"하나증권 여의도", name:"하나증권 구내식당", price:5500, pl:"5,000~6,500원", crowd:65, cl:"보통", cc:"#e76f00", open:false, hours:"평일 11:30~13:30", desc:"하나증권 본사 구내식당으로 임직원 전용이에요." },
-  { id:11, keyword:"국회도서관 여의도", name:"국회도서관 구내식당", price:4000, pl:"3,000~5,000원", crowd:35, cl:"여유", cc:"#2d6a4f", open:true, hours:"평일 11:30~14:00", desc:"도서관 이용객이라면 누구나 이용 가능해요. 매우 저렴한 편이에요." },
-  { id:12, keyword:"국회박물관 여의도", name:"국회박물관 식당", price:5000, pl:"4,000~6,000원", crowd:30, cl:"여유", cc:"#2d6a4f", open:true, hours:"평일 11:30~14:00", desc:"박물관 방문객 누구나 이용 가능해요. 쾌적한 환경이에요." },
-  { id:13, keyword:"이룸센터 여의도", name:"이룸센터 구내식당", price:5500, pl:"5,000~6,500원", crowd:50, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"국회 이룸센터 내 구내식당으로 일반인도 이용 가능해요." },
-  { id:14, keyword:"일신빌딩 여의도", name:"일신빌딩 구내식당", price:5500, pl:"5,000~6,500원", crowd:55, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"증권가 주변에 위치해 점심시간 직장인들이 많이 이용해요." },
-  { id:15, keyword:"태영빌딩 여의도", name:"태영빌딩 구내식당", price:5500, pl:"5,000~6,500원", crowd:55, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"여의도 오피스 밀집 지역에 위치해 있어요." },
-  { id:16, keyword:"KT 여의도지사", name:"KT빌딩 구내식당", price:5500, pl:"5,000~6,500원", crowd:60, cl:"보통", cc:"#e76f00", open:false, hours:"평일 11:30~13:30", desc:"KT 여의도빌딩 구내식당으로 임직원 위주로 운영돼요." },
-  { id:17, keyword:"금융투자협회 여의도", name:"금투센터 구내식당", price:6000, pl:"5,000~7,000원", crowd:65, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"금융투자협회 구내식당으로 여의도 증권가 핵심 위치에 있어요." },
+  { id:1,  keyword:"KBS 본관 여의도", name:"KBS 본관 식당", price:5000, pl:"~5,000원", crowd:60, cl:"보통", open:true, hours:"11:30~13:30", rating:4.2, reviews:87 },
+  { id:2,  keyword:"국회의사당 여의도", name:"국회의사당 식당", price:4000, pl:"~4,000원", crowd:70, cl:"보통", open:true, hours:"11:30~14:00", rating:4.0, reviews:42 },
+  { id:3,  keyword:"한국거래소 여의도", name:"한국거래소 식당", price:5000, pl:"~5,000원", crowd:55, cl:"보통", open:true, hours:"11:20~13:20", rating:4.4, reviews:54 },
+  { id:4,  keyword:"금융감독원 여의도", name:"금융감독원 식당", price:5000, pl:"~5,000원", crowd:50, cl:"보통", open:true, hours:"11:30~13:30", rating:4.1, reviews:38 },
+  { id:5,  keyword:"국민연금공단 여의도", name:"국민연금공단 식당", price:4500, pl:"~4,500원", crowd:45, cl:"여유", open:true, hours:"11:30~13:30", rating:4.0, reviews:29 },
+  { id:6,  keyword:"서울특별시의회 여의도", name:"서울시의회 식당", price:4000, pl:"~4,000원", crowd:40, cl:"여유", open:true, hours:"11:30~14:00", rating:3.9, reviews:21 },
+  { id:7,  keyword:"LG트윈타워 여의도", name:"LG트윈타워 식당", price:5500, pl:"~5,500원", crowd:70, cl:"보통", open:false, hours:"11:30~13:30", rating:4.3, reviews:61 },
+  { id:8,  keyword:"한국교직원공제회 여의도", name:"교직원공제회 식당", price:4500, pl:"~4,500원", crowd:40, cl:"여유", open:true, hours:"11:30~13:30", rating:4.0, reviews:18 },
+  { id:9,  keyword:"전국경제인연합회 여의도", name:"전경련회관 식당", price:6000, pl:"~6,000원", crowd:55, cl:"보통", open:true, hours:"11:30~13:30", rating:4.2, reviews:33 },
+  { id:10, keyword:"하나증권 여의도", name:"하나증권 식당", price:5500, pl:"~5,500원", crowd:65, cl:"보통", open:false, hours:"11:30~13:30", rating:4.1, reviews:27 },
+  { id:11, keyword:"국회도서관 여의도", name:"국회도서관 식당", price:4000, pl:"~4,000원", crowd:35, cl:"여유", open:true, hours:"11:30~14:00", rating:4.0, reviews:15 },
+  { id:12, keyword:"국회박물관 여의도", name:"국회박물관 식당", price:5000, pl:"~5,000원", crowd:30, cl:"여유", open:true, hours:"11:30~14:00", rating:3.8, reviews:12 },
+  { id:13, keyword:"이룸센터 여의도", name:"이룸센터 식당", price:5500, pl:"~5,500원", crowd:50, cl:"보통", open:true, hours:"11:30~13:30", rating:4.0, reviews:22 },
+  { id:14, keyword:"일신빌딩 여의도", name:"일신빌딩 식당", price:5500, pl:"~5,500원", crowd:55, cl:"보통", open:true, hours:"11:30~13:30", rating:3.9, reviews:19 },
+  { id:15, keyword:"태영빌딩 여의도", name:"태영빌딩 식당", price:5500, pl:"~5,500원", crowd:55, cl:"보통", open:true, hours:"11:30~13:30", rating:4.0, reviews:16 },
+  { id:16, keyword:"KT 여의도지사", name:"KT빌딩 식당", price:5500, pl:"~5,500원", crowd:60, cl:"보통", open:false, hours:"11:30~13:30", rating:4.0, reviews:14 },
+  { id:17, keyword:"금융투자협회 여의도", name:"금투센터 식당", price:6000, pl:"~6,000원", crowd:65, cl:"보통", open:true, hours:"11:30~13:30", rating:4.3, reviews:41 },
 ];
 
-let filter='all', map, overlays=[], resolvedData=[];
+let filter='all', map, overlays=[], resolvedData=[], currentCafe=null, userLat=null, userLng=null;
 
-function bc(p){
-  if(p<=4500)return{bg:'#d8f3dc',bd:'#2d6a4f',tx:'#1b4332'};
-  if(p<=6000)return{bg:'#fff3e0',bd:'#e76f00',tx:'#7c3800'};
-  return{bg:'#ffe8e8',bd:'#c1121f',tx:'#7f1d1d'};
+// 현재 위치 가져오기
+navigator.geolocation && navigator.geolocation.getCurrentPosition(pos => {
+  userLat = pos.coords.latitude;
+  userLng = pos.coords.longitude;
+});
+
+function getPinColor(c) {
+  if (!c.open) return { bg:'#ef4444', text:'#fff' };
+  if (c.price <= 5000) return { bg:'#1a9e6e', text:'#fff' };
+  if (c.price <= 6500) return { bg:'#f97316', text:'#fff' };
+  return { bg:'#ef4444', text:'#fff' };
 }
 
-function render(){
+function getCrowdColor(crowd) {
+  if (crowd < 40) return '#1a9e6e';
+  if (crowd < 70) return '#f97316';
+  return '#ef4444';
+}
+
+function getCrowdLabel(crowd) {
+  if (crowd < 40) return '쾌적';
+  if (crowd < 70) return '보통';
+  return '혼잡';
+}
+
+function getDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const dLat = (lat2-lat1)*Math.PI/180;
+  const dLng = (lng2-lng1)*Math.PI/180;
+  const a = Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  const d = R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  return d < 1000 ? Math.round(d)+'m' : (d/1000).toFixed(1)+'km';
+}
+
+function render(data) {
   overlays.forEach(o=>o.setMap(null)); overlays=[];
-  resolvedData.filter(c=>{
-    if(filter==='cheap') return c.price<=5000;
-    if(filter==='mid') return c.price<=7000;
-    if(filter==='open') return c.open;
+  const filtered = data.filter(c => {
+    if (filter==='cheap') return c.price<=6000;
+    if (filter==='mid') return c.price<=7500;
     return true;
-  }).forEach(c=>{
-    const col=bc(c.price);
-    const shortName = c.name.replace('구내식당','').replace('식당','').trim();
-    const html=`<div style="position:relative;cursor:pointer;" onclick="openPanel(${c.id})"><div style="display:flex;flex-direction:column;align-items:center;gap:2px;"><div style="font-size:11px;font-weight:700;color:#1a1a1a;background:rgba(255,255,255,0.9);padding:2px 6px;border-radius:6px;white-space:nowrap;max-width:100px;overflow:hidden;text-overflow:ellipsis;">${shortName}</div><div style="display:flex;align-items:center;gap:5px;padding:5px 10px;background:${col.bg};border:2px solid ${col.bd};border-radius:20px;font-size:13px;font-weight:700;color:${col.tx};white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.15);"><div style="width:7px;height:7px;border-radius:50%;background:${col.bd};"></div>${c.pl}</div></div></div>`;
-    const o=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(c.lat,c.lng),content:html,yAnchor:1.3});
+  });
+  filtered.forEach(c => {
+    const col = getPinColor(c);
+    const shortName = c.name.replace('식당','').replace('구내','').trim();
+    const html = `<div style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;" onclick="openPanel(${c.id})">
+      <div style="background:${col.bg};color:${col.text};padding:5px 12px;border-radius:20px;font-size:13px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.2);font-family:'Nanum Gothic',sans-serif;">${shortName}</div>
+      <div style="width:8px;height:8px;border-radius:50%;background:${col.bg};box-shadow:0 1px 4px rgba(0,0,0,0.2);"></div>
+    </div>`;
+    const o = new kakao.maps.CustomOverlay({ position: new kakao.maps.LatLng(c.lat, c.lng), content: html, yAnchor: 1.2 });
     o.setMap(map); overlays.push(o);
   });
 }
 
-function openPanel(id){
-  const c=resolvedData.find(x=>x.id===id); if(!c) return;
-  document.getElementById('pname').textContent=c.name;
-  document.getElementById('pprice').textContent=c.pl;
-  document.getElementById('pinfo').innerHTML=[
-    c.open?'<span class="pinfo-chip">✅ 일반인 가능</span>':'<span class="pinfo-chip">🔒 임직원 전용</span>',
-    `<span class="pinfo-chip">🕐 ${c.hours}</span>`,
-  ].join('');
-  document.getElementById('pdesc').textContent=c.desc;
-  const bar=document.getElementById('pcbar');
-  bar.style.width=c.crowd+'%'; bar.style.background=c.cc;
-  document.getElementById('pclabel').textContent=c.cl;
+function openPanel(id) {
+  const c = resolvedData.find(x=>x.id===id); if(!c) return;
+  currentCafe = c;
+  document.getElementById('pname').textContent = c.name;
+  document.getElementById('pprice').textContent = c.pl;
+
+  document.getElementById('phours').textContent = c.hours;
+
+  // 거리
+  if(userLat && c.lat) {
+    document.getElementById('pdist').textContent = '약 ' + getDistance(userLat, userLng, c.lat, c.lng);
+  } else {
+    document.getElementById('pdist').textContent = '위치 권한 필요';
+  }
+
+  // 혼잡도
+  const crowdColor = getCrowdColor(c.crowd);
+  document.getElementById('pcrowd-bar').style.width = c.crowd + '%';
+  document.getElementById('pcrowd-bar').style.background = crowdColor;
+  document.getElementById('pcrowd-label').textContent = getCrowdLabel(c.crowd);
+  document.getElementById('pcrowd-label').style.color = crowdColor;
+  document.getElementById('pcrowd-time').textContent = '⏱ 8분 전 제보됨';
+
   document.getElementById('panel').classList.add('open');
-  map.panTo(new kakao.maps.LatLng(c.lat,c.lng));
+  map.panTo(new kakao.maps.LatLng(c.lat, c.lng));
 }
 
-function setFilter(f,el){
-  filter=f;
+function closePanel() {
+  document.getElementById('panel').classList.remove('open');
+}
+
+function startNav() {
+  if(!currentCafe) return;
+  const url = `https://map.kakao.com/link/to/${currentCafe.name},${currentCafe.lat},${currentCafe.lng}`;
+  window.open(url, '_blank');
+}
+
+function setFilter(f, el) {
+  filter = f;
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
-  render();
+  render(resolvedData);
 }
 
-const SUPABASE_URL = 'https://gokynemjexaigmcbmqkq.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_PnEIiBPZEipsAxGTcxgi_A_P6iXS4GI';
+function searchCafeteria(q) {
+  if(!q) { render(resolvedData); return; }
+  const result = resolvedData.filter(c => c.name.includes(q));
+  render(result);
+}
 
 function openModal(){document.getElementById('moverlay').classList.add('open');}
 function closeModal(){document.getElementById('moverlay').classList.remove('open');}
@@ -184,64 +315,36 @@ async function submitReport(){
   const crowd = document.getElementById('fc').value;
   const open = document.getElementById('fo').value;
   const comment = document.querySelector('#modal textarea').value;
-
   if(!name){alert('식당 이름은 필수예요!');return;}
-
   const btn = document.querySelector('.msubmit');
-  btn.textContent = '제보 중...';
-  btn.disabled = true;
-
+  btn.textContent = '제보 중...'; btn.disabled = true;
   try {
     const res = await fetch(SUPABASE_URL + '/rest/v1/reports', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        cafeteria_name: name,
-        menu: menu,
-        price: price,
-        crowd: crowd,
-        comment: (open ? '일반인출입:' + open + ' ' : '') + comment
-      })
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'},
+      body: JSON.stringify({ cafeteria_name:name, menu, price, crowd, comment:(open?'일반인출입:'+open+' ':'')+comment })
     });
-
-    if(res.ok || res.status === 201){
-      alert('제보해주셔서 감사해요! 검토 후 반영할게요 🙏');
-      document.getElementById('fn').value = '';
-      document.getElementById('fm').value = '';
-      document.getElementById('fp').value = '';
-      document.getElementById('fc').value = '';
-      document.getElementById('fo').value = '';
-      document.querySelector('#modal textarea').value = '';
+    if(res.ok||res.status===201){
+      alert('제보해주셔서 감사해요! 🙏');
+      document.getElementById('fn').value='';
+      document.getElementById('fm').value='';
+      document.getElementById('fp').value='';
+      document.getElementById('fc').value='';
+      document.getElementById('fo').value='';
+      document.querySelector('#modal textarea').value='';
       closeModal();
-    } else {
-      const err = await res.text();
-      console.error(err);
-      alert('제보 중 오류가 발생했어요. 다시 시도해주세요.');
-    }
-  } catch(e) {
-    console.error(e);
-    alert('네트워크 오류가 발생했어요. 다시 시도해주세요.');
-  } finally {
-    btn.textContent = '제보하기';
-    btn.disabled = false;
-  }
+    } else { alert('오류가 발생했어요. 다시 시도해주세요.'); }
+  } catch(e) { alert('네트워크 오류가 발생했어요.'); }
+  finally { btn.textContent='제보하기'; btn.disabled=false; }
 }
 
 kakao.maps.load(function(){
-  map = new kakao.maps.Map(document.getElementById('map'),{
+  map = new kakao.maps.Map(document.getElementById('map'), {
     center: new kakao.maps.LatLng(37.5255, 126.9200),
     level: 4
   });
-  document.getElementById('loading').style.display='none';
-
   const ps = new kakao.maps.services.Places();
   let done = 0;
-
   cafeterias.forEach(cafe => {
     ps.keywordSearch(cafe.keyword, function(result, status){
       done++;
@@ -249,12 +352,11 @@ kakao.maps.load(function(){
         cafe.lat = parseFloat(result[0].y);
         cafe.lng = parseFloat(result[0].x);
       } else {
-        // 검색 실패시 여의도 중심 근처 기본값
         cafe.lat = 37.5255 + (Math.random()-0.5)*0.01;
         cafe.lng = 126.9200 + (Math.random()-0.5)*0.01;
       }
       resolvedData.push(cafe);
-      if(done === cafeterias.length) render();
+      if(done === cafeterias.length) render(resolvedData);
     }, { location: new kakao.maps.LatLng(37.5255, 126.9200), radius: 3000 });
   });
 });
