@@ -209,25 +209,12 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       </div>
     </div>
 
-    <div class="crowd-section">
-      <div class="crowd-header">
-        <div class="crowd-title">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-          혼잡도
-        </div>
-        <div class="crowd-updated" id="pcrowd-time">
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          제보 기반
-        </div>
-      </div>
-      <div class="crowd-bar-track">
+    <div style="background:var(--slate-50);border:1px solid var(--slate-100);border-radius:12px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:12px;color:var(--slate-500);white-space:nowrap;">혼잡도</span>
+      <div class="crowd-bar-track" style="flex:1;">
         <div class="crowd-bar-fill" id="pcrowd-bar"></div>
       </div>
-      <div class="crowd-labels">
-        <span id="lbl-low">쾌적</span>
-        <span id="lbl-mid">보통</span>
-        <span id="lbl-high">혼잡</span>
-      </div>
+      <span id="pcrowd-label" style="font-size:12px;font-weight:700;white-space:nowrap;"></span>
     </div>
 
     <div class="divider"></div>
@@ -277,9 +264,6 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
     <div class="fg"><label>혼잡도</label>
       <select id="fc"><option value="">선택</option><option>여유</option><option>보통</option><option>혼잡</option></select>
     </div>
-    <div class="fg"><label>일반인 출입 가능 여부</label>
-      <select id="fo"><option value="">선택</option><option>가능</option><option>불가능</option><option>모름</option></select>
-    </div>
     <div class="fg"><label>추가 정보 (선택)</label><textarea placeholder="운영시간, 맛, 주의사항 등 자유롭게"></textarea></div>
     <div class="mbtns">
       <button class="mcancel" onclick="closeModal()">취소</button>
@@ -300,16 +284,13 @@ const cafeterias = [
   { id:4,  keyword:"금융감독원 여의도", name:"금융감독원 식당", price:5000, pl:"~5,000원", crowd:50, open:true, hours:"11:30~13:30", status:"영업중", address:"서울 영등포구 여의대로 38" },
   { id:5,  keyword:"국민연금공단 여의도", name:"국민연금공단 식당", price:4500, pl:"~4,500원", crowd:35, open:true, hours:"11:30~13:30", status:"영업중", address:"서울 영등포구 국제금융로8길 32" },
   { id:6,  keyword:"서울특별시의회 여의도", name:"서울시의회 식당", price:4000, pl:"~4,000원", crowd:30, open:true, hours:"11:30~14:00", status:"영업중", address:"서울 영등포구 의사당대로 1" },
-  { id:7,  keyword:"LG트윈타워 여의도", name:"LG트윈타워 식당", price:5500, pl:"~5,500원", crowd:70, open:false, hours:"11:30~13:30", status:"임직원전용", address:"서울 영등포구 여의대로 128" },
   { id:8,  keyword:"한국교직원공제회 여의도", name:"교직원공제회 식당", price:4500, pl:"~4,500원", crowd:40, open:true, hours:"11:30~13:30", status:"영업중", address:"서울 영등포구 여의대로 88" },
   { id:9,  keyword:"전국경제인연합회 여의도", name:"전경련회관 식당", price:6000, pl:"~6,000원", crowd:55, open:true, hours:"11:30~13:30", status:"영업중", address:"서울 영등포구 여의대로 24" },
-  { id:10, keyword:"하나증권 여의도", name:"하나증권 식당", price:5500, pl:"~5,500원", crowd:65, open:false, hours:"11:30~13:30", status:"임직원전용", address:"서울 영등포구 의사당대로 82" },
   { id:11, keyword:"국회도서관 여의도", name:"국회도서관 식당", price:4000, pl:"~4,000원", crowd:25, open:true, hours:"11:30~14:00", status:"영업중", address:"서울 영등포구 의사당대로 1" },
   { id:12, keyword:"국회박물관 여의도", name:"국회박물관 식당", price:5000, pl:"~5,000원", crowd:20, open:true, hours:"11:30~14:00", status:"영업중", address:"서울 영등포구 의사당대로 1" },
   { id:13, keyword:"이룸센터 여의도", name:"이룸센터 식당", price:5500, pl:"~5,500원", crowd:50, open:true, hours:"11:30~13:30", status:"영업중", address:"서울 영등포구 의사당대로 22" },
   { id:14, keyword:"일신빌딩 여의도", name:"일신빌딩 식당", price:5500, pl:"~5,500원", crowd:55, open:true, hours:"11:30~13:30", status:"영업중", address:"서울 영등포구 국제금융로 10" },
   { id:15, keyword:"태영빌딩 여의도", name:"태영빌딩 식당", price:5500, pl:"~5,500원", crowd:55, open:true, hours:"11:30~13:30", status:"영업중", address:"서울 영등포구 여의공원로 111" },
-  { id:16, keyword:"KT 여의도지사", name:"KT빌딩 식당", price:5500, pl:"~5,500원", crowd:60, open:false, hours:"11:30~13:30", status:"임직원전용", address:"서울 영등포구 여의대로 90" },
   { id:17, keyword:"금융투자협회 여의도", name:"금투센터 식당", price:6000, pl:"~6,000원", crowd:65, open:true, hours:"11:30~13:30", status:"영업중", address:"서울 영등포구 의사당대로 143" },
 ];
 
@@ -329,7 +310,6 @@ function showToast(msg) {
 }
 
 function getPinColor(c) {
-  if (!c.open) return '#ef4444';
   if (c.price <= 5000) return '#059669';
   if (c.price <= 6500) return '#f97316';
   return '#ef4444';
@@ -360,8 +340,8 @@ function updateDist(c) {
 
 function updateCount(data) {
   const filtered = data.filter(c => {
-    if(filter==='cheap') return c.price<=6000;
-    if(filter==='mid') return c.price<=7500;
+    if(filter==='cheap') return c.price<=5000;
+    if(filter==='mid') return c.price<=6000;
     return true;
   });
   const el = document.getElementById('result-count');
@@ -371,8 +351,8 @@ function updateCount(data) {
 function render(data) {
   overlays.forEach(o=>o.setMap(null)); overlays=[];
   const filtered = data.filter(c => {
-    if(filter==='cheap') return c.price<=6000;
-    if(filter==='mid') return c.price<=7500;
+    if(filter==='cheap') return c.price<=5000;
+    if(filter==='mid') return c.price<=6000;
     return true;
   });
   updateCount(data);
@@ -393,8 +373,6 @@ function openPanel(id) {
   currentCafe = c;
   document.getElementById('pname').textContent = c.name;
   document.getElementById('paddr').textContent = c.address || '';
-  const statusColor = c.status === '영업중' ? '#059669' : '#94a3b8';
-  document.getElementById('pname').innerHTML = c.name + ` <span style="font-size:11px;background:${statusColor};color:#fff;padding:2px 7px;border-radius:20px;font-weight:700;vertical-align:middle;">${c.status||''}</span>`;
   document.getElementById('pprice').textContent = c.pl;
   document.getElementById('phours').textContent = c.hours;
   updateDist(c);
@@ -474,8 +452,8 @@ function renderList(data) {
   const filtered = data.filter(c => {
     const q = document.getElementById('search').value;
     if(q && !c.name.includes(q)) return false;
-    if(filter==='cheap') return c.price<=6000;
-    if(filter==='mid') return c.price<=7500;
+    if(filter==='cheap') return c.price<=5000;
+    if(filter==='mid') return c.price<=6000;
     return true;
   });
   const list = document.getElementById('list-view');
@@ -491,7 +469,7 @@ function renderList(data) {
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
           <div style="width:8px;height:8px;border-radius:50%;background:${getPinColor(c)};flex-shrink:0;"></div>
           <span style="font-size:15px;font-weight:800;color:var(--slate-900);">${c.name}</span>
-          <span style="font-size:10px;background:${c.status==='영업중'?'#059669':'#94a3b8'};color:#fff;padding:2px 6px;border-radius:20px;font-weight:700;">${c.status||''}</span>
+          <span style="font-size:10px;background:#059669;color:#fff;padding:2px 6px;border-radius:20px;font-weight:700;">${c.status==='영업중'?'영업중':''}</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--slate-500);">
           <span style="font-weight:700;color:var(--green);">${c.pl}</span>
@@ -521,7 +499,6 @@ async function submitReport(){
   const menu = document.getElementById('fm').value;
   const price = document.getElementById('fp').value;
   const crowd = document.getElementById('fc').value;
-  const open = document.getElementById('fo').value;
   const comment = document.querySelector('#modal textarea').value;
   if(!name){ alert('식당 이름은 필수예요!'); return; }
   const btn = document.querySelector('.msubmit');
