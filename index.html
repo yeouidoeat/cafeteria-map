@@ -223,15 +223,16 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
         <span>💬 댓글</span>
         <span id="comment-count" style="font-size:11px;color:var(--slate-400);"></span>
       </div>
-      <div class="comment-input-wrap" style="flex-direction:column;gap:6px;">
-        <input type="text" id="comment-nickname" placeholder="닉네임 (선택)" style="border:1.5px solid var(--slate-200);border-radius:10px;padding:7px 12px;font-size:13px;font-family:'Nanum Gothic',sans-serif;outline:none;width:100%;"/>
-        <div id="star-rating" style="display:flex;gap:4px;padding:2px 0;">
-          <span style="font-size:12px;color:var(--slate-500);margin-right:4px;">별점</span>
-          <span class="star-btn" onclick="setStar(1)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
-          <span class="star-btn" onclick="setStar(2)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
-          <span class="star-btn" onclick="setStar(3)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
-          <span class="star-btn" onclick="setStar(4)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
-          <span class="star-btn" onclick="setStar(5)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="text" id="comment-nickname" placeholder="닉네임 (선택)" style="border:1.5px solid var(--slate-200);border-radius:10px;padding:7px 12px;font-size:13px;font-family:'Nanum Gothic',sans-serif;outline:none;flex:1;"/>
+          <div id="star-rating" style="display:flex;gap:2px;flex-shrink:0;">
+            <span class="star-btn" onclick="setStar(1)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
+            <span class="star-btn" onclick="setStar(2)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
+            <span class="star-btn" onclick="setStar(3)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
+            <span class="star-btn" onclick="setStar(4)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
+            <span class="star-btn" onclick="setStar(5)" style="font-size:22px;cursor:pointer;color:#e2e8f0;">★</span>
+          </div>
         </div>
         <div style="display:flex;gap:6px;">
           <textarea class="comment-input" id="comment-text" placeholder="댓글을 입력해주세요..." rows="1" style="flex:1;"></textarea>
@@ -541,15 +542,18 @@ async function loadComments(cafeId) {
       return;
     }
 
-    // 별점 평균 계산
+    // 별점 평균 계산 (전체 댓글 수 + 별점 있는 것만 평균)
     const rated = data.filter(c => c.rating);
-    if(rated.length > 0 && ratingWrap) {
-      const avg = (rated.reduce((s, c) => s + c.rating, 0) / rated.length).toFixed(1);
-      const stars = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
-      ratingWrap.innerHTML = `<span style="color:#f59e0b;font-weight:700;">${stars}</span> <span style="font-weight:700;">${avg}</span> <span style="color:var(--slate-400);">(리뷰 ${rated.length}개)</span>`;
-    } else if(ratingWrap) {
-      ratingWrap.innerHTML = '';
-      ratingWrap.style.marginBottom = '0';
+    const totalCount = data.length;
+    if(ratingWrap) {
+      if(rated.length > 0) {
+        const avg = (rated.reduce((s, c) => s + c.rating, 0) / rated.length).toFixed(1);
+        const stars = '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg));
+        ratingWrap.innerHTML = `<span style="color:#f59e0b;font-weight:700;">${stars}</span> <span style="font-weight:700;">${avg}</span> <span style="color:var(--slate-400);">(댓글 ${totalCount}개)</span>`;
+      } else {
+        ratingWrap.innerHTML = `<span style="color:var(--slate-400);">댓글 ${totalCount}개</span>`;
+      }
+      ratingWrap.style.marginBottom = '4px';
     }
     count.textContent = data.length + '개';
     list.innerHTML = data.map(c => {
@@ -582,6 +586,24 @@ function setStar(n) {
   });
 }
 
+async function deleteComment(id) {
+  if(!confirm('댓글을 삭제할까요?')) return;
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/comments?id=eq.' + id, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    if(res.ok) {
+      const myComments = JSON.parse(localStorage.getItem('my_comments') || '[]');
+      localStorage.setItem('my_comments', JSON.stringify(myComments.filter(i => i !== id)));
+      await loadComments(currentCafe.id);
+      showToast('댓글이 삭제되었어요.');
+    }
+  } catch(e) {
+    showToast('삭제 중 오류가 발생했어요.');
+  }
+}
+
 async function submitComment() {
   const text = document.getElementById('comment-text').value.trim();
   if(!text) { showToast('댓글을 입력해주세요!'); return; }
@@ -611,6 +633,16 @@ async function submitComment() {
     if(res.ok || res.status === 201) {
       document.getElementById('comment-text').value = '';
       setStar(0);
+      // 내가 쓴 댓글 ID 로컬 저장
+      const resData = await fetch(SUPABASE_URL + '/rest/v1/comments?cafeteria_id=eq.' + currentCafe.id + '&order=created_at.desc&limit=1', {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+      });
+      const newComment = await resData.json();
+      if(newComment && newComment[0]) {
+        const myComments = JSON.parse(localStorage.getItem('my_comments') || '[]');
+        myComments.push(newComment[0].id);
+        localStorage.setItem('my_comments', JSON.stringify(myComments));
+      }
       await loadComments(currentCafe.id);
       showToast('댓글이 등록되었어요! 😊');
     }
