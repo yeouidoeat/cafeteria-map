@@ -45,6 +45,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--gray);color:var(--te
 .mbtns{display:flex;gap:8px;margin-top:16px;}
 .mcancel{flex:1;background:var(--gray);border:1px solid #e5e7eb;border-radius:12px;padding:13px;font-size:14px;font-family:'Nanum Gothic',sans-serif;cursor:pointer;}
 .msubmit{flex:2;background:var(--green);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-family:'Black Han Sans',sans-serif;cursor:pointer;}
+#loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:13px;color:var(--muted);text-align:center;}
 </style>
 </head>
 <body>
@@ -60,7 +61,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--gray);color:var(--te
   <button class="chip" onclick="setFilter('mid',this)">~7,000원</button>
   <button class="chip" onclick="setFilter('open',this)">일반인 가능</button>
 </div>
-<div id="map"></div>
+<div id="map"><div id="loading">🍚 식당 정보 불러오는 중...</div></div>
 <div id="panel">
   <div class="handle" onclick="document.getElementById('panel').classList.remove('open')"></div>
   <div class="ptop">
@@ -94,252 +95,30 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--gray);color:var(--te
     </div>
   </div>
 </div>
-<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=979537335115a57fb498aaaab5f482eb&autoload=false"></script>
+
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=979537335115a57fb498aaaab5f482eb&autoload=false&libraries=services"></script>
 <script>
-const data=[
-  {
-    id:1,
-    name:"KBS 구내식당",
-    lat:37.5213,
-    lng:126.9161,
-    price:5000,
-    pl:"4,000~6,000원",
-    crowd:60,
-    cl:"보통",
-    cc:"#e76f00",
-    open:true,
-    hours:"평일 11:30~13:30",
-    desc:"KBS 본관 내 구내식당으로 일반인도 이용 가능해요. 한식 위주로 저렴하고 양이 많기로 유명해요. 방송국 직원들과 함께 이용할 수 있어요.",
-  },
-  {
-    id:2,
-    name:"국회의사당 구내식당",
-    lat:37.5301,
-    lng:126.9152,
-    price:4000,
-    pl:"3,000~5,000원",
-    crowd:70,
-    cl:"보통~혼잡",
-    cc:"#e76f00",
-    open:true,
-    hours:"평일 11:30~14:00 (국회 회기 중)",
-    desc:"국가기관 구내식당으로 가격이 매우 저렴해요. 신분증 지참 후 방문객 출입증 받으면 일반인도 이용 가능해요. 국회 회기 중에만 운영해요.",
-  },
-  {
-    id:3,
-    name:"한국거래소(KRX) 구내식당",
-    lat:37.5243,
-    lng:126.9294,
-    price:5000,
-    pl:"4,000~6,000원",
-    crowd:55,
-    cl:"보통",
-    cc:"#e76f00",
-    open:true,
-    hours:"평일 11:30~13:30",
-    desc:"한국거래소 본사 구내식당이에요. 일반인도 이용 가능한 것으로 알려져 있으나 방문 전 확인을 권장해요. 여의도 증권가 중심부에 위치해요.",
-  },
-  {
-    id:4,
-    name:"금융감독원 구내식당",
-    lat:37.5215,
-    lng:126.9247,
-    price:5000,
-    pl:"4,000~5,500원",
-    crowd:50,
-    cl:"보통",
-    cc:"#e76f00",
-    open:true,
-    hours:"평일 11:30~13:30",
-    desc:"금융감독원 본원 구내식당이에요. 저렴한 가격에 한식을 먹을 수 있어요. 방문 전 일반인 출입 가능 여부를 확인해보세요.",
-  },
-  {
-    id:5,
-    name:"국민연금공단 구내식당",
-    lat:37.5260,
-    lng:126.9220,
-    price:4500,
-    pl:"3,500~5,000원",
-    crowd:45,
-    cl:"여유~보통",
-    cc:"#2d6a4f",
-    open:true,
-    hours:"평일 11:30~13:30",
-    desc:"국민연금공단 여의도 본부 구내식당이에요. 공단 특성상 저렴한 가격을 유지하고 있어요. 방문 전 일반인 출입 여부 확인을 권장해요.",
-  },
-  {
-    id:6,
-    name:"서울시의회 구내식당",
-    lat:37.5290,
-    lng:126.9175,
-    price:4000,
-    pl:"3,000~5,000원",
-    crowd:40,
-    cl:"여유",
-    cc:"#2d6a4f",
-    open:true,
-    hours:"평일 11:30~14:00",
-    desc:"서울시의회 구내식당으로 공공기관 특성상 매우 저렴해요. 일반인도 이용 가능한 것으로 알려져 있어요.",
-  },
-,
-  {
-    id:7,
-    name:"LG트윈타워 구내식당",
-    lat:37.5257,
-    lng:126.9210,
-    price:5500,
-    pl:"5,000~6,500원",
-    crowd:70,
-    cl:"보통~혼잡",
-    cc:"#e76f00",
-    open:false,
-    hours:"평일 11:30~13:30",
-    desc:"LG트윈타워 임직원 전용 구내식당이에요. LG 계열사 임직원만 이용 가능하며, 외부인 출입이 제한되어 있어요. 정보 업데이트가 필요하면 제보해주세요.",
-  },
-  {
-    id:8,
-    name:"한국교직원공제회 구내식당",
-    lat:37.5267,
-    lng:126.9234,
-    price:4500,
-    pl:"3,500~5,000원",
-    crowd:40,
-    cl:"여유",
-    cc:"#2d6a4f",
-    open:true,
-    hours:"평일 11:30~13:30",
-    desc:"한국교직원공제회 본사 구내식당이에요. 공제회 특성상 저렴한 가격에 이용할 수 있어요. 일반인 출입 가능한 것으로 알려져 있으나 방문 전 확인을 권장해요.",
-  },
-  {
-    id:9,
-    name:"전경련회관 구내식당",
-    lat:37.5249,
-    lng:126.9241,
-    price:6000,
-    pl:"5,000~7,000원",
-    crowd:55,
-    cl:"보통",
-    cc:"#e76f00",
-    open:true,
-    hours:"평일 11:30~13:30",
-    desc:"전국경제인연합회 회관 구내식당이에요. 여의도 비즈니스 중심가에 위치해 있어요. 일반인도 이용 가능한 것으로 알려져 있어요.",
-  },
-  {
-    id:10,
-    name:"하나증권 구내식당",
-    lat:37.5238,
-    lng:126.9268,
-    price:5500,
-    pl:"5,000~6,500원",
-    crowd:65,
-    cl:"보통",
-    cc:"#e76f00",
-    open:false,
-    hours:"평일 11:30~13:30",
-    desc:"하나증권 본사 구내식당이에요. 임직원 전용 식당으로 외부인 출입이 제한될 수 있어요. 방문 전 확인을 권장해요.",
-  }
-,
-  {
-    id:11,
-    name:"국회도서관 구내식당",
-    lat:37.5316,
-    lng:126.9140,
-    price:4000,
-    pl:"3,000~5,000원",
-    crowd:35,
-    cl:"여유",
-    cc:"#2d6a4f",
-    open:true,
-    hours:"평일 11:30~14:00",
-    desc:"국회도서관 내 구내식당으로 일반인도 이용 가능해요. 국가기관 특성상 매우 저렴한 편이에요. 도서관 이용객이라면 누구나 이용할 수 있어요.",
-  },
-  {
-    id:12,
-    name:"국회박물관 구내식당",
-    lat:37.5308,
-    lng:126.9148,
-    price:5000,
-    pl:"4,000~6,000원",
-    crowd:30,
-    cl:"여유",
-    cc:"#2d6a4f",
-    open:true,
-    hours:"평일 11:30~14:00",
-    desc:"국회박물관 내 식당으로 박물관 방문객이라면 누구나 이용 가능해요. 한식 위주로 운영되며 쾌적한 환경이에요.",
-  },
-  {
-    id:13,
-    name:"이룸센터 구내식당",
-    lat:37.5283,
-    lng:126.9170,
-    price:5500,
-    pl:"5,000~6,500원",
-    crowd:50,
-    cl:"보통",
-    cc:"#e76f00",
-    open:true,
-    hours:"평일 11:30~13:30",
-    desc:"국회 이룸센터 내 구내식당이에요. 장애인 관련 기관이 입주해있는 건물로 일반인도 이용 가능한 것으로 알려져 있어요.",
-  },
-  {
-    id:14,
-    name:"일신빌딩 구내식당",
-    lat:37.5235,
-    lng:126.9245,
-    price:5500,
-    pl:"5,000~6,500원",
-    crowd:55,
-    cl:"보통",
-    cc:"#e76f00",
-    open:true,
-    hours:"평일 11:30~13:30",
-    desc:"여의도 일신빌딩 구내식당이에요. 증권가 주변에 위치해 점심시간 직장인들이 많이 이용해요.",
-  },
-  {
-    id:15,
-    name:"태영빌딩 구내식당",
-    lat:37.5228,
-    lng:126.9252,
-    price:5500,
-    pl:"5,000~6,500원",
-    crowd:55,
-    cl:"보통",
-    cc:"#e76f00",
-    open:true,
-    hours:"평일 11:30~13:30",
-    desc:"여의도 태영빌딩 구내식당이에요. 여의도 오피스 밀집 지역에 위치해 있어요.",
-  },
-  {
-    id:16,
-    name:"KT 여의도빌딩 구내식당",
-    lat:37.5222,
-    lng:126.9238,
-    price:5500,
-    pl:"5,000~6,500원",
-    crowd:60,
-    cl:"보통",
-    cc:"#e76f00",
-    open:false,
-    hours:"평일 11:30~13:30",
-    desc:"KT 여의도빌딩 구내식당이에요. 임직원 위주로 운영되며 외부인 출입이 제한될 수 있어요. 방문 전 확인을 권장해요.",
-  },
-  {
-    id:17,
-    name:"금투센터 구내식당",
-    lat:37.5241,
-    lng:126.9286,
-    price:6000,
-    pl:"5,000~7,000원",
-    crowd:65,
-    cl:"보통",
-    cc:"#e76f00",
-    open:true,
-    hours:"평일 11:30~13:30",
-    desc:"금융투자협회(금투센터) 구내식당이에요. 여의도 증권가 핵심 위치에 있어요. 일반인도 이용 가능한 것으로 알려져 있어요.",
-  }
+const cafeterias = [
+  { id:1,  keyword:"KBS 본관 여의도", name:"KBS 구내식당", price:5000, pl:"4,000~6,000원", crowd:60, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"KBS 본관 내 구내식당으로 일반인도 이용 가능해요. 저렴하고 양이 많기로 유명해요." },
+  { id:2,  keyword:"국회의사당 여의도", name:"국회의사당 구내식당", price:4000, pl:"3,000~5,000원", crowd:70, cl:"보통~혼잡", cc:"#e76f00", open:true, hours:"평일 11:30~14:00 (회기 중)", desc:"신분증 지참 후 방문객 출입증 받으면 일반인도 이용 가능해요. 매우 저렴한 편이에요." },
+  { id:3,  keyword:"한국거래소 여의도", name:"한국거래소(KRX) 구내식당", price:5000, pl:"4,000~6,000원", crowd:55, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"한국거래소 본사 구내식당이에요. 일반인도 이용 가능한 것으로 알려져 있어요." },
+  { id:4,  keyword:"금융감독원 여의도", name:"금융감독원 구내식당", price:5000, pl:"4,000~5,500원", crowd:50, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"금융감독원 본원 구내식당으로 저렴하게 이용할 수 있어요." },
+  { id:5,  keyword:"국민연금공단 여의도", name:"국민연금공단 구내식당", price:4500, pl:"3,500~5,000원", crowd:45, cl:"여유~보통", cc:"#2d6a4f", open:true, hours:"평일 11:30~13:30", desc:"공단 특성상 저렴한 가격을 유지하고 있어요." },
+  { id:6,  keyword:"서울특별시의회 여의도", name:"서울시의회 구내식당", price:4000, pl:"3,000~5,000원", crowd:40, cl:"여유", cc:"#2d6a4f", open:true, hours:"평일 11:30~14:00", desc:"공공기관 특성상 매우 저렴해요. 일반인도 이용 가능해요." },
+  { id:7,  keyword:"LG트윈타워 여의도", name:"LG트윈타워 구내식당", price:5500, pl:"5,000~6,500원", crowd:70, cl:"보통~혼잡", cc:"#e76f00", open:false, hours:"평일 11:30~13:30", desc:"LG 계열사 임직원 전용 구내식당이에요. 외부인 출입이 제한되어 있어요." },
+  { id:8,  keyword:"한국교직원공제회 여의도", name:"교직원공제회 구내식당", price:4500, pl:"3,500~5,000원", crowd:40, cl:"여유", cc:"#2d6a4f", open:true, hours:"평일 11:30~13:30", desc:"공제회 특성상 저렴한 가격에 이용할 수 있어요." },
+  { id:9,  keyword:"전국경제인연합회 여의도", name:"전경련회관 구내식당", price:6000, pl:"5,000~7,000원", crowd:55, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"전경련회관 구내식당으로 일반인도 이용 가능한 것으로 알려져 있어요." },
+  { id:10, keyword:"하나증권 여의도", name:"하나증권 구내식당", price:5500, pl:"5,000~6,500원", crowd:65, cl:"보통", cc:"#e76f00", open:false, hours:"평일 11:30~13:30", desc:"하나증권 본사 구내식당으로 임직원 전용이에요." },
+  { id:11, keyword:"국회도서관 여의도", name:"국회도서관 구내식당", price:4000, pl:"3,000~5,000원", crowd:35, cl:"여유", cc:"#2d6a4f", open:true, hours:"평일 11:30~14:00", desc:"도서관 이용객이라면 누구나 이용 가능해요. 매우 저렴한 편이에요." },
+  { id:12, keyword:"국회박물관 여의도", name:"국회박물관 식당", price:5000, pl:"4,000~6,000원", crowd:30, cl:"여유", cc:"#2d6a4f", open:true, hours:"평일 11:30~14:00", desc:"박물관 방문객 누구나 이용 가능해요. 쾌적한 환경이에요." },
+  { id:13, keyword:"이룸센터 여의도", name:"이룸센터 구내식당", price:5500, pl:"5,000~6,500원", crowd:50, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"국회 이룸센터 내 구내식당으로 일반인도 이용 가능해요." },
+  { id:14, keyword:"일신빌딩 여의도", name:"일신빌딩 구내식당", price:5500, pl:"5,000~6,500원", crowd:55, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"증권가 주변에 위치해 점심시간 직장인들이 많이 이용해요." },
+  { id:15, keyword:"태영빌딩 여의도", name:"태영빌딩 구내식당", price:5500, pl:"5,000~6,500원", crowd:55, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"여의도 오피스 밀집 지역에 위치해 있어요." },
+  { id:16, keyword:"KT 여의도지사", name:"KT빌딩 구내식당", price:5500, pl:"5,000~6,500원", crowd:60, cl:"보통", cc:"#e76f00", open:false, hours:"평일 11:30~13:30", desc:"KT 여의도빌딩 구내식당으로 임직원 위주로 운영돼요." },
+  { id:17, keyword:"금융투자협회 여의도", name:"금투센터 구내식당", price:6000, pl:"5,000~7,000원", crowd:65, cl:"보통", cc:"#e76f00", open:true, hours:"평일 11:30~13:30", desc:"금융투자협회 구내식당으로 여의도 증권가 핵심 위치에 있어요." },
 ];
 
-let filter='all', map, overlays=[];
+let filter='all', map, overlays=[], resolvedData=[];
 
 function bc(p){
   if(p<=4500)return{bg:'#d8f3dc',bd:'#2d6a4f',tx:'#1b4332'};
@@ -348,22 +127,22 @@ function bc(p){
 }
 
 function render(){
-  overlays.forEach(o=>o.setMap(null));overlays=[];
-  data.filter(c=>{
-    if(filter==='cheap')return c.price<=5000;
-    if(filter==='mid')return c.price<=7000;
-    if(filter==='open')return c.open;
+  overlays.forEach(o=>o.setMap(null)); overlays=[];
+  resolvedData.filter(c=>{
+    if(filter==='cheap') return c.price<=5000;
+    if(filter==='mid') return c.price<=7000;
+    if(filter==='open') return c.open;
     return true;
   }).forEach(c=>{
     const col=bc(c.price);
     const html=`<div style="position:relative;cursor:pointer;" onclick="openPanel(${c.id})"><div style="display:flex;align-items:center;gap:5px;padding:5px 10px;background:${col.bg};border:2px solid ${col.bd};border-radius:20px;font-size:13px;font-weight:700;color:${col.tx};white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.15);"><div style="width:7px;height:7px;border-radius:50%;background:${col.bd};"></div>${c.pl}</div></div>`;
     const o=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(c.lat,c.lng),content:html,yAnchor:1.3});
-    o.setMap(map);overlays.push(o);
+    o.setMap(map); overlays.push(o);
   });
 }
 
 function openPanel(id){
-  const c=data.find(x=>x.id===id);if(!c)return;
+  const c=resolvedData.find(x=>x.id===id); if(!c) return;
   document.getElementById('pname').textContent=c.name;
   document.getElementById('pprice').textContent=c.pl;
   document.getElementById('pinfo').innerHTML=[
@@ -372,8 +151,7 @@ function openPanel(id){
   ].join('');
   document.getElementById('pdesc').textContent=c.desc;
   const bar=document.getElementById('pcbar');
-  bar.style.width=c.crowd+'%';
-  bar.style.background=c.cc;
+  bar.style.width=c.crowd+'%'; bar.style.background=c.cc;
   document.getElementById('pclabel').textContent=c.cl;
   document.getElementById('panel').classList.add('open');
   map.panTo(new kakao.maps.LatLng(c.lat,c.lng));
@@ -395,11 +173,30 @@ function submitReport(){
 }
 
 kakao.maps.load(function(){
-  map=new kakao.maps.Map(document.getElementById('map'),{
-    center:new kakao.maps.LatLng(37.5255,126.9200),
-    level:5
+  map = new kakao.maps.Map(document.getElementById('map'),{
+    center: new kakao.maps.LatLng(37.5255, 126.9200),
+    level: 5
   });
-  render();
+  document.getElementById('loading').style.display='none';
+
+  const ps = new kakao.maps.services.Places();
+  let done = 0;
+
+  cafeterias.forEach(cafe => {
+    ps.keywordSearch(cafe.keyword, function(result, status){
+      done++;
+      if(status === kakao.maps.services.Status.OK && result.length > 0){
+        cafe.lat = parseFloat(result[0].y);
+        cafe.lng = parseFloat(result[0].x);
+      } else {
+        // 검색 실패시 여의도 중심 근처 기본값
+        cafe.lat = 37.5255 + (Math.random()-0.5)*0.01;
+        cafe.lng = 126.9200 + (Math.random()-0.5)*0.01;
+      }
+      resolvedData.push(cafe);
+      if(done === cafeterias.length) render();
+    }, { location: new kakao.maps.LatLng(37.5255, 126.9200), radius: 3000 });
+  });
 });
 </script>
 </body>
