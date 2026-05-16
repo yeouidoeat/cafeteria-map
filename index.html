@@ -7,151 +7,194 @@
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap" rel="stylesheet"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-:root{--green:#1a9e6e;--green-dark:#157a55;--green-light:#e8f7f0;--orange:#f97316;--red:#ef4444;--gray:#f4f6f8;--text:#1a1a1a;--muted:#6b7280;--white:#fff;--border:#e5e7eb;}
-body{font-family:'Nanum Gothic',sans-serif;background:var(--white);color:var(--text);height:100dvh;overflow:hidden;display:flex;flex-direction:column;}
+:root{
+  --green:#059669;--green-dark:#047857;--green-light:#ecfdf5;--green-text:#065f46;
+  --orange:#f97316;--red:#ef4444;
+  --slate-50:#f8fafc;--slate-100:#f1f5f9;--slate-200:#e2e8f0;--slate-400:#94a3b8;--slate-500:#64748b;--slate-600:#475569;--slate-800:#1e293b;--slate-900:#0f172a;
+  --white:#fff;--shadow:0 -10px 40px rgba(0,0,0,0.1);
+}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(--slate-900);height:100dvh;overflow:hidden;display:flex;flex-direction:column;position:relative;}
+
+/* 토스트 */
+#toast{position:fixed;top:100px;left:50%;transform:translateX(-50%);background:var(--slate-800);color:#fff;padding:10px 24px;border-radius:999px;font-size:13px;font-weight:700;z-index:999;display:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.2);}
+#toast.show{display:block;animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateX(-50%) scale(0.9);}to{opacity:1;transform:translateX(-50%) scale(1);}}
 
 /* 헤더 */
-#header{background:var(--white);padding:12px 16px 8px;border-bottom:1px solid var(--border);flex-shrink:0;}
-.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+#header{background:var(--white);padding:14px 16px 12px;box-shadow:0 1px 4px rgba(0,0,0,0.06);z-index:20;flex-shrink:0;}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;}
 .logo{display:flex;align-items:center;gap:8px;}
-.logo-icon{width:36px;height:36px;border-radius:10px;object-fit:cover;}
-.logo-text h1{font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--text);}
-.logo-text p{font-size:11px;color:var(--muted);margin-top:1px;}
-.report-btn{display:flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);border:none;border-radius:20px;padding:8px 14px;font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;}
+.logo-icon-wrap{background:var(--green);padding:6px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.logo-icon{width:20px;height:20px;filter:brightness(0) invert(1);}
+.logo img.logo-img{width:36px;height:36px;border-radius:10px;object-fit:cover;}
+.logo-text h1{font-size:19px;font-weight:800;color:var(--green-text);letter-spacing:-0.5px;}
+.logo-text p{font-size:11px;color:var(--slate-400);margin-top:1px;}
+.report-btn{display:flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);border:none;border-radius:999px;padding:8px 14px;font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;}
+.report-btn:active{transform:scale(0.95);}
 
-/* 검색바 */
-#search-wrap{padding:10px 16px 0;flex-shrink:0;}
-.search-box{display:flex;align-items:center;gap:8px;background:var(--gray);border-radius:12px;padding:10px 14px;}
-.search-box input{background:none;border:none;outline:none;font-size:14px;font-family:'Nanum Gothic',sans-serif;color:var(--text);flex:1;}
-.search-box input::placeholder{color:#9ca3af;}
+/* 검색 */
+.search-wrap{position:relative;margin:12px 0 10px;}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--slate-400);}
+.search-wrap input{width:100%;background:var(--slate-100);border:none;border-radius:14px;padding:10px 14px 10px 38px;font-size:14px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);outline:none;}
+.search-wrap input:focus{box-shadow:0 0 0 2px var(--green);}
+.search-wrap input::placeholder{color:var(--slate-400);}
 
 /* 필터 */
-#filters{padding:10px 16px;display:flex;gap:8px;flex-shrink:0;}
-.chip{background:var(--white);border:1.5px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;font-family:'Nanum Gothic',sans-serif;cursor:pointer;white-space:nowrap;color:var(--muted);font-weight:700;}
-.chip.active{background:var(--green);border-color:var(--green);color:var(--white);}
+.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;}
+.filters::-webkit-scrollbar{display:none;}
+.chip{background:var(--white);border:1.5px solid var(--slate-200);border-radius:999px;padding:6px 16px;font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;color:var(--slate-600);white-space:nowrap;transition:all .15s;}
+.chip.active{background:var(--green);border-color:var(--green);color:var(--white);box-shadow:0 4px 12px rgba(5,150,105,0.3);}
 
 /* 지도 */
-#map{flex:1;}
+#map{flex:1;position:relative;}
 
 /* 하단 패널 */
-#panel{background:var(--white);border-radius:24px 24px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,0.1);position:fixed;bottom:0;left:0;right:0;transform:translateY(100%);transition:transform .3s ease;max-height:75vh;overflow-y:auto;z-index:200;}
+#panel{background:var(--white);border-radius:28px 28px 0 0;box-shadow:var(--shadow);position:fixed;bottom:0;left:0;right:0;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);max-height:78vh;overflow-y:auto;z-index:200;}
 #panel.open{transform:translateY(0);}
-.panel-handle{width:40px;height:4px;background:#e5e7eb;border-radius:2px;margin:12px auto 16px;}
+.panel-handle{width:44px;height:5px;background:var(--slate-200);border-radius:999px;margin:14px auto 20px;}
 
-.panel-header{padding:0 20px 16px;}
-.panel-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
-.panel-name{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--text);}
-.panel-price{font-family:'Black Han Sans',sans-serif;font-size:24px;color:var(--green);}
-.panel-meta{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.panel-body{padding:0 20px 24px;}
+.panel-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.panel-left h2{font-size:22px;font-weight:800;color:var(--slate-900);line-height:1.2;margin-bottom:4px;}
+.panel-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.panel-price{font-size:24px;font-weight:800;color:var(--green);}
+.close-btn{background:none;border:none;cursor:pointer;color:var(--slate-300);padding:2px;}
+.close-btn:hover{color:var(--slate-500);}
 
-.close-btn{background:none;border:none;cursor:pointer;color:#9ca3af;font-size:22px;padding:0;line-height:1;}
-
-/* 정보 카드들 */
-.info-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 16px;}
-.info-card{background:var(--gray);border-radius:14px;padding:12px 14px;}
-.info-card-label{font-size:11px;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;gap:4px;}
-.info-card-value{font-size:14px;font-weight:700;color:var(--text);}
+/* 정보 카드 */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.info-card{background:var(--slate-50);border:1px solid var(--slate-100);border-radius:16px;padding:14px;}
+.info-card-label{font-size:10px;color:var(--slate-400);font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:4px;}
+.info-card-value{font-size:14px;font-weight:800;color:var(--slate-800);}
 
 /* 혼잡도 */
-.crowd-section{padding:0 20px 16px;}
-.crowd-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.crowd-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:6px;}
-.crowd-time{font-size:11px;color:var(--muted);}
-.crowd-bar-wrap{background:#f3f4f6;border-radius:20px;height:12px;overflow:hidden;margin-bottom:8px;}
-.crowd-bar{height:100%;border-radius:20px;transition:width .5s;}
-.crowd-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);}
-.crowd-current{font-weight:700;}
+.crowd-section{background:var(--slate-50);border:1px solid var(--slate-100);border-radius:20px;padding:16px;margin-bottom:24px;}
+.crowd-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.crowd-title{font-size:15px;font-weight:800;color:var(--slate-800);display:flex;align-items:center;gap:6px;}
+.crowd-updated{font-size:10px;color:var(--slate-400);background:var(--white);border:1px solid var(--slate-100);border-radius:999px;padding:3px 10px;display:flex;align-items:center;gap:3px;}
+.crowd-bar-track{height:14px;background:var(--slate-200);border-radius:999px;overflow:hidden;margin-bottom:10px;}
+.crowd-bar-fill{height:100%;border-radius:999px;transition:width .8s ease;}
+.crowd-labels{display:flex;justify-content:space-between;padding:0 2px;}
+.crowd-labels span{font-size:11px;font-weight:700;color:var(--slate-400);}
+.crowd-labels span.active-label{color:inherit;}
 
-/* 길찾기 버튼 */
-.nav-btn{margin:0 20px 20px;width:calc(100% - 40px);background:var(--green);color:white;border:none;border-radius:16px;padding:16px;font-size:16px;font-family:'Black Han Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
-.nav-btn:active{background:var(--green-dark);}
+/* 버튼 */
+.action-btns{display:flex;gap:12px;}
+.nav-btn{flex:1;background:var(--green);color:#fff;border:none;border-radius:18px;padding:16px;font-size:16px;font-family:'Black Han Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 8px 20px rgba(5,150,105,0.25);transition:all .15s;}
+.nav-btn:active{transform:scale(0.98);background:var(--green-dark);}
+.share-btn{width:56px;height:56px;background:var(--white);border:1.5px solid var(--slate-200);border-radius:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--slate-500);transition:all .15s;flex-shrink:0;}
+.share-btn:active{transform:scale(0.95);}
 
 /* 제보 모달 */
-#moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;}
+#moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:flex-end;}
 #moverlay.open{display:flex;}
-#modal{background:var(--white);border-radius:24px 24px 0 0;padding:20px 20px 40px;width:100%;max-height:85vh;overflow-y:auto;}
-#modal h2{font-family:'Black Han Sans',sans-serif;font-size:20px;margin-bottom:4px;color:var(--text);}
-#modal p{font-size:13px;color:var(--muted);margin-bottom:20px;}
+#modal{background:var(--white);border-radius:28px 28px 0 0;padding:24px 20px 40px;width:100%;max-height:88vh;overflow-y:auto;}
+#modal h2{font-size:20px;font-weight:800;margin-bottom:4px;color:var(--slate-900);}
+#modal>p{font-size:13px;color:var(--slate-400);margin-bottom:20px;}
 .fg{margin-bottom:14px;}
-.fg label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;}
-.fg input,.fg textarea,.fg select{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;font-size:14px;font-family:'Nanum Gothic',sans-serif;color:var(--text);background:var(--white);outline:none;}
+.fg label{display:block;font-size:12px;font-weight:700;color:var(--slate-500);margin-bottom:6px;}
+.fg input,.fg textarea,.fg select{width:100%;border:1.5px solid var(--slate-200);border-radius:14px;padding:12px 14px;font-size:14px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);outline:none;background:var(--white);}
 .fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--green);}
 .fg textarea{height:80px;resize:none;}
 .mbtns{display:flex;gap:10px;margin-top:20px;}
-.mcancel{flex:1;background:var(--gray);border:none;border-radius:12px;padding:14px;font-size:14px;font-family:'Nanum Gothic',sans-serif;cursor:pointer;color:var(--muted);}
-.msubmit{flex:2;background:var(--green);color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-family:'Black Han Sans',sans-serif;cursor:pointer;}
+.mcancel{flex:1;background:var(--slate-100);border:none;border-radius:14px;padding:14px;font-size:14px;font-family:'Nanum Gothic',sans-serif;cursor:pointer;color:var(--slate-500);font-weight:700;}
+.msubmit{flex:2;background:var(--green);color:#fff;border:none;border-radius:14px;padding:14px;font-size:14px;font-family:'Black Han Sans',sans-serif;cursor:pointer;box-shadow:0 4px 12px rgba(5,150,105,0.3);}
 </style>
 </head>
 <body>
 
+<div id="toast"></div>
+
 <div id="header">
   <div class="header-top">
     <div class="logo">
-      <img src="logo.jpg" class="logo-icon" alt="로고"/>
+      <img src="logo.jpg" class="logo-img" alt="로고" onerror="this.style.display='none'"/>
       <div class="logo-text">
         <h1>구내식당 맵</h1>
         <p>여의도 직장인을 위한 점심 위키 | 전국 서비스로 확대 중</p>
       </div>
     </div>
-    <button class="report-btn" onclick="openModal()">💬 제보하기</button>
+    <button class="report-btn" onclick="openModal()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      제보하기
+    </button>
   </div>
-</div>
-
-<div id="search-wrap">
-  <div class="search-box">
-    <span style="font-size:16px;color:#9ca3af;">🔍</span>
+  <div class="search-wrap">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
     <input type="text" id="search" placeholder="식당명 또는 건물명 검색" oninput="searchCafeteria(this.value)"/>
   </div>
-</div>
-
-<div id="filters">
-  <button class="chip active" onclick="setFilter('all',this)">전체</button>
-  <button class="chip" onclick="setFilter('cheap',this)">~6,000원</button>
-  <button class="chip" onclick="setFilter('mid',this)">~7,500원</button>
+  <div class="filters">
+    <button class="chip active" onclick="setFilter('all',this)">전체</button>
+    <button class="chip" onclick="setFilter('cheap',this)">~6,000원</button>
+    <button class="chip" onclick="setFilter('mid',this)">~7,500원</button>
+  </div>
 </div>
 
 <div id="map"></div>
 
 <div id="panel">
   <div class="panel-handle"></div>
-  <div class="panel-header">
+  <div class="panel-body">
     <div class="panel-top">
-      <div class="panel-name" id="pname"></div>
-      <div style="display:flex;align-items:center;gap:8px;">
+      <div class="panel-left">
+        <h2 id="pname"></h2>
+      </div>
+      <div class="panel-right">
         <div class="panel-price" id="pprice"></div>
-        <button class="close-btn" onclick="closePanel()">✕</button>
+        <button class="close-btn" onclick="closePanel()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
       </div>
     </div>
 
-  </div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-label">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          운영 시간
+        </div>
+        <div class="info-card-value" id="phours"></div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+          현재 거리
+        </div>
+        <div class="info-card-value" id="pdist">계산 중...</div>
+      </div>
+    </div>
 
-  <div class="info-cards">
-    <div class="info-card">
-      <div class="info-card-label">🕐 운영 시간</div>
-      <div class="info-card-value" id="phours"></div>
+    <div class="crowd-section">
+      <div class="crowd-header">
+        <div class="crowd-title">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          실시간 혼잡도
+        </div>
+        <div class="crowd-updated" id="pcrowd-time">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          제보 기반
+        </div>
+      </div>
+      <div class="crowd-bar-track">
+        <div class="crowd-bar-fill" id="pcrowd-bar"></div>
+      </div>
+      <div class="crowd-labels">
+        <span id="lbl-low">쾌적</span>
+        <span id="lbl-mid">보통</span>
+        <span id="lbl-high">혼잡</span>
+      </div>
     </div>
-    <div class="info-card">
-      <div class="info-card-label">📍 현재 거리</div>
-      <div class="info-card-value" id="pdist">계산 중...</div>
+
+    <div class="action-btns">
+      <button class="nav-btn" onclick="startNav()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+        길 찾기 시작
+      </button>
+      <button class="share-btn" onclick="shareLink()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+      </button>
     </div>
   </div>
-
-  <div class="crowd-section">
-    <div class="crowd-header">
-      <div class="crowd-title">👥 실시간 혼잡도</div>
-      <div class="crowd-time" id="pcrowd-time"></div>
-    </div>
-    <div class="crowd-bar-wrap">
-      <div class="crowd-bar" id="pcrowd-bar"></div>
-    </div>
-    <div class="crowd-labels">
-      <span>쾌적</span>
-      <span class="crowd-current" id="pcrowd-label"></span>
-      <span>혼잡</span>
-    </div>
-  </div>
-
-  <button class="nav-btn" id="nav-btn" onclick="startNav()">📍 길 찾기 시작</button>
 </div>
 
 <div id="moverlay" onclick="if(event.target===this)closeModal()">
@@ -181,76 +224,85 @@ const SUPABASE_URL = 'https://gokynemjexaigmcbmqkq.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_PnEIiBPZEipsAxGTcxgi_A_P6iXS4GI';
 
 const cafeterias = [
-  { id:1,  keyword:"KBS 본관 여의도", name:"KBS 본관 식당", price:5000, pl:"~5,000원", crowd:60, cl:"보통", open:true, hours:"11:30~13:30", rating:4.2, reviews:87 },
-  { id:2,  keyword:"국회의사당 여의도", name:"국회의사당 식당", price:4000, pl:"~4,000원", crowd:70, cl:"보통", open:true, hours:"11:30~14:00", rating:4.0, reviews:42 },
-  { id:3,  keyword:"한국거래소 여의도", name:"한국거래소 식당", price:5000, pl:"~5,000원", crowd:55, cl:"보통", open:true, hours:"11:20~13:20", rating:4.4, reviews:54 },
-  { id:4,  keyword:"금융감독원 여의도", name:"금융감독원 식당", price:5000, pl:"~5,000원", crowd:50, cl:"보통", open:true, hours:"11:30~13:30", rating:4.1, reviews:38 },
-  { id:5,  keyword:"국민연금공단 여의도", name:"국민연금공단 식당", price:4500, pl:"~4,500원", crowd:45, cl:"여유", open:true, hours:"11:30~13:30", rating:4.0, reviews:29 },
-  { id:6,  keyword:"서울특별시의회 여의도", name:"서울시의회 식당", price:4000, pl:"~4,000원", crowd:40, cl:"여유", open:true, hours:"11:30~14:00", rating:3.9, reviews:21 },
-  { id:7,  keyword:"LG트윈타워 여의도", name:"LG트윈타워 식당", price:5500, pl:"~5,500원", crowd:70, cl:"보통", open:false, hours:"11:30~13:30", rating:4.3, reviews:61 },
-  { id:8,  keyword:"한국교직원공제회 여의도", name:"교직원공제회 식당", price:4500, pl:"~4,500원", crowd:40, cl:"여유", open:true, hours:"11:30~13:30", rating:4.0, reviews:18 },
-  { id:9,  keyword:"전국경제인연합회 여의도", name:"전경련회관 식당", price:6000, pl:"~6,000원", crowd:55, cl:"보통", open:true, hours:"11:30~13:30", rating:4.2, reviews:33 },
-  { id:10, keyword:"하나증권 여의도", name:"하나증권 식당", price:5500, pl:"~5,500원", crowd:65, cl:"보통", open:false, hours:"11:30~13:30", rating:4.1, reviews:27 },
-  { id:11, keyword:"국회도서관 여의도", name:"국회도서관 식당", price:4000, pl:"~4,000원", crowd:35, cl:"여유", open:true, hours:"11:30~14:00", rating:4.0, reviews:15 },
-  { id:12, keyword:"국회박물관 여의도", name:"국회박물관 식당", price:5000, pl:"~5,000원", crowd:30, cl:"여유", open:true, hours:"11:30~14:00", rating:3.8, reviews:12 },
-  { id:13, keyword:"이룸센터 여의도", name:"이룸센터 식당", price:5500, pl:"~5,500원", crowd:50, cl:"보통", open:true, hours:"11:30~13:30", rating:4.0, reviews:22 },
-  { id:14, keyword:"일신빌딩 여의도", name:"일신빌딩 식당", price:5500, pl:"~5,500원", crowd:55, cl:"보통", open:true, hours:"11:30~13:30", rating:3.9, reviews:19 },
-  { id:15, keyword:"태영빌딩 여의도", name:"태영빌딩 식당", price:5500, pl:"~5,500원", crowd:55, cl:"보통", open:true, hours:"11:30~13:30", rating:4.0, reviews:16 },
-  { id:16, keyword:"KT 여의도지사", name:"KT빌딩 식당", price:5500, pl:"~5,500원", crowd:60, cl:"보통", open:false, hours:"11:30~13:30", rating:4.0, reviews:14 },
-  { id:17, keyword:"금융투자협회 여의도", name:"금투센터 식당", price:6000, pl:"~6,000원", crowd:65, cl:"보통", open:true, hours:"11:30~13:30", rating:4.3, reviews:41 },
+  { id:1,  keyword:"KBS 본관 여의도", name:"KBS 본관 식당", price:5000, pl:"~5,000원", crowd:60, open:true, hours:"11:30~13:30" },
+  { id:2,  keyword:"국회의사당 여의도", name:"국회의사당 식당", price:4000, pl:"~4,000원", crowd:70, open:true, hours:"11:30~14:00" },
+  { id:3,  keyword:"한국거래소 여의도", name:"한국거래소 식당", price:5000, pl:"~5,000원", crowd:45, open:true, hours:"11:20~13:20" },
+  { id:4,  keyword:"금융감독원 여의도", name:"금융감독원 식당", price:5000, pl:"~5,000원", crowd:50, open:true, hours:"11:30~13:30" },
+  { id:5,  keyword:"국민연금공단 여의도", name:"국민연금공단 식당", price:4500, pl:"~4,500원", crowd:35, open:true, hours:"11:30~13:30" },
+  { id:6,  keyword:"서울특별시의회 여의도", name:"서울시의회 식당", price:4000, pl:"~4,000원", crowd:30, open:true, hours:"11:30~14:00" },
+  { id:7,  keyword:"LG트윈타워 여의도", name:"LG트윈타워 식당", price:5500, pl:"~5,500원", crowd:70, open:false, hours:"11:30~13:30" },
+  { id:8,  keyword:"한국교직원공제회 여의도", name:"교직원공제회 식당", price:4500, pl:"~4,500원", crowd:40, open:true, hours:"11:30~13:30" },
+  { id:9,  keyword:"전국경제인연합회 여의도", name:"전경련회관 식당", price:6000, pl:"~6,000원", crowd:55, open:true, hours:"11:30~13:30" },
+  { id:10, keyword:"하나증권 여의도", name:"하나증권 식당", price:5500, pl:"~5,500원", crowd:65, open:false, hours:"11:30~13:30" },
+  { id:11, keyword:"국회도서관 여의도", name:"국회도서관 식당", price:4000, pl:"~4,000원", crowd:25, open:true, hours:"11:30~14:00" },
+  { id:12, keyword:"국회박물관 여의도", name:"국회박물관 식당", price:5000, pl:"~5,000원", crowd:20, open:true, hours:"11:30~14:00" },
+  { id:13, keyword:"이룸센터 여의도", name:"이룸센터 식당", price:5500, pl:"~5,500원", crowd:50, open:true, hours:"11:30~13:30" },
+  { id:14, keyword:"일신빌딩 여의도", name:"일신빌딩 식당", price:5500, pl:"~5,500원", crowd:55, open:true, hours:"11:30~13:30" },
+  { id:15, keyword:"태영빌딩 여의도", name:"태영빌딩 식당", price:5500, pl:"~5,500원", crowd:55, open:true, hours:"11:30~13:30" },
+  { id:16, keyword:"KT 여의도지사", name:"KT빌딩 식당", price:5500, pl:"~5,500원", crowd:60, open:false, hours:"11:30~13:30" },
+  { id:17, keyword:"금융투자협회 여의도", name:"금투센터 식당", price:6000, pl:"~6,000원", crowd:65, open:true, hours:"11:30~13:30" },
 ];
 
 let filter='all', map, overlays=[], resolvedData=[], currentCafe=null, userLat=null, userLng=null;
 
-// 현재 위치 가져오기
 navigator.geolocation && navigator.geolocation.getCurrentPosition(pos => {
   userLat = pos.coords.latitude;
   userLng = pos.coords.longitude;
+  if(currentCafe) updateDist(currentCafe);
 });
 
-function getPinColor(c) {
-  if (!c.open) return { bg:'#ef4444', text:'#fff' };
-  if (c.price <= 5000) return { bg:'#1a9e6e', text:'#fff' };
-  if (c.price <= 6500) return { bg:'#f97316', text:'#fff' };
-  return { bg:'#ef4444', text:'#fff' };
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-function getCrowdColor(crowd) {
-  if (crowd < 40) return '#1a9e6e';
-  if (crowd < 70) return '#f97316';
+function getPinColor(c) {
+  if (!c.open) return '#ef4444';
+  if (c.price <= 5000) return '#059669';
+  if (c.price <= 6500) return '#f97316';
   return '#ef4444';
 }
 
-function getCrowdLabel(crowd) {
-  if (crowd < 40) return '쾌적';
-  if (crowd < 70) return '보통';
-  return '혼잡';
+function getCrowdColor(crowd) {
+  if (crowd < 40) return '#059669';
+  if (crowd < 70) return '#f97316';
+  return '#ef4444';
 }
 
 function getDistance(lat1, lng1, lat2, lng2) {
   const R = 6371000;
   const dLat = (lat2-lat1)*Math.PI/180;
   const dLng = (lng2-lng1)*Math.PI/180;
-  const a = Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
-  const d = R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-  return d < 1000 ? Math.round(d)+'m' : (d/1000).toFixed(1)+'km';
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  const d = R*2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return d < 1000 ? '약 '+Math.round(d)+'m' : '약 '+(d/1000).toFixed(1)+'km';
+}
+
+function updateDist(c) {
+  if(userLat && c.lat) {
+    document.getElementById('pdist').textContent = getDistance(userLat, userLng, c.lat, c.lng);
+  } else {
+    document.getElementById('pdist').textContent = '위치 권한 필요';
+  }
 }
 
 function render(data) {
   overlays.forEach(o=>o.setMap(null)); overlays=[];
   const filtered = data.filter(c => {
-    if (filter==='cheap') return c.price<=6000;
-    if (filter==='mid') return c.price<=7500;
+    if(filter==='cheap') return c.price<=6000;
+    if(filter==='mid') return c.price<=7500;
     return true;
   });
   filtered.forEach(c => {
     const col = getPinColor(c);
-    const shortName = c.name.replace('식당','').replace('구내','').trim();
-    const html = `<div style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;" onclick="openPanel(${c.id})">
-      <div style="background:${col.bg};color:${col.text};padding:5px 12px;border-radius:20px;font-size:13px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.2);font-family:'Nanum Gothic',sans-serif;">${shortName}</div>
-      <div style="width:8px;height:8px;border-radius:50%;background:${col.bg};box-shadow:0 1px 4px rgba(0,0,0,0.2);"></div>
+    const shortName = c.name.replace('구내식당','').replace('식당','').trim();
+    const html = `<div style="cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;" onclick="openPanel(${c.id})">
+      <div style="background:${col};color:#fff;padding:5px 12px;border-radius:10px;font-size:13px;font-weight:800;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.2);font-family:'Nanum Gothic',sans-serif;border:2px solid rgba(255,255,255,0.25);">${shortName}</div>
+      <div style="width:10px;height:10px;border-radius:50%;background:${col};border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.2);"></div>
     </div>`;
-    const o = new kakao.maps.CustomOverlay({ position: new kakao.maps.LatLng(c.lat, c.lng), content: html, yAnchor: 1.2 });
+    const o = new kakao.maps.CustomOverlay({ position: new kakao.maps.LatLng(c.lat, c.lng), content: html, yAnchor: 1.15 });
     o.setMap(map); overlays.push(o);
   });
 }
@@ -260,36 +312,40 @@ function openPanel(id) {
   currentCafe = c;
   document.getElementById('pname').textContent = c.name;
   document.getElementById('pprice').textContent = c.pl;
-
   document.getElementById('phours').textContent = c.hours;
+  updateDist(c);
 
-  // 거리
-  if(userLat && c.lat) {
-    document.getElementById('pdist').textContent = '약 ' + getDistance(userLat, userLng, c.lat, c.lng);
-  } else {
-    document.getElementById('pdist').textContent = '위치 권한 필요';
-  }
-
-  // 혼잡도
   const crowdColor = getCrowdColor(c.crowd);
-  document.getElementById('pcrowd-bar').style.width = c.crowd + '%';
+  document.getElementById('pcrowd-bar').style.width = c.crowd+'%';
   document.getElementById('pcrowd-bar').style.background = crowdColor;
-  document.getElementById('pcrowd-label').textContent = getCrowdLabel(c.crowd);
-  document.getElementById('pcrowd-label').style.color = crowdColor;
-  document.getElementById('pcrowd-time').textContent = '⏱ 8분 전 제보됨';
+
+  // 혼잡도 레이블 활성화
+  const lblLow = document.getElementById('lbl-low');
+  const lblMid = document.getElementById('lbl-mid');
+  const lblHigh = document.getElementById('lbl-high');
+  lblLow.style.color = c.crowd < 40 ? '#059669' : '#94a3b8';
+  lblMid.style.color = (c.crowd >= 40 && c.crowd < 70) ? '#f97316' : '#94a3b8';
+  lblHigh.style.color = c.crowd >= 70 ? '#ef4444' : '#94a3b8';
 
   document.getElementById('panel').classList.add('open');
   map.panTo(new kakao.maps.LatLng(c.lat, c.lng));
 }
 
-function closePanel() {
-  document.getElementById('panel').classList.remove('open');
-}
+function closePanel() { document.getElementById('panel').classList.remove('open'); }
 
 function startNav() {
   if(!currentCafe) return;
-  const url = `https://map.kakao.com/link/to/${currentCafe.name},${currentCafe.lat},${currentCafe.lng}`;
+  const url = `https://map.kakao.com/link/to/${encodeURIComponent(currentCafe.name)},${currentCafe.lat},${currentCafe.lng}`;
   window.open(url, '_blank');
+}
+
+function shareLink() {
+  if(navigator.share) {
+    navigator.share({ title:'구내식당 맵', url: window.location.href });
+  } else {
+    navigator.clipboard.writeText(window.location.href);
+    showToast('링크가 복사되었습니다!');
+  }
 }
 
 function setFilter(f, el) {
@@ -305,8 +361,8 @@ function searchCafeteria(q) {
   render(result);
 }
 
-function openModal(){document.getElementById('moverlay').classList.add('open');}
-function closeModal(){document.getElementById('moverlay').classList.remove('open');}
+function openModal(){ document.getElementById('moverlay').classList.add('open'); }
+function closeModal(){ document.getElementById('moverlay').classList.remove('open'); }
 
 async function submitReport(){
   const name = document.getElementById('fn').value;
@@ -315,17 +371,17 @@ async function submitReport(){
   const crowd = document.getElementById('fc').value;
   const open = document.getElementById('fo').value;
   const comment = document.querySelector('#modal textarea').value;
-  if(!name){alert('식당 이름은 필수예요!');return;}
+  if(!name){ alert('식당 이름은 필수예요!'); return; }
   const btn = document.querySelector('.msubmit');
   btn.textContent = '제보 중...'; btn.disabled = true;
   try {
-    const res = await fetch(SUPABASE_URL + '/rest/v1/reports', {
+    const res = await fetch(SUPABASE_URL+'/rest/v1/reports', {
       method:'POST',
       headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'},
       body: JSON.stringify({ cafeteria_name:name, menu, price, crowd, comment:(open?'일반인출입:'+open+' ':'')+comment })
     });
     if(res.ok||res.status===201){
-      alert('제보해주셔서 감사해요! 🙏');
+      showToast('제보해주셔서 감사해요! 🙏');
       document.getElementById('fn').value='';
       document.getElementById('fm').value='';
       document.getElementById('fp').value='';
