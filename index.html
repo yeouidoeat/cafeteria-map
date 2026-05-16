@@ -476,6 +476,7 @@ function renderList(data) {
     return `<div onclick="openPanel(${c.id});toggleView();" style="background:var(--white);border:1px solid var(--slate-200);border-radius:16px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
       <div style="flex:1;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${getPinColor(c)};flex-shrink:0;"></div>
           <span style="font-size:15px;font-weight:800;color:var(--slate-900);">${c.name}</span>
           <span style="font-size:13px;font-weight:700;color:#059669;">${c.pl}</span>
         </div>
