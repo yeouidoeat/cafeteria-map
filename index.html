@@ -14,25 +14,24 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--gray);color:var(--te
 .logo p{font-size:11px;color:var(--muted);margin-top:2px;}
 .hbtns{display:flex;gap:8px;}
 .hbtn{background:none;border:1px solid #e5e7eb;border-radius:20px;padding:6px 12px;font-size:12px;font-family:'Nanum Gothic',sans-serif;cursor:pointer;color:var(--text);}
-.hbtn.active{background:var(--green);color:#fff;border-color:var(--green);}
 #filters{background:var(--white);padding:8px 14px;display:flex;gap:6px;overflow-x:auto;border-bottom:1px solid #e5e7eb;flex-shrink:0;}
 #filters::-webkit-scrollbar{display:none;}
 .chip{background:var(--gray);border:1px solid #e5e7eb;border-radius:20px;padding:5px 12px;font-size:12px;font-family:'Nanum Gothic',sans-serif;cursor:pointer;white-space:nowrap;color:var(--text);}
 .chip.active{background:var(--green-light);border-color:var(--green);color:var(--green);font-weight:700;}
 #map{flex:1;}
-#panel{background:var(--white);border-radius:20px 20px 0 0;border-top:1px solid #e5e7eb;padding:0 16px 24px;transform:translateY(100%);transition:transform .3s;flex-shrink:0;max-height:60vh;overflow-y:auto;}
+#panel{background:var(--white);border-radius:20px 20px 0 0;border-top:1px solid #e5e7eb;padding:0 16px 24px;transform:translateY(100%);transition:transform .3s;flex-shrink:0;max-height:65vh;overflow-y:auto;}
 #panel.open{transform:translateY(0);}
 .handle{width:36px;height:4px;background:#e5e7eb;border-radius:2px;margin:12px auto 14px;cursor:pointer;}
 .ptop{display:flex;justify-content:space-between;margin-bottom:6px;}
 .pname{font-family:'Black Han Sans',sans-serif;font-size:18px;}
 .pprice{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--green);}
-.pbadge{display:inline-block;background:#fff3e0;color:#7c3800;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;margin-bottom:10px;}
-.prating{font-size:13px;color:var(--muted);margin-bottom:12px;}
 .pinfo-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
 .pinfo-chip{background:var(--gray);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--muted);}
 .clabel{font-size:12px;color:var(--muted);margin-bottom:4px;display:flex;justify-content:space-between;}
-.cbar{height:8px;background:#f3f4f6;border-radius:4px;overflow:hidden;margin-bottom:12px;}
+.cbar{height:8px;background:#f3f4f6;border-radius:4px;overflow:hidden;margin-bottom:4px;}
 .cfill{height:100%;border-radius:4px;transition:width .5s;}
+.crowd-note{font-size:11px;color:var(--muted);margin-bottom:12px;}
+.pdesc{font-size:13px;color:var(--text);line-height:1.6;margin-bottom:14px;background:var(--gray);border-radius:8px;padding:10px 12px;}
 .rbtn{width:100%;background:var(--green);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-family:'Black Han Sans',sans-serif;cursor:pointer;}
 #moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end;}
 #moverlay.open{display:flex;}
@@ -46,7 +45,6 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--gray);color:var(--te
 .mbtns{display:flex;gap:8px;margin-top:16px;}
 .mcancel{flex:1;background:var(--gray);border:1px solid #e5e7eb;border-radius:12px;padding:13px;font-size:14px;font-family:'Nanum Gothic',sans-serif;cursor:pointer;}
 .msubmit{flex:2;background:var(--green);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-family:'Black Han Sans',sans-serif;cursor:pointer;}
-.unverified{background:#fff3e0;border-left:3px solid #e76f00;border-radius:0;padding:10px 12px;font-size:12px;color:#7c3800;margin-bottom:12px;}
 </style>
 </head>
 <body>
@@ -69,10 +67,11 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--gray);color:var(--te
     <div class="pname" id="pname"></div>
     <div class="pprice" id="pprice"></div>
   </div>
-  <div id="punverified" class="unverified" style="display:none;">⚠️ 정보 미확인 — 방문 전 확인을 권장해요. 아시는 분은 제보해주세요!</div>
   <div class="pinfo-row" id="pinfo"></div>
-  <div class="clabel"><span>혼잡도 (제보 기반)</span><span id="pclabel">정보없음</span></div>
-  <div class="cbar"><div class="cfill" id="pcbar" style="width:0%;background:#e5e7eb;"></div></div>
+  <div class="pdesc" id="pdesc"></div>
+  <div class="clabel"><span>혼잡도 (점심시간 기준)</span><span id="pclabel"></span></div>
+  <div class="cbar"><div class="cfill" id="pcbar"></div></div>
+  <div class="crowd-note">💡 제보를 통해 실시간 혼잡도를 업데이트할 수 있어요</div>
   <button class="rbtn" onclick="openModal()">📢 정보 제보하기</button>
 </div>
 <div id="moverlay" onclick="if(event.target===this)closeModal()">
@@ -80,7 +79,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--gray);color:var(--te
     <h2>📢 식당 정보 제보</h2>
     <p>직접 방문해서 확인한 정보를 알려주세요 🙏</p>
     <div class="fg"><label>식당 이름</label><input type="text" id="fn" placeholder="예: KBS 구내식당"/></div>
-    <div class="fg"><label>오늘의 메뉴</label><input type="text" id="fm" placeholder="예: 제육볶음, 된장찌개, 공기밥"/></div>
+    <div class="fg"><label>오늘의 메뉴</label><input type="text" id="fm" placeholder="예: 제육볶음, 된장찌개"/></div>
     <div class="fg"><label>가격</label><input type="text" id="fp" placeholder="예: 5,500원"/></div>
     <div class="fg"><label>혼잡도</label>
       <select id="fc"><option value="">선택</option><option>여유</option><option>보통</option><option>혼잡</option></select>
@@ -104,35 +103,247 @@ const data=[
     lat:37.5213,
     lng:126.9161,
     price:5000,
-    pl:"~5,000원",
-    crowd:0,
-    cl:"정보없음",
-    cc:"#e5e7eb",
+    pl:"4,000~6,000원",
+    crowd:60,
+    cl:"보통",
+    cc:"#e76f00",
     open:true,
-    hours:"평일 11:30~14:00",
-    verified:false,
+    hours:"평일 11:30~13:30",
+    desc:"KBS 본관 내 구내식당으로 일반인도 이용 가능해요. 한식 위주로 저렴하고 양이 많기로 유명해요. 방송국 직원들과 함께 이용할 수 있어요.",
   },
   {
     id:2,
     name:"국회의사당 구내식당",
     lat:37.5301,
     lng:126.9152,
-    price:5000,
-    pl:"~5,000원",
-    crowd:0,
-    cl:"정보없음",
-    cc:"#e5e7eb",
+    price:4000,
+    pl:"3,000~5,000원",
+    crowd:70,
+    cl:"보통~혼잡",
+    cc:"#e76f00",
     open:true,
-    hours:"평일 운영 (회기 중)",
-    verified:false,
+    hours:"평일 11:30~14:00 (국회 회기 중)",
+    desc:"국가기관 구내식당으로 가격이 매우 저렴해요. 신분증 지참 후 방문객 출입증 받으면 일반인도 이용 가능해요. 국회 회기 중에만 운영해요.",
   },
+  {
+    id:3,
+    name:"한국거래소(KRX) 구내식당",
+    lat:37.5243,
+    lng:126.9294,
+    price:5000,
+    pl:"4,000~6,000원",
+    crowd:55,
+    cl:"보통",
+    cc:"#e76f00",
+    open:true,
+    hours:"평일 11:30~13:30",
+    desc:"한국거래소 본사 구내식당이에요. 일반인도 이용 가능한 것으로 알려져 있으나 방문 전 확인을 권장해요. 여의도 증권가 중심부에 위치해요.",
+  },
+  {
+    id:4,
+    name:"금융감독원 구내식당",
+    lat:37.5215,
+    lng:126.9247,
+    price:5000,
+    pl:"4,000~5,500원",
+    crowd:50,
+    cl:"보통",
+    cc:"#e76f00",
+    open:true,
+    hours:"평일 11:30~13:30",
+    desc:"금융감독원 본원 구내식당이에요. 저렴한 가격에 한식을 먹을 수 있어요. 방문 전 일반인 출입 가능 여부를 확인해보세요.",
+  },
+  {
+    id:5,
+    name:"국민연금공단 구내식당",
+    lat:37.5260,
+    lng:126.9220,
+    price:4500,
+    pl:"3,500~5,000원",
+    crowd:45,
+    cl:"여유~보통",
+    cc:"#2d6a4f",
+    open:true,
+    hours:"평일 11:30~13:30",
+    desc:"국민연금공단 여의도 본부 구내식당이에요. 공단 특성상 저렴한 가격을 유지하고 있어요. 방문 전 일반인 출입 여부 확인을 권장해요.",
+  },
+  {
+    id:6,
+    name:"서울시의회 구내식당",
+    lat:37.5290,
+    lng:126.9175,
+    price:4000,
+    pl:"3,000~5,000원",
+    crowd:40,
+    cl:"여유",
+    cc:"#2d6a4f",
+    open:true,
+    hours:"평일 11:30~14:00",
+    desc:"서울시의회 구내식당으로 공공기관 특성상 매우 저렴해요. 일반인도 이용 가능한 것으로 알려져 있어요.",
+  },
+,
+  {
+    id:7,
+    name:"LG트윈타워 구내식당",
+    lat:37.5257,
+    lng:126.9210,
+    price:5500,
+    pl:"5,000~6,500원",
+    crowd:70,
+    cl:"보통~혼잡",
+    cc:"#e76f00",
+    open:false,
+    hours:"평일 11:30~13:30",
+    desc:"LG트윈타워 임직원 전용 구내식당이에요. LG 계열사 임직원만 이용 가능하며, 외부인 출입이 제한되어 있어요. 정보 업데이트가 필요하면 제보해주세요.",
+  },
+  {
+    id:8,
+    name:"한국교직원공제회 구내식당",
+    lat:37.5267,
+    lng:126.9234,
+    price:4500,
+    pl:"3,500~5,000원",
+    crowd:40,
+    cl:"여유",
+    cc:"#2d6a4f",
+    open:true,
+    hours:"평일 11:30~13:30",
+    desc:"한국교직원공제회 본사 구내식당이에요. 공제회 특성상 저렴한 가격에 이용할 수 있어요. 일반인 출입 가능한 것으로 알려져 있으나 방문 전 확인을 권장해요.",
+  },
+  {
+    id:9,
+    name:"전경련회관 구내식당",
+    lat:37.5249,
+    lng:126.9241,
+    price:6000,
+    pl:"5,000~7,000원",
+    crowd:55,
+    cl:"보통",
+    cc:"#e76f00",
+    open:true,
+    hours:"평일 11:30~13:30",
+    desc:"전국경제인연합회 회관 구내식당이에요. 여의도 비즈니스 중심가에 위치해 있어요. 일반인도 이용 가능한 것으로 알려져 있어요.",
+  },
+  {
+    id:10,
+    name:"하나증권 구내식당",
+    lat:37.5238,
+    lng:126.9268,
+    price:5500,
+    pl:"5,000~6,500원",
+    crowd:65,
+    cl:"보통",
+    cc:"#e76f00",
+    open:false,
+    hours:"평일 11:30~13:30",
+    desc:"하나증권 본사 구내식당이에요. 임직원 전용 식당으로 외부인 출입이 제한될 수 있어요. 방문 전 확인을 권장해요.",
+  }
+,
+  {
+    id:11,
+    name:"국회도서관 구내식당",
+    lat:37.5316,
+    lng:126.9140,
+    price:4000,
+    pl:"3,000~5,000원",
+    crowd:35,
+    cl:"여유",
+    cc:"#2d6a4f",
+    open:true,
+    hours:"평일 11:30~14:00",
+    desc:"국회도서관 내 구내식당으로 일반인도 이용 가능해요. 국가기관 특성상 매우 저렴한 편이에요. 도서관 이용객이라면 누구나 이용할 수 있어요.",
+  },
+  {
+    id:12,
+    name:"국회박물관 구내식당",
+    lat:37.5308,
+    lng:126.9148,
+    price:5000,
+    pl:"4,000~6,000원",
+    crowd:30,
+    cl:"여유",
+    cc:"#2d6a4f",
+    open:true,
+    hours:"평일 11:30~14:00",
+    desc:"국회박물관 내 식당으로 박물관 방문객이라면 누구나 이용 가능해요. 한식 위주로 운영되며 쾌적한 환경이에요.",
+  },
+  {
+    id:13,
+    name:"이룸센터 구내식당",
+    lat:37.5283,
+    lng:126.9170,
+    price:5500,
+    pl:"5,000~6,500원",
+    crowd:50,
+    cl:"보통",
+    cc:"#e76f00",
+    open:true,
+    hours:"평일 11:30~13:30",
+    desc:"국회 이룸센터 내 구내식당이에요. 장애인 관련 기관이 입주해있는 건물로 일반인도 이용 가능한 것으로 알려져 있어요.",
+  },
+  {
+    id:14,
+    name:"일신빌딩 구내식당",
+    lat:37.5235,
+    lng:126.9245,
+    price:5500,
+    pl:"5,000~6,500원",
+    crowd:55,
+    cl:"보통",
+    cc:"#e76f00",
+    open:true,
+    hours:"평일 11:30~13:30",
+    desc:"여의도 일신빌딩 구내식당이에요. 증권가 주변에 위치해 점심시간 직장인들이 많이 이용해요.",
+  },
+  {
+    id:15,
+    name:"태영빌딩 구내식당",
+    lat:37.5228,
+    lng:126.9252,
+    price:5500,
+    pl:"5,000~6,500원",
+    crowd:55,
+    cl:"보통",
+    cc:"#e76f00",
+    open:true,
+    hours:"평일 11:30~13:30",
+    desc:"여의도 태영빌딩 구내식당이에요. 여의도 오피스 밀집 지역에 위치해 있어요.",
+  },
+  {
+    id:16,
+    name:"KT 여의도빌딩 구내식당",
+    lat:37.5222,
+    lng:126.9238,
+    price:5500,
+    pl:"5,000~6,500원",
+    crowd:60,
+    cl:"보통",
+    cc:"#e76f00",
+    open:false,
+    hours:"평일 11:30~13:30",
+    desc:"KT 여의도빌딩 구내식당이에요. 임직원 위주로 운영되며 외부인 출입이 제한될 수 있어요. 방문 전 확인을 권장해요.",
+  },
+  {
+    id:17,
+    name:"금투센터 구내식당",
+    lat:37.5241,
+    lng:126.9286,
+    price:6000,
+    pl:"5,000~7,000원",
+    crowd:65,
+    cl:"보통",
+    cc:"#e76f00",
+    open:true,
+    hours:"평일 11:30~13:30",
+    desc:"금융투자협회(금투센터) 구내식당이에요. 여의도 증권가 핵심 위치에 있어요. 일반인도 이용 가능한 것으로 알려져 있어요.",
+  }
 ];
 
 let filter='all', map, overlays=[];
 
 function bc(p){
-  if(p<=5000)return{bg:'#d8f3dc',bd:'#2d6a4f',tx:'#1b4332'};
-  if(p<=7000)return{bg:'#fff3e0',bd:'#e76f00',tx:'#7c3800'};
+  if(p<=4500)return{bg:'#d8f3dc',bd:'#2d6a4f',tx:'#1b4332'};
+  if(p<=6000)return{bg:'#fff3e0',bd:'#e76f00',tx:'#7c3800'};
   return{bg:'#ffe8e8',bd:'#c1121f',tx:'#7f1d1d'};
 }
 
@@ -145,8 +356,7 @@ function render(){
     return true;
   }).forEach(c=>{
     const col=bc(c.price);
-    const unverifiedBadge=c.verified?'':'<div style="position:absolute;top:-20px;left:50%;transform:translateX(-50%);background:#fff3e0;color:#7c3800;font-size:9px;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;border:1px solid #e76f00;">미확인</div>';
-    const html=`<div style="position:relative;cursor:pointer;" onclick="openPanel(${c.id})">${unverifiedBadge}<div style="display:flex;align-items:center;gap:5px;padding:5px 10px;background:${col.bg};border:2px solid ${col.bd};border-radius:20px;font-size:13px;font-weight:700;color:${col.tx};white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.15);"><div style="width:7px;height:7px;border-radius:50%;background:${col.bd};"></div>${c.pl}</div></div>`;
+    const html=`<div style="position:relative;cursor:pointer;" onclick="openPanel(${c.id})"><div style="display:flex;align-items:center;gap:5px;padding:5px 10px;background:${col.bg};border:2px solid ${col.bd};border-radius:20px;font-size:13px;font-weight:700;color:${col.tx};white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.15);"><div style="width:7px;height:7px;border-radius:50%;background:${col.bd};"></div>${c.pl}</div></div>`;
     const o=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(c.lat,c.lng),content:html,yAnchor:1.3});
     o.setMap(map);overlays.push(o);
   });
@@ -156,11 +366,11 @@ function openPanel(id){
   const c=data.find(x=>x.id===id);if(!c)return;
   document.getElementById('pname').textContent=c.name;
   document.getElementById('pprice').textContent=c.pl;
-  document.getElementById('punverified').style.display=c.verified?'none':'block';
   document.getElementById('pinfo').innerHTML=[
     c.open?'<span class="pinfo-chip">✅ 일반인 가능</span>':'<span class="pinfo-chip">🔒 임직원 전용</span>',
     `<span class="pinfo-chip">🕐 ${c.hours}</span>`,
   ].join('');
+  document.getElementById('pdesc').textContent=c.desc;
   const bar=document.getElementById('pcbar');
   bar.style.width=c.crowd+'%';
   bar.style.background=c.cc;
@@ -186,7 +396,7 @@ function submitReport(){
 
 kakao.maps.load(function(){
   map=new kakao.maps.Map(document.getElementById('map'),{
-    center:new kakao.maps.LatLng(37.5250,126.9160),
+    center:new kakao.maps.LatLng(37.5255,126.9200),
     level:5
   });
   render();
