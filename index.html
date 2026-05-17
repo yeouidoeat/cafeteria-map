@@ -187,7 +187,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 
 <div id="header">
   <div class="header-top">
-    <div class="logo">
+    <div class="logo" onclick="goHome()" style="cursor:pointer;">
       <img src="logo.png?v=2" class="logo-img" alt="로고" onerror="this.style.display='none'"/>
       <div class="logo-text">
         <h1>구내식당맵</h1>
@@ -333,9 +333,9 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       </span>
     </div>
 
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;line-height:1;">
       <span style="font-size:12px;color:var(--slate-500);white-space:nowrap;flex-shrink:0;">혼잡도</span>
-      <div class="crowd-bar-track" style="width:100px;height:6px;flex-shrink:0;">
+      <div class="crowd-bar-track" style="flex:1;height:8px;display:flex;align-items:center;">
         <div class="crowd-bar-fill" id="pcrowd-bar" style="height:100%;"></div>
       </div>
       <span id="pcrowd-label" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;"></span>
@@ -435,6 +435,17 @@ if(navigator.geolocation) {
   }, err => {
     console.log('위치 권한 거부');
   });
+}
+
+function goHome() {
+  closePanel();
+  document.getElementById('search').value = '';
+  filter = 'all';
+  document.querySelectorAll('.chip').forEach((c,i) => c.classList.toggle('active', i===0));
+  switchTabTo('map');
+  render(resolvedData);
+  map.setCenter(new kakao.maps.LatLng(37.5255, 126.9200));
+  map.setLevel(4);
 }
 
 function goMyLocation() {
@@ -597,6 +608,7 @@ function searchCafeteria(q) {
 let viewMode = 'map';
 
 function toggleView() {
+  closePanel();
   viewMode = viewMode === 'map' ? 'list' : 'map';
   const mapEl = document.getElementById('map');
   const listEl = document.getElementById('list-view');
@@ -609,30 +621,39 @@ function toggleView() {
     listEl.style.paddingTop = (headerH + 12) + 'px';
     iconList.style.display = 'none';
     iconMap.style.display = 'block';
+    document.getElementById('my-location-btn').style.display = 'none';
     renderList(resolvedData);
   } else {
     listEl.style.display = 'none';
     mapEl.style.display = 'block';
     iconList.style.display = 'block';
     iconMap.style.display = 'none';
+    document.getElementById('my-location-btn').style.display = 'flex';
     setTimeout(() => { map.relayout(); }, 100);
   }
 }
 
 function renderList(data) {
   const q = document.getElementById('search').value;
-  const filtered = data.filter(c => {
+  let filtered = data.filter(c => {
     if(q && !c.name.includes(q)) return false;
     if(filter==='cheap') return c.price<=6000;
     if(filter==='mid') return c.price<=8000;
     return true;
   });
+  if(userLat) {
+    filtered.sort((a, b) => {
+      const da = Math.sqrt((a.lat-userLat)**2 + (a.lng-userLng)**2);
+      const db = Math.sqrt((b.lat-userLat)**2 + (b.lng-userLng)**2);
+      return da - db;
+    });
+  }
   const list = document.getElementById('list-view');
   if(filtered.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:60px 0;color:var(--slate-400);font-size:14px;">검색 결과가 없습니다.</div>';
     return;
   }
-  list.innerHTML = filtered.map(c => {
+  list.innerHTML = '<div style="display:flex;align-items:center;gap:4px;margin-bottom:8px;font-size:11px;color:var(--slate-400);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>' + (userLat ? '가까운 순' : '기본 순') + '</div>' + filtered.map(c => {
     const crowdColor = c.crowd < 40 ? '#059669' : c.crowd < 70 ? '#f97316' : '#ef4444';
     const crowdLabel = c.crowd < 40 ? '쾌적' : c.crowd < 70 ? '보통' : '혼잡';
     return `<div onclick="toggleView();setTimeout(()=>openPanel(${c.id}),100);" style="background:var(--white);border:1px solid var(--slate-200);border-radius:16px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
@@ -642,9 +663,7 @@ function renderList(data) {
           <span style="font-size:15px;font-weight:800;color:var(--slate-900);">${c.name}</span>
           <span style="font-size:13px;font-weight:700;color:#059669;">${c.pl}</span>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--slate-500);">
-          <span style="display:flex;align-items:center;gap:3px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>${c.hours}</span>
-        </div>
+        <div style="font-size:11px;color:var(--slate-400);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.address || ''}</div>
       </div>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
     </div>`;
