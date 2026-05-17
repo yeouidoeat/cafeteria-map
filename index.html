@@ -44,7 +44,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 /* 헤더 */
 #header{background:var(--white);padding:14px 16px 12px;box-shadow:0 1px 4px rgba(0,0,0,0.06);z-index:20;flex-shrink:0;}
 .header-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2px;gap:8px;}
-.logo{display:flex;align-items:center;gap:8px;}
+.logo{display:flex;align-items:center;gap:8px;min-width:0;}
 .logo-icon-wrap{background:var(--green);padding:6px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
 .logo-icon{width:20px;height:20px;filter:brightness(0) invert(1);}
 .logo img.logo-img{width:36px;height:36px;border-radius:10px;object-fit:cover;}
@@ -325,12 +325,12 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       </span>
     </div>
 
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-      <span style="font-size:12px;color:var(--slate-500);white-space:nowrap;">혼잡도</span>
-      <div class="crowd-bar-track" style="flex:1;">
-        <div class="crowd-bar-fill" id="pcrowd-bar"></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;height:20px;">
+      <span style="font-size:12px;color:var(--slate-500);white-space:nowrap;flex-shrink:0;">혼잡도</span>
+      <div class="crowd-bar-track" style="flex:1;height:8px;">
+        <div class="crowd-bar-fill" id="pcrowd-bar" style="height:100%;"></div>
       </div>
-      <span id="pcrowd-label" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;white-space:nowrap;"></span>
+      <span id="pcrowd-label" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;"></span>
     </div>
 
     <div class="divider"></div>
@@ -413,11 +413,16 @@ const cafeterias = [
 
 let filter='all', map, overlays=[], resolvedData=[], currentCafe=null, userLat=null, userLng=null;
 
-navigator.geolocation && navigator.geolocation.getCurrentPosition(pos => {
-  userLat = pos.coords.latitude;
-  userLng = pos.coords.longitude;
-  if(currentCafe) updateDist(currentCafe);
-});
+if(navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(pos => {
+    userLat = pos.coords.latitude;
+    userLng = pos.coords.longitude;
+    if(map) map.panTo(new kakao.maps.LatLng(userLat, userLng));
+    if(currentCafe) updateDist(currentCafe);
+  }, err => {
+    console.log('위치 권한 거부');
+  });
+}
 
 function goMyLocation() {
   if(!navigator.geolocation) {
@@ -616,7 +621,7 @@ function renderList(data) {
   list.innerHTML = filtered.map(c => {
     const crowdColor = c.crowd < 40 ? '#059669' : c.crowd < 70 ? '#f97316' : '#ef4444';
     const crowdLabel = c.crowd < 40 ? '쾌적' : c.crowd < 70 ? '보통' : '혼잡';
-    return `<div onclick="openPanel(${c.id});toggleView();" style="background:var(--white);border:1px solid var(--slate-200);border-radius:16px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+    return `<div onclick="toggleView();setTimeout(()=>openPanel(${c.id}),100);" style="background:var(--white);border:1px solid var(--slate-200);border-radius:16px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
       <div style="flex:1;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
           <div style="width:8px;height:8px;border-radius:50%;background:${getPinColor(c)};flex-shrink:0;"></div>
@@ -802,6 +807,28 @@ async function submitComment() {
 }
 
 let currentTab = 'map';
+
+function switchTabTo(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.nav-tab').forEach((t, i) => {
+    t.classList.toggle('active', (tab === 'map' && i === 0) || (tab === 'feed' && i === 1));
+  });
+  const mapEl = document.getElementById('map');
+  const header = document.getElementById('header');
+  const pageFeed = document.getElementById('page-feed');
+  const listView = document.getElementById('list-view');
+  if(viewMode === 'list') {
+    viewMode = 'map';
+    listView.style.display = 'none';
+    document.getElementById('view-icon-list').style.display = 'block';
+    document.getElementById('view-icon-map').style.display = 'none';
+  }
+  mapEl.style.display = tab === 'map' ? 'block' : 'none';
+  document.getElementById('my-location-btn').style.display = tab === 'map' ? 'flex' : 'none';
+  header.style.display = tab === 'map' ? 'block' : 'none';
+  pageFeed.style.display = tab === 'feed' ? 'block' : 'none';
+  if(tab === 'feed') loadFeed();
+}
 let currentSort = 'price';
 
 function switchTab(tab) {
@@ -1013,7 +1040,7 @@ async function loadFeed() {
 
       return `<div class="feed-card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <div class="feed-cafe"><span class="feed-cafe-dot" style="background:${dotColor};"></span>${cafeName}</div>
+          <div class="feed-cafe" onclick="event.stopPropagation();switchTabTo('map');setTimeout(()=>{const fc=resolvedData.find(x=>x.id===${c.cafeteria_id});if(fc)openPanel(fc.id);},300);" style="cursor:pointer;"><span class="feed-cafe-dot" style="background:${dotColor};"></span>${cafeName}</div>
           <span style="font-size:11px;color:var(--slate-400);">${timeStr}</span>
         </div>
         <div class="feed-text">"${c.content}"</div>
