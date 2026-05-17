@@ -73,12 +73,10 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 /* 하단 패널 */
 #panel{background:var(--white);border-radius:22px 22px 0 0;box-shadow:var(--shadow);position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);max-height:65vh;overflow-y:auto;z-index:200;width:100%;max-width:500px;pointer-events:none;}
 #panel.open{transform:translateX(-50%) translateY(0);pointer-events:auto;}
-@media(min-width:768px){#panel{top:50%;bottom:auto;border-radius:22px;transform:translateX(-50%) translateY(-50%) scale(0.95);max-height:80vh;overflow-y:auto;opacity:0;pointer-events:none;transition:transform .3s cubic-bezier(.32,.72,0,1), opacity .3s;}#panel.open{transform:translateX(-50%) translateY(-50%) scale(1);opacity:1;pointer-events:auto;}}
+
 .panel-handle{width:36px;height:4px;background:var(--slate-200);border-radius:999px;margin:10px auto 12px;}
-@media(min-width:768px){.panel-handle{display:none;}}
 
 .panel-body{padding:0 16px 20px;}
-@media(min-width:768px){.panel-body{padding:20px 20px 24px;}}
 .panel-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
 .panel-left h2{font-size:18px;font-weight:800;color:var(--slate-900);line-height:1.2;margin-bottom:2px;}
 .panel-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
@@ -169,9 +167,9 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 
 /* 제보 모달 */
 #moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:flex-end;}
-@media(min-width:768px){#moverlay{align-items:center;}#modal{border-radius:22px;max-height:80vh;margin-bottom:0;}}
+@media(min-width:768px){#moverlay{align-items:flex-end;justify-content:center;}}
 #moverlay.open{display:flex;justify-content:center;}
-#modal{background:var(--white);border-radius:28px;padding:24px 20px 40px;width:100%;max-width:500px;max-height:88vh;overflow-y:auto;}
+#modal{background:var(--white);border-radius:28px 28px 0 0;padding:24px 20px 40px;width:100%;max-width:500px;max-height:88vh;overflow-y:auto;}
 #modal h2{font-size:20px;font-weight:800;margin-bottom:4px;color:var(--slate-900);}
 #modal>p{font-size:13px;color:var(--slate-400);margin-bottom:20px;}
 .fg{margin-bottom:14px;}
@@ -306,7 +304,6 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 
 <div id="panel">
   <div class="panel-handle" onclick="closePanel()"></div>
-  <div id="panel-drag-btn" style="display:none;position:absolute;top:12px;left:14px;cursor:grab;color:var(--slate-400);font-size:12px;display:flex;align-items:center;gap:3px;user-select:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l4-4 4 4"></path><path d="M5 15l4 4 4 4"></path><path d="M15 9l4-4 4 4"></path><path d="M15 15l4 4 4 4"></path></svg>이동</div>
   <div class="panel-body">
     <div class="panel-top">
       <div class="panel-left" style="display:flex;align-items:baseline;gap:8px;flex:1;flex-wrap:wrap;">
@@ -427,6 +424,19 @@ const cafeterias = [
   { id:9,  keyword:"금융투자협회 여의도", name:"한국금융투자협회 식당", price:7700, pl:"7,700원", crowd:65, open:true, hours:"11:30~13:00", address:"서울 영등포구 의사당대로 143 지하 1층" },
   { id:10, keyword:"KT 여의도지사", name:"KT그룹희망나눔재단 식당", price:6500, pl:"6,500원", crowd:50, open:true, hours:"11:40~13:30", address:"서울 영등포구 여의대로 14" },
   { id:11, keyword:"하나증권 여의도", name:"하나증권 식당", price:8300, pl:"8,300원", crowd:60, open:true, hours:"12:00~13:00", address:"서울 영등포구 의사당대로 82 23층" },
+  { id:12, keyword:"국민연금공단 강남사옥", name:"국민연금 강남사옥 식당", price:10000, pl:"10,000원", crowd:50, open:true, hours:"11:30~13:30", address:"서울 강남구 도산대로 128 국민연금강남사옥 1-3층" },
+  { id:13, keyword:"포스코타워 역삼", name:"포스코타워 역삼 식당", price:7500, pl:"7,500원", crowd:60, open:true, hours:"11:30~13:00", address:"서울 강남구 테헤란로 134" },
+  { id:14, keyword:"카이트타워 강남", name:"카이트타워 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:10~13:00", address:"서울 강남구 테헤란로 306" },
+  { id:15, keyword:"강남구청", name:"강남구청 식당", price:8000, pl:"8,000원", crowd:45, open:true, hours:"11:00~14:00", address:"서울 강남구 학동로 411" },
+  { id:16, keyword:"오크우드 프리미어 코엑스 센터", name:"코엑스 식당", price:7500, pl:"7,500원", crowd:60, open:true, hours:"10:50~14:30", address:"서울 강남구 테헤란로87길 58" },
+  { id:17, keyword:"캠코양재타워", name:"캠코양재타워 식당", price:9000, pl:"9,000원", crowd:50, open:true, hours:"11:10~14:00", address:"서울 강남구 강남대로 262 캠코양재타워 지하2층" },
+  { id:18, keyword:"삼성화재 본사 서초", name:"삼성화재 본사 식당", price:9000, pl:"9,000원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 서초구 서초대로74길 14" },
+  { id:19, keyword:"롯데카드 본사 새문안로", name:"롯데카드 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:00~13:30", address:"서울 종로구 새문안로 76" },
+  { id:20, keyword:"서울신문사 광화문", name:"서울신문사 식당", price:7000, pl:"7,000원", crowd:50, open:true, hours:"11:00~13:30", address:"서울 중구 세종대로 124" },
+  { id:21, keyword:"예금보험공사 청계천로", name:"예금보험공사 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:10~13:15", address:"서울 중구 청계천로 30" },
+  { id:22, keyword:"케이트윈타워 종로구청", name:"종로구청 식당", price:6000, pl:"6,000원", crowd:50, open:true, hours:"12:30~13:30", address:"서울 종로구 종로1길 50 케이트윈타워B동" },
+  { id:23, keyword:"부영그룹 본사 세종대로", name:"부영그룹 식당", price:9500, pl:"9,500원", crowd:50, open:true, hours:"11:00~14:00", address:"서울 중구 세종대로9길 42 지하1층" },
+  { id:24, keyword:"광화문우체국", name:"광화문우체국 식당", price:5800, pl:"5,800원", crowd:55, open:true, hours:"12:00~13:00", address:"서울 종로구 종로 6 광화문우체국" },
 ];
 
 let filter='all', map, overlays=[], resolvedData=[], currentCafe=null, userLat=null, userLng=null;
@@ -980,7 +990,7 @@ function filterFeedCafe(q) {
     return;
   }
 
-  const results = resolvedData.filter(c => c.name.includes(q));
+  const results = resolvedData.filter(c => c.name.toLowerCase().includes(q.toLowerCase()));
   
   if(results.length > 0) {
     dropdown.style.display = 'block';
@@ -1183,46 +1193,7 @@ if('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
 }
 
-// PC에서 팝업 드래그 이동 (이동 버튼으로만)
-if(window.innerWidth >= 768) {
-  document.getElementById('panel-drag-btn').style.display = 'flex';
 
-  (function() {
-    const panel = document.getElementById('panel');
-    const dragBtn = document.getElementById('panel-drag-btn');
-    let isDragging = false, startX, startY, origX, origY;
-
-    dragBtn.addEventListener('mousedown', function(e) {
-      isDragging = true;
-      dragBtn.style.cursor = 'grabbing';
-      const rect = panel.getBoundingClientRect();
-      startX = e.clientX;
-      startY = e.clientY;
-      origX = rect.left + rect.width / 2;
-      origY = rect.top + rect.height / 2;
-      e.preventDefault();
-      e.stopPropagation();
-    });
-
-    document.addEventListener('mousemove', function(e) {
-      if(!isDragging) return;
-      e.preventDefault();
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      panel.style.left = (origX + dx) + 'px';
-      panel.style.top = (origY + dy) + 'px';
-      panel.style.transform = 'translate(-50%, -50%) scale(1)';
-      panel.style.opacity = '1';
-    });
-
-    document.addEventListener('mouseup', function() {
-      if(isDragging) {
-        isDragging = false;
-        dragBtn.style.cursor = 'grab';
-      }
-    });
-  })();
-}
 </script>
 </body>
 </html>
