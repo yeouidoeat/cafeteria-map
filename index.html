@@ -78,7 +78,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 @media(min-width:768px){.panel-handle{display:none;}}
 
 .panel-body{padding:0 16px 20px;}
-@media(min-width:768px){.panel-body{padding:10px 20px 24px;}}
+@media(min-width:768px){.panel-body{padding:20px 20px 24px;}}
 .panel-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
 .panel-left h2{font-size:18px;font-weight:800;color:var(--slate-900);line-height:1.2;margin-bottom:2px;}
 .panel-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px;}
@@ -306,6 +306,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 
 <div id="panel">
   <div class="panel-handle" onclick="closePanel()"></div>
+  <div id="panel-drag-btn" style="display:none;position:absolute;top:12px;left:14px;cursor:grab;color:var(--slate-400);font-size:12px;display:flex;align-items:center;gap:3px;user-select:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l4-4 4 4"></path><path d="M5 15l4 4 4 4"></path><path d="M15 9l4-4 4 4"></path><path d="M15 15l4 4 4 4"></path></svg>이동</div>
   <div class="panel-body">
     <div class="panel-top">
       <div class="panel-left" style="display:flex;align-items:baseline;gap:8px;flex:1;flex-wrap:wrap;">
@@ -1182,53 +1183,45 @@ if('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
 }
 
-// PC에서 팝업 드래그 이동
+// PC에서 팝업 드래그 이동 (이동 버튼으로만)
 if(window.innerWidth >= 768) {
-  function makeDraggable(el, handleSelector) {
-    let isDragging = false, startX, startY, origX, origY;
-    const handle = el.querySelector(handleSelector);
-    if(!handle) return;
-    handle.style.cursor = 'grab';
+  document.getElementById('panel-drag-btn').style.display = 'flex';
 
-    handle.addEventListener('mousedown', function(e) {
-      if(e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.tagName === 'A' || e.target.closest('button')) return;
+  (function() {
+    const panel = document.getElementById('panel');
+    const dragBtn = document.getElementById('panel-drag-btn');
+    let isDragging = false, startX, startY, origX, origY;
+
+    dragBtn.addEventListener('mousedown', function(e) {
       isDragging = true;
-      handle.style.cursor = 'grabbing';
-      const rect = el.getBoundingClientRect();
+      dragBtn.style.cursor = 'grabbing';
+      const rect = panel.getBoundingClientRect();
       startX = e.clientX;
       startY = e.clientY;
       origX = rect.left + rect.width / 2;
       origY = rect.top + rect.height / 2;
       e.preventDefault();
+      e.stopPropagation();
     });
 
     document.addEventListener('mousemove', function(e) {
       if(!isDragging) return;
+      e.preventDefault();
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
-      const newX = origX + dx;
-      const newY = origY + dy;
-      el.style.left = newX + 'px';
-      el.style.top = newY + 'px';
-      el.style.transform = 'translate(-50%, -50%)';
-      if(el.classList.contains('open')) {
-        el.style.transform = 'translate(-50%, -50%) scale(1)';
-        el.style.opacity = '1';
-      }
+      panel.style.left = (origX + dx) + 'px';
+      panel.style.top = (origY + dy) + 'px';
+      panel.style.transform = 'translate(-50%, -50%) scale(1)';
+      panel.style.opacity = '1';
     });
 
     document.addEventListener('mouseup', function() {
       if(isDragging) {
         isDragging = false;
-        handle.style.cursor = 'grab';
+        dragBtn.style.cursor = 'grab';
       }
     });
-  }
-
-  setTimeout(() => {
-    makeDraggable(document.getElementById('panel'), '.panel-top');
-    makeDraggable(document.getElementById('modal'), 'h2');
-  }, 1000);
+  })();
 }
 </script>
 </body>
