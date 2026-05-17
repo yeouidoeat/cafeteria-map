@@ -459,21 +459,21 @@ let viewMode = 'map';
 
 function toggleView() {
   viewMode = viewMode === 'map' ? 'list' : 'map';
-  const map = document.getElementById('map');
-  const list = document.getElementById('list-view');
+  const mapEl = document.getElementById('map');
+  const listEl = document.getElementById('list-view');
   const iconList = document.getElementById('view-icon-list');
   const iconMap = document.getElementById('view-icon-map');
   const headerH = document.getElementById('header').offsetHeight;
   if(viewMode === 'list') {
-    map.style.display = 'none';
-    list.style.display = 'block';
-    list.style.paddingTop = (headerH + 12) + 'px';
+    mapEl.style.display = 'none';
+    listEl.style.display = 'block';
+    listEl.style.paddingTop = (headerH + 12) + 'px';
     iconList.style.display = 'none';
     iconMap.style.display = 'block';
     renderList(resolvedData);
   } else {
-    map.style.display = 'block';
-    list.style.display = 'none';
+    mapEl.style.display = 'block';
+    listEl.style.display = 'none';
     iconList.style.display = 'block';
     iconMap.style.display = 'none';
   }
