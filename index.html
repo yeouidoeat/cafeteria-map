@@ -221,11 +221,9 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 
 <div id="map"></div>
 <button id="my-location-btn" onclick="goMyLocation()">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3"></path><path d="M12 19v3"></path><path d="M2 12h3"></path><path d="M19 12h3"></path></svg>
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line></svg>
 </button>
-<div id="footer" style="position:fixed;bottom:50px;left:0;right:0;padding:4px 16px;background:rgba(255,255,255,0.9);text-align:center;font-size:10px;color:#94a3b8;z-index:50;pointer-events:none;">
-  © 구내식당맵 · 문의: <a href="mailto:yeouido.eat@gmail.com" style="color:#94a3b8;text-decoration:none;pointer-events:auto;">yeouido.eat@gmail.com</a>
-</div>
+
 
 
 
@@ -275,6 +273,9 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
   </div>
   <div class="feed-content" id="feed-content">
     <div class="feed-empty">아직 리뷰가 없어요. 첫 번째 리뷰를 남겨보세요!</div>
+  </div>
+  <div style="text-align:center;padding:20px 16px 30px;font-size:11px;color:#cbd5e1;">
+    © 구내식당맵 · 문의: <a href="mailto:yeouido.eat@gmail.com" style="color:#cbd5e1;text-decoration:none;">yeouido.eat@gmail.com</a>
   </div>
 </div>
 
@@ -524,7 +525,6 @@ function openPanel(id) {
   }
 
   document.getElementById('panel').classList.add('open');
-  document.getElementById('footer').style.display = 'none';
   document.getElementById('bottom-nav').style.display = 'none';
   document.getElementById('my-location-btn').style.display = 'none';
   loadComments(c.id);
@@ -533,7 +533,6 @@ function openPanel(id) {
 
 function closePanel() {
   document.getElementById('panel').classList.remove('open');
-  document.getElementById('footer').style.display = 'block';
   document.getElementById('bottom-nav').style.display = 'flex';
   document.getElementById('my-location-btn').style.display = 'flex';
 }
@@ -812,7 +811,6 @@ function switchTab(tab) {
 
   const mapEl = document.getElementById('map');
   const header = document.getElementById('header');
-  const footer = document.getElementById('footer');
   const pageFeed = document.getElementById('page-feed');
   const listView = document.getElementById('list-view');
 
@@ -827,7 +825,6 @@ function switchTab(tab) {
   mapEl.style.display = tab === 'map' ? 'block' : 'none';
   document.getElementById('my-location-btn').style.display = tab === 'map' ? 'flex' : 'none';
   header.style.display = tab === 'map' ? 'block' : 'none';
-  footer.style.display = tab === 'map' ? 'block' : 'none';
   pageFeed.style.display = tab === 'feed' ? 'block' : 'none';
 
   if(tab === 'feed') { loadFeed(); }
@@ -907,9 +904,14 @@ function filterFeedCafe(q) {
     dropdown.style.display = 'block';
     notfound.style.display = 'none';
     dropdown.innerHTML = results.map(c => 
-      `<div onclick="selectFeedCafe(${c.id},'${c.name}')" style="padding:10px 12px;cursor:pointer;font-size:13px;color:var(--slate-800);border-bottom:0.5px solid var(--slate-100);display:flex;align-items:center;gap:6px;">
-        <div style="width:6px;height:6px;border-radius:50%;background:${getPinColor(c)};flex-shrink:0;"></div>
-        ${c.name} <span style="color:var(--slate-400);font-size:11px;">${c.pl}</span>
+      `<div onclick="selectFeedCafe(${c.id},'${c.name}')" style="padding:10px 12px;cursor:pointer;border-bottom:0.5px solid var(--slate-100);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--slate-900);margin-bottom:2px;">${c.name}</div>
+            <div style="font-size:11px;color:var(--slate-400);">${c.address || ''}</div>
+          </div>
+          <span style="font-size:13px;font-weight:700;color:var(--green);flex-shrink:0;margin-left:8px;">${c.pl}</span>
+        </div>
       </div>`
     ).join('');
   } else {
