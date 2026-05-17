@@ -22,7 +22,7 @@
 <meta name="apple-mobile-web-app-title" content="구내식당맵"/>
 <link rel="apple-touch-icon" href="/logo.png?v=2"/>
 <meta property="og:title" content="구내식당맵"/>
-<meta property="og:description" content="직장인을 위한 점심 위키 | 여의도에서 전국 확대 중"/>
+<meta property="og:description" content="직장인을 위한 점심 위키 | 전국 확대 중"/>
 <meta property="og:image" content="https://cafeteria-map.kr/og-image.png"/>
 <meta property="og:url" content="https://cafeteria-map.kr"/>
 <meta property="og:type" content="website"/>
@@ -191,11 +191,11 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       <img src="logo.png?v=2" class="logo-img" alt="로고" onerror="this.style.display='none'"/>
       <div class="logo-text">
         <h1>구내식당맵</h1>
-        <p>직장인을 위한 점심 위키 | 여의도에서 전국 확대 중</p>
+        <p>직장인을 위한 점심 위키 | 전국 확대 중</p>
       </div>
     </div>
     <button class="report-btn" onclick="openModal()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
       제보하기
     </button>
   </div>
@@ -228,13 +228,20 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 
 
 <div id="page-feed">
-  <div class="feed-header">
-    <div class="feed-title">피드</div>
+  <div class="feed-header" style="display:flex;align-items:center;justify-content:space-between;">
+    <div class="logo">
+      <img src="logo.png?v=2" class="logo-img" alt="로고" onerror="this.style.display='none'"/>
+      <div class="logo-text">
+        <h1 style="font-size:19px;font-weight:800;color:var(--green-text);letter-spacing:-0.5px;">구내식당맵</h1>
+        <p style="font-size:11px;color:var(--slate-400);margin-top:1px;">직장인을 위한 점심 위키 | 전국 확대 중</p>
+      </div>
+    </div>
+    <button class="report-btn" onclick="openModal()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      제보하기
+    </button>
   </div>
-  <div class="feed-banner">
-    <div class="feed-banner-title"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M12 2a5 5 0 0 1 0 10"></path><path d="M12 2a5 5 0 0 0 0 10"></path><path d="M12 12v10"></path></svg> 밥심 대나무숲</div>
-    <div class="feed-banner-sub">직장인들의 따끈따끈한 점심 한줄평입니다.</div>
-  </div>
+
   <div style="background:var(--white);border:1px solid var(--slate-100);border-radius:14px;margin:12px 16px;padding:14px 16px;">
 
     <div style="margin-bottom:10px;">
@@ -251,7 +258,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
             찾으시는 식당이 지도에 없나요?
           </div>
-          <div style="font-size:12px;color:var(--slate-500);line-height:1.5;">아직 등록되지 않은 구내식당은 <span onclick="closeFeeCafeDropdown();switchTabTo('map');setTimeout(openModal,300);" style="color:var(--green);font-weight:700;cursor:pointer;text-decoration:underline;">간단 제보</span>를 진행해 주시면, 검토 후 빠르게 등록해 드려요!</div>
+          <div style="font-size:12px;color:var(--slate-500);line-height:1.5;">아직 등록되지 않은 구내식당은 <span onclick="closeFeeCafeDropdown();openModal();" style="color:var(--green);font-weight:700;cursor:pointer;text-decoration:underline;">간단 제보</span>를 진행해 주세요.</div>
         </div>
       </div>
     </div>
@@ -379,13 +386,18 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 <div id="moverlay" onclick="if(event.target===this)closeModal()">
   <div id="modal">
     <h2 style="display:flex;align-items:center;gap:7px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a9e6e" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> 제보하기</h2>
-    <p>직접 방문해서 확인한 정보를 알려주세요</p>
+    <p>방문하신 구내식당 정보를 알려주시면, 확인 후 빠르게 반영해 드릴게요!</p>
     <div class="fg"><label>식당 이름</label><input type="text" id="fn" placeholder="예: KBS 구내식당"/></div>
     <div class="fg"><label>가격</label><input type="text" id="fp" placeholder="예: 5,500원"/></div>
     <div class="fg"><label>혼잡도</label>
-      <select id="fc"><option value="">선택</option><option>여유</option><option>보통</option><option>혼잡</option></select>
+      <div id="fc-wrap" style="display:flex;gap:8px;">
+        <button type="button" onclick="selectCrowd(this,'여유')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">여유</button>
+        <button type="button" onclick="selectCrowd(this,'보통')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">보통</button>
+        <button type="button" onclick="selectCrowd(this,'혼잡')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">혼잡</button>
+      </div>
+      <input type="hidden" id="fc" value=""/>
     </div>
-    <div class="fg"><label>추가 정보 (선택)</label><textarea placeholder="운영시간, 맛, 주의사항 등 자유롭게"></textarea></div>
+    <div class="fg"><label>추가 정보 (선택)</label><textarea placeholder="외부인이 출입 가능한 운영시간과 주의사항 등 자유롭게 적어주세요!"></textarea></div>
     <div class="mbtns">
       <button class="mcancel" onclick="closeModal()">취소</button>
       <button class="msubmit" onclick="submitReport()">제보하기</button>
@@ -646,6 +658,19 @@ function copyAddress() {
   }).catch(() => {
     showToast('주소: ' + currentCafe.address);
   });
+}
+
+let selectedCrowdBtn = null;
+function selectCrowd(btn, val) {
+  document.querySelectorAll('#fc-wrap button').forEach(b => {
+    b.style.background = 'var(--white)';
+    b.style.color = 'var(--slate-500)';
+    b.style.borderColor = 'var(--slate-200)';
+  });
+  btn.style.background = 'var(--green)';
+  btn.style.color = '#fff';
+  btn.style.borderColor = 'var(--green)';
+  document.getElementById('fc').value = val;
 }
 
 function openModal(){ document.getElementById('moverlay').classList.add('open'); }
@@ -1077,10 +1102,10 @@ async function loadFeed() {
             ${isMine ? `<button onclick="deleteFeedComment(${c.id})" style="background:none;border:none;cursor:pointer;color:#cbd5e1;font-size:13px;padding:0;">✕</button>` : ''}
           </div>
         </div>
-        <div class="feed-text">"${c.content}"</div>
-        <div class="feed-meta">
-          <span>글쓴이: ${c.nickname || '익명'}</span>
-          ${c.rating ? '<span class="feed-stars">' + '★'.repeat(c.rating) + '☆'.repeat(5 - c.rating) + '</span>' : ''}
+        <div style="font-size:13px;color:var(--slate-800);line-height:1.4;">
+          <span style="font-weight:700;color:var(--slate-700);margin-right:4px;">${c.nickname || '익명'}</span>
+          ${c.rating ? '<span style="color:#f59e0b;font-size:12px;margin-right:4px;">' + '★'.repeat(c.rating) + '</span>' : ''}
+          ${c.content}
         </div>
       </div>`;
     }).join('');
