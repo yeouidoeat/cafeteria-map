@@ -37,7 +37,7 @@
 body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(--slate-900);height:100dvh;overflow:hidden;display:flex;flex-direction:column;position:relative;}
 
 /* 토스트 */
-#toast{position:fixed;top:100px;left:50%;transform:translateX(-50%);background:var(--slate-800);color:#fff;padding:10px 24px;border-radius:999px;font-size:13px;font-weight:700;z-index:999;display:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.2);}
+#toast{position:fixed;top:100px;left:50%;transform:translateX(-50%);max-width:400px;background:var(--slate-800);color:#fff;padding:10px 24px;border-radius:999px;font-size:13px;font-weight:700;z-index:999;display:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.2);}
 #toast.show{display:block;animation:fadeIn .2s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateX(-50%) scale(0.9);}to{opacity:1;transform:translateX(-50%) scale(1);}}
 
@@ -71,8 +71,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 #map{flex:1;position:relative;}
 
 /* 하단 패널 */
-#panel{background:var(--white);border-radius:22px 22px 0 0;box-shadow:var(--shadow);position:fixed;bottom:0;left:0;right:0;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);max-height:65vh;overflow-y:auto;z-index:200;}
-#panel.open{transform:translateY(0);}
+#panel{background:var(--white);border-radius:22px 22px 0 0;box-shadow:var(--shadow);position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);max-height:65vh;overflow-y:auto;z-index:200;width:100%;max-width:500px;}
+#panel.open{transform:translateX(-50%) translateY(0);}
 .panel-handle{width:36px;height:4px;background:var(--slate-200);border-radius:999px;margin:10px auto 12px;}
 
 .panel-body{padding:0 16px 20px;}
@@ -166,8 +166,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 
 /* 제보 모달 */
 #moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:flex-end;}
-#moverlay.open{display:flex;}
-#modal{background:var(--white);border-radius:28px 28px 0 0;padding:24px 20px 40px;width:100%;max-height:88vh;overflow-y:auto;}
+#moverlay.open{display:flex;justify-content:center;}
+#modal{background:var(--white);border-radius:28px 28px 0 0;padding:24px 20px 40px;width:100%;max-width:500px;max-height:88vh;overflow-y:auto;}
 #modal h2{font-size:20px;font-weight:800;margin-bottom:4px;color:var(--slate-900);}
 #modal>p{font-size:13px;color:var(--slate-400);margin-bottom:20px;}
 .fg{margin-bottom:14px;}
@@ -274,7 +274,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
-        <input type="text" id="feed-text" placeholder="방문한 구내식당의 꿀팁을 남겨주세요!" style="flex:1;border:none;background:transparent;outline:none;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);"/>
+        <input type="text" id="feed-text" placeholder="방문한 구내식당의 후기를 남겨주세요!" style="flex:1;border:none;background:transparent;outline:none;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);"/>
         <button class="comment-send-btn" onclick="submitFeedComment()">등록</button>
       </div>
     </div>
@@ -362,7 +362,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <input type="text" id="comment-text" placeholder="방문한 구내식당의 꿀팁을 남겨주세요!" style="flex:1;border:none;background:transparent;outline:none;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);"/>
+          <input type="text" id="comment-text" placeholder="방문한 구내식당의 후기를 남겨주세요!" style="flex:1;border:none;background:transparent;outline:none;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);"/>
           <button class="comment-send-btn" onclick="submitComment()">등록</button>
         </div>
       </div>
@@ -593,7 +593,7 @@ function setFilter(f, el) {
 
 function searchCafeteria(q) {
   if(!q) { render(resolvedData); if(viewMode==='list') renderList(resolvedData); return; }
-  const result = resolvedData.filter(c => c.name.includes(q));
+  const result = resolvedData.filter(c => c.name.toLowerCase().includes(q.toLowerCase()));
   render(result);
   if(viewMode==='list') renderList(result);
   if(result.length === 1 && result[0].lat) {
@@ -636,7 +636,7 @@ function toggleView() {
 function renderList(data) {
   const q = document.getElementById('search').value;
   let filtered = data.filter(c => {
-    if(q && !c.name.includes(q)) return false;
+    if(q && !c.name.toLowerCase().includes(q.toLowerCase())) return false;
     if(filter==='cheap') return c.price<=6000;
     if(filter==='mid') return c.price<=8000;
     return true;
@@ -855,6 +855,7 @@ let currentTab = 'map';
 
 function switchTabTo(tab) {
   currentTab = tab;
+  closePanel();
   document.querySelectorAll('.nav-tab').forEach((t, i) => {
     t.classList.toggle('active', (tab === 'map' && i === 0) || (tab === 'feed' && i === 1));
   });
@@ -879,6 +880,7 @@ let currentSort = 'price';
 
 function switchTab(tab) {
   currentTab = tab;
+  closePanel();
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   event.currentTarget.classList.add('active');
 
