@@ -72,6 +72,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 
 /* 하단 패널 */
 #panel{background:var(--white);border-radius:22px 22px 0 0;box-shadow:var(--shadow);position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);max-height:65vh;overflow-y:auto;z-index:200;width:100%;max-width:500px;}
+@media(min-width:768px){#panel{bottom:50%;border-radius:22px;transform:translateX(-50%) translateY(50%) translateY(100%);max-height:none;overflow-y:visible;}#panel.open{transform:translateX(-50%) translateY(50%);}}
 #panel.open{transform:translateX(-50%) translateY(0);}
 .panel-handle{width:36px;height:4px;background:var(--slate-200);border-radius:999px;margin:10px auto 12px;}
 
@@ -592,6 +593,7 @@ function setFilter(f, el) {
 }
 
 function searchCafeteria(q) {
+  closePanel();
   if(!q) { render(resolvedData); if(viewMode==='list') renderList(resolvedData); return; }
   const result = resolvedData.filter(c => c.name.toLowerCase().includes(q.toLowerCase()));
   render(result);
