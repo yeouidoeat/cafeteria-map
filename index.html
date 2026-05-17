@@ -128,6 +128,10 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 .comment-empty{font-size:13px;color:var(--slate-400);text-align:center;padding:16px 0;}
 .divider{height:1px;background:var(--slate-100);margin:0 20px 12px;}
 
+/* 현재위치 버튼 */
+#my-location-btn{position:fixed;bottom:70px;right:16px;width:40px;height:40px;background:var(--white);border:1.5px solid var(--slate-200);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:60;box-shadow:0 2px 8px rgba(0,0,0,0.12);}
+#my-location-btn:active{transform:scale(0.95);}
+
 /* 하단 탭 */
 #bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-top:1px solid var(--slate-100);display:flex;z-index:100;padding:6px 0 env(safe-area-inset-bottom, 6px);}
 .nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border:none;background:none;cursor:pointer;color:var(--slate-400);font-size:10px;font-family:'Nanum Gothic',sans-serif;font-weight:700;}
@@ -216,20 +220,14 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 </div>
 
 <div id="map"></div>
+<button id="my-location-btn" onclick="goMyLocation()">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3"></path><path d="M12 19v3"></path><path d="M2 12h3"></path><path d="M19 12h3"></path></svg>
+</button>
 <div id="footer" style="position:fixed;bottom:50px;left:0;right:0;padding:4px 16px;background:rgba(255,255,255,0.9);text-align:center;font-size:10px;color:#94a3b8;z-index:50;pointer-events:none;">
   © 구내식당맵 · 문의: <a href="mailto:yeouido.eat@gmail.com" style="color:#94a3b8;text-decoration:none;pointer-events:auto;">yeouido.eat@gmail.com</a>
 </div>
 
-<div id="page-list">
-  <div class="list-header">
-    <div class="list-title">리스트</div>
-    <div class="sort-tabs">
-      <button class="sort-tab active" onclick="sortList('price',this)">최저가순</button>
-      <button class="sort-tab" onclick="sortList('distance',this)">가까운순</button>
-    </div>
-  </div>
-  <div class="list-content" id="list-content"></div>
-</div>
+
 
 <div id="page-feed">
   <div class="feed-header">
@@ -238,25 +236,41 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
   <div style="background:var(--white);border:1px solid var(--slate-100);border-radius:14px;margin:12px 16px;padding:14px 16px;">
     <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;font-size:14px;font-weight:800;color:var(--slate-900);">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-      오늘 점심 방명록 남기기
+      점심 후기 남기기
     </div>
-    <div style="display:flex;gap:8px;margin-bottom:10px;">
-      <div style="flex:1;">
-        <div style="font-size:11px;color:var(--slate-400);margin-bottom:4px;">식당 선택</div>
-        <select id="feed-cafe-select" style="width:100%;border:1.5px solid var(--slate-200);border-radius:10px;padding:8px 10px;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);outline:none;background:var(--white);">
-        </select>
-      </div>
-      <div style="flex:0.7;">
-        <div style="font-size:11px;color:var(--slate-400);margin-bottom:4px;">닉네임</div>
-        <input type="text" id="feed-nickname" placeholder="글쓴이" style="width:100%;border:1.5px solid var(--slate-200);border-radius:10px;padding:8px 10px;font-size:13px;font-family:'Nanum Gothic',sans-serif;outline:none;color:var(--slate-900);"/>
+    <div style="margin-bottom:10px;">
+      <div style="position:relative;">
+        <div style="font-size:11px;color:var(--slate-400);margin-bottom:4px;">식당 선택 <span style="color:#ef4444;">*</span></div>
+        <div style="position:relative;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="feed-cafe-search" placeholder="식당명 검색" autocomplete="off" oninput="filterFeedCafe(this.value)" onfocus="showFeedDropdown()" style="width:100%;border:1.5px solid var(--slate-200);border-radius:10px;padding:8px 10px 8px 32px;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);outline:none;"/>
+        </div>
+        <div id="feed-cafe-dropdown" style="display:none;position:absolute;left:0;right:0;top:100%;background:var(--white);border:1.5px solid var(--slate-200);border-radius:10px;max-height:160px;overflow-y:auto;z-index:20;margin-top:4px;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+        </div>
+        <div id="feed-cafe-notfound" style="display:none;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-top:8px;">
+          <div style="font-size:13px;font-weight:700;color:var(--slate-800);margin-bottom:4px;display:flex;align-items:center;gap:4px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            찾으시는 식당이 지도에 없나요?
+          </div>
+          <div style="font-size:12px;color:var(--slate-500);line-height:1.5;">아직 등록되지 않은 맛집은 <span onclick="closeFeeCafeDropdown();switchTab('map');setTimeout(openModal,300);" style="color:var(--green);font-weight:700;cursor:pointer;text-decoration:underline;">간단 제보</span>를 먼저 진행해 주시면, 검토 후 빠르게 등록해 드려요!</div>
+        </div>
       </div>
     </div>
-    <div style="font-size:11px;color:var(--slate-400);margin-bottom:4px;">한줄 후기 제보</div>
-    <div style="display:flex;align-items:center;border:1.5px solid var(--slate-200);border-radius:10px;overflow:hidden;">
-      <input type="text" id="feed-text" placeholder="오늘 나온 특별 메뉴나 줄 대기 현황을 알려주세요!" style="flex:1;border:none;outline:none;padding:9px 12px;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);"/>
-      <button onclick="submitFeedComment()" style="background:var(--green);color:#fff;border:none;padding:9px 12px;cursor:pointer;flex-shrink:0;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-      </button>
+    <div style="background:var(--slate-50);border:1px solid var(--slate-100);border-radius:14px;padding:10px;margin-top:10px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--slate-200);">
+        <input type="text" id="feed-nickname" placeholder="닉네임" style="border:none;background:transparent;font-size:13px;font-family:'Nanum Gothic',sans-serif;outline:none;flex:1;min-width:0;color:var(--slate-900);"/>
+        <div id="feed-star-rating" style="display:flex;gap:2px;flex-shrink:0;">
+          <span class="feed-star-btn" onclick="setFeedStar(1)" style="font-size:18px;cursor:pointer;color:#e2e8f0;line-height:1;">★</span>
+          <span class="feed-star-btn" onclick="setFeedStar(2)" style="font-size:18px;cursor:pointer;color:#e2e8f0;line-height:1;">★</span>
+          <span class="feed-star-btn" onclick="setFeedStar(3)" style="font-size:18px;cursor:pointer;color:#e2e8f0;line-height:1;">★</span>
+          <span class="feed-star-btn" onclick="setFeedStar(4)" style="font-size:18px;cursor:pointer;color:#e2e8f0;line-height:1;">★</span>
+          <span class="feed-star-btn" onclick="setFeedStar(5)" style="font-size:18px;cursor:pointer;color:#e2e8f0;line-height:1;">★</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input type="text" id="feed-text" placeholder="방문한 구내식당의 꿀팁을 남겨주세요!" style="flex:1;border:none;background:transparent;outline:none;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);"/>
+        <button class="comment-send-btn" onclick="submitFeedComment()">등록</button>
+      </div>
     </div>
   </div>
   <div class="feed-content" id="feed-content">
@@ -268,10 +282,6 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
   <button class="nav-tab active" onclick="switchTab('map')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
     지도
-  </button>
-  <button class="nav-tab" onclick="switchTab('list')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-    리스트
   </button>
   <button class="nav-tab" onclick="switchTab('feed')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -295,31 +305,23 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
     </div>
 
     <div id="p-rating-wrap" style="margin-bottom:10px;font-size:13px;color:var(--slate-500);"></div>
-    <div id="paddr-wrap" style="background:var(--slate-50);border:1px solid var(--slate-100);border-radius:12px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
-      <div style="display:flex;align-items:center;gap:6px;flex:1;overflow:hidden;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="flex-shrink:0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-        <span id="paddr" style="font-size:12px;color:var(--slate-500);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
-      </div>
-      <button onclick="copyAddress()" style="background:none;border:none;cursor:pointer;color:var(--green);font-size:12px;font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:3px;flex-shrink:0;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+    <div style="display:flex;align-items:center;gap:4px;margin-bottom:6px;font-size:12px;color:var(--slate-500);">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="flex-shrink:0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+      <span id="paddr" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;"></span>
+      <button onclick="copyAddress()" style="background:none;border:none;cursor:pointer;color:var(--green);font-size:11px;font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:2px;flex-shrink:0;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
         복사
       </button>
     </div>
-    <div class="info-grid">
-      <div class="info-card">
-        <div class="info-card-label">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-          운영 시간
-        </div>
-        <div class="info-card-value" id="phours"></div>
-      </div>
-      <div class="info-card">
-        <div class="info-card-label">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
-          현재 거리
-        </div>
-        <div class="info-card-value" id="pdist">계산 중...</div>
-      </div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:12px;color:var(--slate-500);">
+      <span style="display:flex;align-items:center;gap:3px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        운영시간: <span id="phours" style="color:var(--slate-800);font-weight:700;"></span>
+      </span>
+      <span style="display:flex;align-items:center;gap:3px;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+        현재거리: <span id="pdist" style="color:var(--slate-800);font-weight:700;">계산 중...</span>
+      </span>
     </div>
 
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
@@ -351,7 +353,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
           </div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
-          <input type="text" id="comment-text" placeholder="댓글을 입력해주세요..." style="flex:1;border:none;background:transparent;outline:none;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);"/>
+          <input type="text" id="comment-text" placeholder="방문한 구내식당의 꿀팁을 남겨주세요!" style="flex:1;border:none;background:transparent;outline:none;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);"/>
           <button class="comment-send-btn" onclick="submitComment()">등록</button>
         </div>
       </div>
@@ -415,6 +417,24 @@ navigator.geolocation && navigator.geolocation.getCurrentPosition(pos => {
   userLng = pos.coords.longitude;
   if(currentCafe) updateDist(currentCafe);
 });
+
+function goMyLocation() {
+  if(!navigator.geolocation) {
+    showToast('위치 서비스를 지원하지 않는 브라우저예요.');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      userLat = pos.coords.latitude;
+      userLng = pos.coords.longitude;
+      map.panTo(new kakao.maps.LatLng(userLat, userLng));
+      showToast('현재 위치로 이동했어요!');
+    },
+    err => {
+      showToast('위치 권한을 허용해주세요!');
+    }
+  );
+}
 
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -506,6 +526,7 @@ function openPanel(id) {
   document.getElementById('panel').classList.add('open');
   document.getElementById('footer').style.display = 'none';
   document.getElementById('bottom-nav').style.display = 'none';
+  document.getElementById('my-location-btn').style.display = 'none';
   loadComments(c.id);
   map.panTo(new kakao.maps.LatLng(c.lat, c.lng));
 }
@@ -514,6 +535,7 @@ function closePanel() {
   document.getElementById('panel').classList.remove('open');
   document.getElementById('footer').style.display = 'block';
   document.getElementById('bottom-nav').style.display = 'flex';
+  document.getElementById('my-location-btn').style.display = 'flex';
 }
 
 function startNav() {
@@ -546,6 +568,13 @@ function searchCafeteria(q) {
   const result = resolvedData.filter(c => c.name.includes(q));
   render(result);
   if(viewMode==='list') renderList(result);
+  if(result.length === 1 && result[0].lat) {
+    map.panTo(new kakao.maps.LatLng(result[0].lat, result[0].lng));
+  } else if(result.length > 1) {
+    const bounds = new kakao.maps.LatLngBounds();
+    result.forEach(c => { if(c.lat) bounds.extend(new kakao.maps.LatLng(c.lat, c.lng)); });
+    map.setBounds(bounds);
+  }
 }
 
 let viewMode = 'map';
@@ -784,7 +813,6 @@ function switchTab(tab) {
   const mapEl = document.getElementById('map');
   const header = document.getElementById('header');
   const footer = document.getElementById('footer');
-  const pageList = document.getElementById('page-list');
   const pageFeed = document.getElementById('page-feed');
   const listView = document.getElementById('list-view');
 
@@ -797,13 +825,12 @@ function switchTab(tab) {
   }
 
   mapEl.style.display = tab === 'map' ? 'block' : 'none';
+  document.getElementById('my-location-btn').style.display = tab === 'map' ? 'flex' : 'none';
   header.style.display = tab === 'map' ? 'block' : 'none';
   footer.style.display = tab === 'map' ? 'block' : 'none';
-  pageList.style.display = tab === 'list' ? 'block' : 'none';
   pageFeed.style.display = tab === 'feed' ? 'block' : 'none';
 
-  if(tab === 'list') renderSortedList();
-  if(tab === 'feed') { populateFeedSelect(); loadFeed(); }
+  if(tab === 'feed') { loadFeed(); }
 }
 
 function sortList(sort, el) {
@@ -853,6 +880,68 @@ function renderSortedList() {
   }).join('');
 }
 
+let selectedFeedCafeId = null;
+let selectedFeedRating = 0;
+
+function setFeedStar(n) {
+  selectedFeedRating = n;
+  document.querySelectorAll('.feed-star-btn').forEach((s, i) => {
+    s.style.color = i < n ? '#f59e0b' : '#e2e8f0';
+  });
+}
+
+function filterFeedCafe(q) {
+  const dropdown = document.getElementById('feed-cafe-dropdown');
+  const notfound = document.getElementById('feed-cafe-notfound');
+  selectedFeedCafeId = null;
+
+  if(!q) {
+    dropdown.style.display = 'none';
+    notfound.style.display = 'none';
+    return;
+  }
+
+  const results = resolvedData.filter(c => c.name.includes(q));
+  
+  if(results.length > 0) {
+    dropdown.style.display = 'block';
+    notfound.style.display = 'none';
+    dropdown.innerHTML = results.map(c => 
+      `<div onclick="selectFeedCafe(${c.id},'${c.name}')" style="padding:10px 12px;cursor:pointer;font-size:13px;color:var(--slate-800);border-bottom:0.5px solid var(--slate-100);display:flex;align-items:center;gap:6px;">
+        <div style="width:6px;height:6px;border-radius:50%;background:${getPinColor(c)};flex-shrink:0;"></div>
+        ${c.name} <span style="color:var(--slate-400);font-size:11px;">${c.pl}</span>
+      </div>`
+    ).join('');
+  } else {
+    dropdown.style.display = 'none';
+    notfound.style.display = 'block';
+  }
+}
+
+function showFeedDropdown() {
+  const q = document.getElementById('feed-cafe-search').value;
+  if(q) filterFeedCafe(q);
+}
+
+function selectFeedCafe(id, name) {
+  selectedFeedCafeId = id;
+  document.getElementById('feed-cafe-search').value = name;
+  document.getElementById('feed-cafe-dropdown').style.display = 'none';
+  document.getElementById('feed-cafe-notfound').style.display = 'none';
+}
+
+function closeFeeCafeDropdown() {
+  document.getElementById('feed-cafe-dropdown').style.display = 'none';
+  document.getElementById('feed-cafe-notfound').style.display = 'none';
+}
+
+// 다른곳 클릭시 드롭다운 닫기
+document.addEventListener('click', function(e) {
+  if(!e.target.closest('#feed-cafe-search') && !e.target.closest('#feed-cafe-dropdown')) {
+    document.getElementById('feed-cafe-dropdown')?.style && (document.getElementById('feed-cafe-dropdown').style.display = 'none');
+  }
+});
+
 function populateFeedSelect() {
   const sel = document.getElementById('feed-cafe-select');
   if(!sel) return;
@@ -862,11 +951,11 @@ function populateFeedSelect() {
 }
 
 async function submitFeedComment() {
-  const cafeId = document.getElementById('feed-cafe-select').value;
   const nickname = document.getElementById('feed-nickname').value.trim() || '익명';
   const text = document.getElementById('feed-text').value.trim();
 
-  if(!cafeId) { showToast('식당을 선택해주세요!'); return; }
+  if(!selectedFeedCafeId) { showToast('식당을 선택해주세요!'); return; }
+  const cafeId = selectedFeedCafeId;
   if(!text) { showToast('내용을 입력해주세요!'); return; }
 
   try {
@@ -883,11 +972,14 @@ async function submitFeedComment() {
         nickname: nickname,
         content: text,
         profile_image: '',
-        rating: null
+        rating: selectedFeedRating || null
       })
     });
     if(res.ok || res.status === 201) {
       document.getElementById('feed-text').value = '';
+      document.getElementById('feed-cafe-search').value = '';
+      selectedFeedCafeId = null;
+      setFeedStar(0);
       showToast('후기가 등록되었어요!');
       loadFeed();
     }
