@@ -64,7 +64,10 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 .filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;}
 .filters::-webkit-scrollbar{display:none;}
 .chip{background:var(--white);border:1.5px solid var(--slate-200);border-radius:999px;padding:4px 12px;font-size:12px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;color:var(--slate-600);white-space:nowrap;transition:all .15s;}
-.chip.active{background:var(--green);border-color:var(--green);color:var(--white);box-shadow:0 4px 12px rgba(5,150,105,0.3);}
+.chip.active{color:var(--white);box-shadow:0 4px 12px rgba(0,0,0,0.15);}
+.chip.active[data-filter="all"]{background:var(--slate-600);border-color:var(--slate-600);}
+.chip.active[data-filter="cheap"]{background:var(--green);border-color:var(--green);}
+.chip.active[data-filter="mid"]{background:var(--orange);border-color:var(--orange);}
 .chip.active .dot-green,.chip.active .dot-orange{background:#fff !important;}
 
 /* 지도 */
@@ -213,9 +216,9 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
   </div>
   <div style="display:flex;align-items:center;gap:8px;padding:8px 16px 10px;">
     <div class="filters" style="flex:1;padding:0;">
-      <button class="chip active" onclick="setFilter('all',this)">전체</button>
-      <button class="chip" onclick="setFilter('cheap',this)"><span class="dot-green" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#059669;margin-right:5px;vertical-align:middle;"></span>~6,000원</button>
-      <button class="chip" onclick="setFilter('mid',this)"><span class="dot-orange" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f97316;margin-right:5px;vertical-align:middle;"></span>~8,000원</button>
+      <button class="chip active" data-filter="all" onclick="setFilter('all',this)">전체</button>
+      <button class="chip" data-filter="cheap" onclick="setFilter('cheap',this)"><span class="dot-green" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#059669;margin-right:5px;vertical-align:middle;"></span>~6,000원</button>
+      <button class="chip" data-filter="mid" onclick="setFilter('mid',this)"><span class="dot-orange" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f97316;margin-right:5px;vertical-align:middle;"></span>~8,000원</button>
     </div>
     <span id="result-count" style="font-size:11px;color:var(--slate-400);font-weight:700;white-space:nowrap;flex-shrink:0;">17개</span>
   </div>
@@ -231,7 +234,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 
 <div id="page-feed">
   <div class="feed-header" style="display:flex;align-items:center;justify-content:space-between;">
-    <div class="logo" onclick="loadFeed();" style="cursor:pointer;">
+    <div class="logo" onclick="document.getElementById('page-feed').scrollTop=0;loadFeed();" style="cursor:pointer;">
       <img src="logo.png?v=2" class="logo-img" alt="로고" onerror="this.style.display='none'"/>
       <div class="logo-text">
         <h1 style="font-size:19px;font-weight:800;color:var(--green-text);letter-spacing:-0.5px;">구내식당맵</h1>
@@ -275,9 +278,9 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
           <span class="feed-star-btn" onclick="setFeedStar(5)" style="font-size:18px;cursor:pointer;color:#e2e8f0;line-height:1;">★</span>
         </div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <input type="text" id="feed-text" placeholder="방문한 구내식당의 후기를 남겨주세요!" style="flex:1;border:none;background:transparent;outline:none;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);"/>
-        <button class="comment-send-btn" onclick="submitFeedComment()">등록</button>
+      <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+        <input type="text" id="feed-text" placeholder="방문한 구내식당의 후기를 남겨주세요!" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);"/>
+        <button class="comment-send-btn" onclick="submitFeedComment()" style="flex-shrink:0;">등록</button>
       </div>
     </div>
   </div>
@@ -352,7 +355,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
         </div>
         <span id="comment-count" style="font-size:12px;color:var(--slate-500);background:var(--slate-100);padding:2px 10px;border-radius:20px;"></span>
       </div>
-      <div style="background:var(--slate-50);border:1px solid var(--slate-100);border-radius:14px;padding:10px;margin-bottom:8px;">
+      <div style="background:var(--slate-50);border:1px solid var(--slate-100);border-radius:14px;padding:10px;margin-bottom:8px;overflow:hidden;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--slate-200);">
           <input type="text" id="comment-nickname" placeholder="닉네임" style="border:none;background:transparent;font-size:13px;font-family:'Nanum Gothic',sans-serif;outline:none;flex:1;min-width:0;color:var(--slate-900);"/>
           <div id="star-rating" style="display:flex;gap:2px;flex-shrink:0;">
@@ -363,9 +366,9 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
             <span class="star-btn" onclick="setStar(5)" style="font-size:18px;cursor:pointer;color:#e2e8f0;line-height:1;">★</span>
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <input type="text" id="comment-text" placeholder="방문한 구내식당의 후기를 남겨주세요!" style="flex:1;border:none;background:transparent;outline:none;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);"/>
-          <button class="comment-send-btn" onclick="submitComment()">등록</button>
+        <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+          <input type="text" id="comment-text" placeholder="방문한 구내식당의 후기를 남겨주세요!" style="flex:1;min-width:0;border:none;background:transparent;outline:none;font-size:13px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);"/>
+          <button class="comment-send-btn" onclick="submitComment()" style="flex-shrink:0;">등록</button>
         </div>
       </div>
       <div class="comment-list" id="comment-list">
@@ -393,9 +396,9 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
     <div class="fg"><label>가격</label><input type="text" id="fp" placeholder="예: 5,500원"/></div>
     <div class="fg"><label>혼잡도</label>
       <div id="fc-wrap" style="display:flex;gap:8px;">
-        <button type="button" onclick="selectCrowd(this,'여유')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">여유</button>
-        <button type="button" onclick="selectCrowd(this,'보통')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">보통</button>
-        <button type="button" onclick="selectCrowd(this,'혼잡')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">혼잡</button>
+        <button type="button" data-color="#059669" onclick="selectCrowd(this,'여유')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">여유</button>
+        <button type="button" data-color="#f97316" onclick="selectCrowd(this,'보통')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">보통</button>
+        <button type="button" data-color="#ef4444" onclick="selectCrowd(this,'혼잡')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">혼잡</button>
       </div>
       <input type="hidden" id="fc" value=""/>
     </div>
@@ -424,7 +427,7 @@ const cafeterias = [
   { id:9,  keyword:"금융투자협회 여의도", name:"한국금융투자협회 식당", price:7700, pl:"7,700원", crowd:65, open:true, hours:"11:30~13:00", address:"서울 영등포구 의사당대로 143 지하 1층" },
   { id:10, keyword:"KT 여의도지사", name:"KT그룹희망나눔재단 식당", price:6500, pl:"6,500원", crowd:50, open:true, hours:"11:40~13:30", address:"서울 영등포구 여의대로 14" },
   { id:11, keyword:"하나증권 여의도", name:"하나증권 식당", price:8300, pl:"8,300원", crowd:60, open:true, hours:"12:00~13:00", address:"서울 영등포구 의사당대로 82 23층" },
-  { id:12, keyword:"국민연금공단 강남사옥", name:"국민연금 강남사옥 식당", price:10000, pl:"10,000원", crowd:50, open:true, hours:"11:30~13:30", address:"서울 강남구 도산대로 128 국민연금강남사옥 1-3층" },
+  { id:12, keyword:"국민연금공단 강남지사", name:"국민연금 강남사옥 식당", price:10000, pl:"10,000원", crowd:50, open:true, hours:"11:30~13:30", address:"서울 강남구 도산대로 128 국민연금강남사옥 1-3층" },
   { id:13, keyword:"포스코타워 역삼", name:"포스코타워 역삼 식당", price:7500, pl:"7,500원", crowd:60, open:true, hours:"11:30~13:00", address:"서울 강남구 테헤란로 134" },
   { id:14, keyword:"카이트타워 강남", name:"카이트타워 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:10~13:00", address:"서울 강남구 테헤란로 306" },
   { id:15, keyword:"강남구청", name:"강남구청 식당", price:8000, pl:"8,000원", crowd:45, open:true, hours:"11:00~14:00", address:"서울 강남구 학동로 411" },
@@ -454,13 +457,16 @@ if(navigator.geolocation) {
 
 function goHome() {
   closePanel();
+  closeModal();
   document.getElementById('search').value = '';
   filter = 'all';
   document.querySelectorAll('.chip').forEach((c,i) => c.classList.toggle('active', i===0));
-  switchTabTo('map');
   render(resolvedData);
-  map.setCenter(new kakao.maps.LatLng(37.5255, 126.9200));
-  map.setLevel(4);
+  // 리스트 모드면 맨 위로 스크롤
+  if(viewMode === 'list') {
+    document.getElementById('list-view').scrollTop = 0;
+    renderList(resolvedData);
+  }
 }
 
 function goMyLocation() {
@@ -600,8 +606,12 @@ function shareLink() {
 
 function setFilter(f, el) {
   filter = f;
-  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.classList.remove('active','cheap-active','mid-active');
+  });
+  if(f === 'cheap') el.classList.add('cheap-active');
+  else if(f === 'mid') el.classList.add('mid-active');
+  else el.classList.add('active');
   render(resolvedData);
   if(viewMode === 'list') renderList(resolvedData);
 }
@@ -702,9 +712,10 @@ function selectCrowd(btn, val) {
     b.style.color = 'var(--slate-500)';
     b.style.borderColor = 'var(--slate-200)';
   });
-  btn.style.background = 'var(--green)';
+  const color = btn.dataset.color;
+  btn.style.background = color;
   btn.style.color = '#fff';
-  btn.style.borderColor = 'var(--green)';
+  btn.style.borderColor = color;
   document.getElementById('fc').value = val;
 }
 
