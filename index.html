@@ -606,12 +606,8 @@ function shareLink() {
 
 function setFilter(f, el) {
   filter = f;
-  document.querySelectorAll('.chip').forEach(c=>{
-    c.classList.remove('active','cheap-active','mid-active');
-  });
-  if(f === 'cheap') el.classList.add('cheap-active');
-  else if(f === 'mid') el.classList.add('mid-active');
-  else el.classList.add('active');
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
   render(resolvedData);
   if(viewMode === 'list') renderList(resolvedData);
 }
