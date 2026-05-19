@@ -348,6 +348,12 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       </div>
       <span id="pcrowd-label" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;"></span>
     </div>
+    <div id="menu-btn-wrap" style="display:none;margin-bottom:12px;">
+      <button onclick="openMenu()" style="width:100%;background:var(--green-light);color:var(--green-text);border:none;border-radius:12px;padding:11px;font-size:14px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="15" y2="17"></line></svg>
+        오늘의 식단표 보기
+      </button>
+    </div>
 
     <div class="divider"></div>
     <div class="comment-section">
@@ -419,7 +425,7 @@ const SUPABASE_URL = 'https://gokynemjexaigmcbmqkq.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_PnEIiBPZEipsAxGTcxgi_A_P6iXS4GI';
 
 const cafeterias = [
-  { id:1,  keyword:"KBS 본관 여의도", name:"KBS 본관 식당", price:5000, pl:"5,000원", crowd:60, open:true, hours:"11:30~14:00", address:"서울 영등포구 여의공원로 13" },
+  { id:1,  keyword:"KBS 본관 여의도", name:"KBS 본관 식당", price:5000, pl:"5,000원", crowd:60, open:true, hours:"11:30~14:00", address:"서울 영등포구 여의공원로 13", menuType:"url", menuLink:"https://kbsg.co.kr/?page_id=19" },
   { id:2,  keyword:"KBS 여의도 신관", name:"KBS 신관 식당", price:5000, pl:"5,000원", crowd:55, open:true, hours:"11:20~14:00", address:"서울 영등포구 여의공원로 13" },
   { id:3,  keyword:"한국교직원공제회 여의도", name:"교직원공제회 식당", price:8500, pl:"8,500원", crowd:40, open:true, hours:"11:00~14:00", address:"서울 영등포구 여의나루로 50" },
   { id:4,  keyword:"전국경제인연합회 여의도", name:"전경련회관 식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~13:00", address:"서울 영등포구 여의대로 24" },
@@ -594,6 +600,22 @@ function startNav() {
   if(!currentCafe) return;
   const url = `https://map.kakao.com/link/to/${encodeURIComponent(currentCafe.name)},${currentCafe.lat},${currentCafe.lng}`;
   window.open(url, '_blank');
+}
+
+function openMenu() {
+  if(!currentCafe || !currentCafe.menuLink) return;
+  const type = currentCafe.menuType;
+  if(type === 'kakao') {
+    if(confirm('이 식당은 카카오 오픈채팅에서 식단을 공유해요. 입장하시겠어요?')) {
+      window.open(currentCafe.menuLink, '_blank');
+    }
+  } else if(type === 'app') {
+    if(confirm('이 식당은 자체 앱에서 메뉴를 안내해요. 앱스토어로 이동할까요?')) {
+      window.open(currentCafe.menuLink, '_blank');
+    }
+  } else {
+    window.open(currentCafe.menuLink, '_blank');
+  }
 }
 
 function shareLink() {
