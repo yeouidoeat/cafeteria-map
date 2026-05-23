@@ -171,26 +171,43 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 .feed-stars{color:#f59e0b;}
 .feed-empty{text-align:center;padding:40px 0;color:var(--slate-400);font-size:14px;}
 
-/* 제보 모달 */
+/* ===== 제보 모달 ===== */
 #moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:flex-end;}
 @media(min-width:768px){#moverlay{align-items:flex-end;justify-content:center;}}
 #moverlay.open{display:flex;justify-content:center;}
 #modal{background:var(--white);border-radius:28px 28px 0 0;width:100%;max-width:500px;max-height:88vh;overflow-y:auto;overflow:hidden;}
-#modal-header{padding:20px 20px 16px;}
+#modal-header{padding:20px 20px 16px;border-radius:28px 28px 0 0;}
 #modal-body{padding:16px 20px 30px;}
-#modal.error-mode #modal-header{background:#fffbeb;border-bottom:1px solid #fde68a;}
+
+/* 신규 제보 모드 */
+#modal-header{background:var(--white);border-bottom:1px solid var(--slate-100);}
+#modal-header h2{font-size:20px;font-weight:800;margin-bottom:4px;color:var(--slate-900);display:flex;align-items:center;gap:8px;}
+#modal-header > p{font-size:13px;color:var(--slate-400);margin:0;}
+
+/* 오류 제보 모드 */
+#modal.error-mode #modal-header{
+  background:linear-gradient(135deg,#fffbeb 0%,#fef3c7 100%);
+  border-bottom:2px solid #fcd34d;
+  border-radius:28px 28px 0 0;
+}
 #modal.error-mode #modal-header h2{color:#92400e;}
-#modal.error-mode #modal-header > p{color:#b45309;}
-#modal h2{font-size:20px;font-weight:800;margin-bottom:4px;color:var(--slate-900);}
-#modal>p{font-size:13px;color:var(--slate-400);margin-bottom:20px;}
+#modal.error-mode #modal-header > p{color:#b45309;font-size:13px;}
+
 .fg{margin-bottom:14px;}
 .fg label{display:block;font-size:12px;font-weight:700;color:var(--slate-500);margin-bottom:6px;}
 .fg input,.fg textarea,.fg select{width:100%;border:1.5px solid var(--slate-200);border-radius:14px;padding:12px 14px;font-size:14px;font-family:'Nanum Gothic',sans-serif;color:var(--slate-900);outline:none;background:var(--white);}
 .fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--green);}
+#modal.error-mode .fg input:focus,
+#modal.error-mode .fg textarea:focus{border-color:#f59e0b;}
 .fg textarea{height:80px;resize:none;}
 .mbtns{display:flex;gap:10px;margin-top:20px;}
 .mcancel{flex:1;background:var(--slate-100);border:none;border-radius:14px;padding:14px;font-size:14px;font-family:'Nanum Gothic',sans-serif;cursor:pointer;color:var(--slate-500);font-weight:700;}
-.msubmit{flex:2;background:var(--green);color:#fff;border:none;border-radius:14px;padding:14px;font-size:14px;font-family:'Black Han Sans',sans-serif;cursor:pointer;box-shadow:0 4px 12px rgba(5,150,105,0.3);}
+.msubmit{flex:2;background:var(--green);color:#fff;border:none;border-radius:14px;padding:14px;font-size:14px;font-family:'Black Han Sans',sans-serif;cursor:pointer;box-shadow:0 4px 12px rgba(5,150,105,0.3);transition:background .15s;}
+#modal.error-mode .msubmit{background:#f59e0b;box-shadow:0 4px 12px rgba(245,158,11,0.35);}
+#modal.error-mode .msubmit:active{background:#d97706;}
+
+/* 혼잡도 버튼 선택 상태 */
+#fc-wrap button{transition:all .15s;}
 </style>
 </head>
 <body>
@@ -415,29 +432,33 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
   </div>
 </div>
 
+<!-- ===== 제보 모달 ===== -->
 <div id="moverlay" onclick="if(event.target===this)closeModal()">
   <div id="modal">
     <div id="modal-header">
-      <h2 style="display:flex;align-items:center;gap:7px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a9e6e" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> 제보하기</h2>
-      <p>방문하신 구내식당 정보를 알려주시면, 확인 후 빠르게 반영해 드릴게요!</p>
+      <h2 id="modal-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a9e6e" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        제보하기
+      </h2>
+      <p id="modal-desc">방문하신 구내식당 정보를 알려주시면, 확인 후 빠르게 반영해 드릴게요!</p>
     </div>
     <div id="modal-body">
-    <div class="fg"><label>식당 이름</label><input type="text" id="fn" placeholder="예: KBS 구내식당"/></div>
-    <div class="fg"><label>외부인 이용 가격</label><input type="text" id="fp" placeholder="예: 5,500원"/></div>
-    <div class="fg"><label>외부인 이용 운영시간</label><input type="text" id="fh" placeholder="예: 11:30~14:00"/></div>
-    <div class="fg"><label>혼잡도</label>
-      <div id="fc-wrap" style="display:flex;gap:8px;">
-        <button type="button" data-color="#059669" onclick="selectCrowd(this,'여유')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">여유</button>
-        <button type="button" data-color="#f97316" onclick="selectCrowd(this,'보통')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">보통</button>
-        <button type="button" data-color="#ef4444" onclick="selectCrowd(this,'혼잡')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">혼잡</button>
+      <div class="fg"><label>식당 이름</label><input type="text" id="fn" placeholder="예: KBS 구내식당"/></div>
+      <div class="fg"><label>외부인 이용 가격</label><input type="text" id="fp" placeholder="예: 5,500원"/></div>
+      <div class="fg"><label>외부인 이용 운영시간</label><input type="text" id="fh" placeholder="예: 11:30~14:00"/></div>
+      <div class="fg"><label>혼잡도</label>
+        <div id="fc-wrap" style="display:flex;gap:8px;">
+          <button type="button" data-color="#059669" onclick="selectCrowd(this,'여유')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">여유</button>
+          <button type="button" data-color="#f97316" onclick="selectCrowd(this,'보통')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">보통</button>
+          <button type="button" data-color="#ef4444" onclick="selectCrowd(this,'혼잡')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">혼잡</button>
+        </div>
+        <input type="hidden" id="fc" value=""/>
       </div>
-      <input type="hidden" id="fc" value=""/>
-    </div>
-    <div class="fg"><label>추가 정보 (선택)</label><textarea placeholder="구내식당 주의사항을 자유롭게 적어주세요."></textarea></div>
-    <div class="mbtns">
-      <button class="mcancel" onclick="closeModal()">취소</button>
-      <button class="msubmit" onclick="submitReport()">제보하기</button>
-    </div>
+      <div class="fg"><label>추가 정보 (선택)</label><textarea id="fcomment" placeholder="구내식당 주의사항을 자유롭게 적어주세요."></textarea></div>
+      <div class="mbtns">
+        <button class="mcancel" onclick="closeModal()">취소</button>
+        <button class="msubmit" id="modal-submit-btn" onclick="submitReport()">제보하기</button>
+      </div>
     </div>
   </div>
 </div>
@@ -531,7 +552,6 @@ function goHome() {
   filter = 'all';
   document.querySelectorAll('.chip').forEach((c,i) => c.classList.toggle('active', i===0));
   render(resolvedData);
-  // 리스트 모드면 맨 위로 스크롤
   if(viewMode === 'list') {
     document.getElementById('list-view').scrollTop = 0;
     renderList(resolvedData);
@@ -655,7 +675,6 @@ function openPanel(id) {
   document.getElementById('pcrowd-bar').style.width = c.crowd+'%';
   document.getElementById('pcrowd-bar').style.background = crowdColor;
 
-  // 혼잡도
   const crowdLabel = document.getElementById('pcrowd-label');
   if(crowdLabel) {
     const cl = c.crowd < 40 ? '쾌적' : c.crowd < 70 ? '보통' : '혼잡';
@@ -663,7 +682,6 @@ function openPanel(id) {
     crowdLabel.innerHTML = `<span style="width:8px;height:8px;border-radius:50%;background:${cc};display:inline-block;"></span> <span style="color:${cc};">${cl}</span>`;
   }
 
-  // 식단표 버튼
   const menuBtn = document.getElementById('menu-btn-wrap');
   const hasMenu = c.menuType && c.menuType !== 'none' && (c.menuLink || c.menuLinkIos || c.menuLinkAndroid);
   menuBtn.style.display = hasMenu ? 'block' : 'none';
@@ -708,14 +726,12 @@ async function openMenu() {
       } else if(isAndroid && c.menuLinkAndroid) {
         window.open(c.menuLinkAndroid, '_blank');
       } else {
-        // PC인 경우 둘 다 보여주기
         const choice = await customConfirm('iOS는 [확인], Android는 [취소]를 눌러주세요.');
         if(choice && c.menuLinkIos) window.open(c.menuLinkIos, '_blank');
         else if(!choice && c.menuLinkAndroid) window.open(c.menuLinkAndroid, '_blank');
       }
     }
   } else {
-    // URL 타입: 별도 얼럿 없이 바로 이동
     if(c.menuLink) window.open(c.menuLink, '_blank');
   }
 }
@@ -804,7 +820,6 @@ function renderList(data) {
   }
   list.innerHTML = '<div style="display:flex;align-items:center;gap:4px;margin-bottom:8px;font-size:11px;color:var(--slate-400);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>' + (userLat ? '가까운 순' : '기본 순') + '</div>' + filtered.map(c => {
     const crowdColor = c.crowd < 40 ? '#059669' : c.crowd < 70 ? '#f97316' : '#ef4444';
-    const crowdLabel = c.crowd < 40 ? '쾌적' : c.crowd < 70 ? '보통' : '혼잡';
     return `<div onclick="toggleView();setTimeout(()=>openPanel(${c.id}),100);" style="background:var(--white);border:1px solid var(--slate-200);border-radius:16px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
       <div style="flex:1;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
@@ -842,63 +857,82 @@ function selectCrowd(btn, val) {
   document.getElementById('fc').value = val;
 }
 
-function openModal(){
-  document.getElementById('moverlay').classList.add('open');
+// ===== 모달 열기/닫기 =====
+function openModal() {
   const modal = document.getElementById('modal');
   modal.classList.remove('error-mode');
-  // 신규 제보 모드로 초기화
-  document.querySelector('#modal-header h2').innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a9e6e" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> 제보하기';
-  document.querySelector('#modal-header > p').textContent = '방문하신 구내식당 정보를 알려주시면, 확인 후 빠르게 반영해 드릴게요!';
-  document.querySelector('.msubmit').textContent = '제보하기';
-  document.querySelector('.msubmit').style.background = '';
-  const ta = document.querySelector('#modal textarea');
-  if(ta) ta.placeholder = '구내식당 주의사항을 자유롭게 적어주세요.';
+  // 신규 제보 모드
+  document.getElementById('modal-title').innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a9e6e" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> 제보하기';
+  document.getElementById('modal-desc').textContent = '방문하신 구내식당 정보를 알려주시면, 확인 후 빠르게 반영해 드릴게요!';
+  document.getElementById('modal-submit-btn').textContent = '제보하기';
+  document.getElementById('fcomment').placeholder = '구내식당 주의사항을 자유롭게 적어주세요.';
+  document.getElementById('moverlay').classList.add('open');
 }
-function closeModal(){ document.getElementById('moverlay').classList.remove('open'); }
+
+function closeModal() {
+  document.getElementById('moverlay').classList.remove('open');
+}
 
 function reportError() {
   if(!currentCafe) return;
   openModal();
   const modal = document.getElementById('modal');
   modal.classList.add('error-mode');
+  // 오류 제보 모드
+  document.getElementById('modal-title').innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5" style="flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> 오류 제보';
+  document.getElementById('modal-desc').textContent = '잘못된 정보가 있다면 알려주세요. 확인 후 빠르게 수정할게요!';
+  document.getElementById('modal-submit-btn').textContent = '오류 제보';
+  document.getElementById('fcomment').placeholder = '어떤 부분이 잘못됐는지 알려주세요!';
   document.getElementById('fn').value = currentCafe.name;
-  // 오류 제보 모드 UI 변경
-  document.querySelector('#modal-header h2').innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5" style="flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> 오류 제보';
-  document.querySelector('#modal-header > p').textContent = '잘못된 정보가 있다면 알려주세요. 확인 후 빠르게 수정할게요!';
-  document.querySelector('.msubmit').textContent = '오류 제보';
-  document.querySelector('.msubmit').style.background = '#f59e0b';
-  document.querySelector('#modal textarea').placeholder = '어떤 부분이 잘못됐는지 알려주세요!';
 }
 
-async function submitReport(){
-  const name = document.getElementById('fn').value;
-  const price = document.getElementById('fp').value;
-  const hours = document.getElementById('fh').value;
+// ===== 제보 제출 (409 수정: id 컬럼 추가됐으므로 정상 동작) =====
+async function submitReport() {
+  const name = document.getElementById('fn').value.trim();
+  const price = document.getElementById('fp').value.trim();
+  const hours = document.getElementById('fh').value.trim();
   const crowd = document.getElementById('fc').value;
-  const comment = document.querySelector('#modal textarea').value;
-  if(!name){ showToast('식당 이름은 필수예요!'); return; }
-  const btn = document.querySelector('.msubmit');
+  const comment = document.getElementById('fcomment').value.trim();
+  if(!name) { showToast('식당 이름은 필수예요!'); return; }
+  const btn = document.getElementById('modal-submit-btn');
+  const origText = btn.textContent;
   btn.textContent = '제보 중...'; btn.disabled = true;
   try {
-    const res = await fetch(SUPABASE_URL+'/rest/v1/reports', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'},
-      body: JSON.stringify({ cafeteria_name:name, price, hours, crowd, comment })
+    const res = await fetch(SUPABASE_URL + '/rest/v1/reports', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ cafeteria_name: name, price, hours, crowd, comment })
     });
-    if(res.ok||res.status===201){
-      showToast('제보해주셔서 감사해요!');
-      document.getElementById('fn').value='';
-      document.getElementById('fp').value='';
-      document.getElementById('fh').value='';
-      document.getElementById('fc').value='';
-      document.querySelector('#modal textarea').value='';
+    if(res.ok || res.status === 201 || res.status === 204) {
+      showToast('제보해주셔서 감사해요! 🙏');
+      document.getElementById('fn').value = '';
+      document.getElementById('fp').value = '';
+      document.getElementById('fh').value = '';
+      document.getElementById('fc').value = '';
+      document.getElementById('fcomment').value = '';
+      document.querySelectorAll('#fc-wrap button').forEach(b => {
+        b.style.background = 'var(--white)';
+        b.style.color = 'var(--slate-500)';
+        b.style.borderColor = 'var(--slate-200)';
+      });
       closeModal();
-    } else { showToast('오류가 발생했어요. 다시 시도해주세요.'); }
-  } catch(e) { showToast('네트워크 오류가 발생했어요.'); }
-  finally { btn.textContent='제보하기'; btn.disabled=false; }
+    } else {
+      const errText = await res.text();
+      console.error('제보 오류:', res.status, errText);
+      showToast('오류가 발생했어요. 다시 시도해주세요.');
+    }
+  } catch(e) {
+    showToast('네트워크 오류가 발생했어요.');
+  } finally {
+    btn.textContent = origText;
+    btn.disabled = false;
+  }
 }
-
-
 
 async function loadComments(cafeId) {
   try {
@@ -917,7 +951,6 @@ async function loadComments(cafeId) {
       return;
     }
 
-    // 별점 평균 계산 (전체 댓글 수 + 별점 있는 것만 평균)
     const rated = data.filter(c => c.rating);
     const totalCount = data.length;
     if(ratingWrap) {
@@ -1009,7 +1042,6 @@ async function submitComment() {
     if(res.ok || res.status === 201) {
       document.getElementById('comment-text').value = '';
       setStar(0);
-      // 내가 쓴 댓글 ID 로컬 저장
       const resData = await fetch(SUPABASE_URL + '/rest/v1/comments?cafeteria_id=eq.' + currentCafe.id + '&order=created_at.desc&limit=1', {
         headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
       });
@@ -1054,6 +1086,7 @@ function switchTabTo(tab) {
   pageFeed.style.display = tab === 'feed' ? 'block' : 'none';
   if(tab === 'feed') loadFeed();
 }
+
 let currentSort = 'price';
 
 function switchTab(tab) {
@@ -1067,7 +1100,6 @@ function switchTab(tab) {
   const pageFeed = document.getElementById('page-feed');
   const listView = document.getElementById('list-view');
 
-  // 리스트뷰 닫기
   if(viewMode === 'list') {
     viewMode = 'map';
     listView.style.display = 'none';
@@ -1191,20 +1223,12 @@ function closeFeeCafeDropdown() {
   document.getElementById('feed-cafe-notfound').style.display = 'none';
 }
 
-// 다른곳 클릭시 드롭다운 닫기
 document.addEventListener('click', function(e) {
   if(!e.target.closest('#feed-cafe-search') && !e.target.closest('#feed-cafe-dropdown')) {
-    document.getElementById('feed-cafe-dropdown')?.style && (document.getElementById('feed-cafe-dropdown').style.display = 'none');
+    const dd = document.getElementById('feed-cafe-dropdown');
+    if(dd) dd.style.display = 'none';
   }
 });
-
-function populateFeedSelect() {
-  const sel = document.getElementById('feed-cafe-select');
-  if(!sel) return;
-  sel.innerHTML = '<option value="">선택</option>' + resolvedData.map(c =>
-    `<option value="${c.id}">${c.name}</option>`
-  ).join('');
-}
 
 async function submitFeedComment() {
   const nickname = document.getElementById('feed-nickname').value.trim() || '익명';
@@ -1236,7 +1260,6 @@ async function submitFeedComment() {
       document.getElementById('feed-cafe-search').value = '';
       selectedFeedCafeId = null;
       setFeedStar(0);
-      // 내가 쓴 글 ID 로컬 저장
       const feedRes = await fetch(SUPABASE_URL + '/rest/v1/comments?order=created_at.desc&limit=1', {
         headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
       });
@@ -1355,8 +1378,6 @@ kakao.maps.load(function(){
 if('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
 }
-
-
 </script>
 </body>
 </html>
