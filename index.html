@@ -175,7 +175,12 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 #moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:flex-end;}
 @media(min-width:768px){#moverlay{align-items:flex-end;justify-content:center;}}
 #moverlay.open{display:flex;justify-content:center;}
-#modal{background:var(--white);border-radius:28px 28px 0 0;padding:24px 20px 40px;width:100%;max-width:500px;max-height:88vh;overflow-y:auto;}
+#modal{background:var(--white);border-radius:28px 28px 0 0;width:100%;max-width:500px;max-height:88vh;overflow-y:auto;overflow:hidden;}
+#modal-header{padding:20px 20px 16px;}
+#modal-body{padding:16px 20px 30px;}
+#modal.error-mode #modal-header{background:#fffbeb;border-bottom:1px solid #fde68a;}
+#modal.error-mode #modal-header h2{color:#92400e;}
+#modal.error-mode #modal-header > p{color:#b45309;}
 #modal h2{font-size:20px;font-weight:800;margin-bottom:4px;color:var(--slate-900);}
 #modal>p{font-size:13px;color:var(--slate-400);margin-bottom:20px;}
 .fg{margin-bottom:14px;}
@@ -326,8 +331,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
         <h2 id="pname"></h2>
         <div class="panel-price" id="pprice"></div>
       </div>
-      <button onclick="reportError()" style="background:none;border:none;cursor:pointer;color:var(--slate-300);padding:2px;margin-right:4px;" title="오류 제보">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <button onclick="reportError()" style="background:none;border:none;cursor:pointer;color:var(--slate-300);padding:4px;margin-right:2px;display:flex;align-items:center;justify-content:center;" title="오류 제보">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:block;"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="7" x2="12" y2="13"></line><circle cx="12" cy="16.5" r="0.5" fill="currentColor"></circle></svg>
       </button>
       <button class="close-btn" onclick="closePanel()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -412,8 +417,11 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 
 <div id="moverlay" onclick="if(event.target===this)closeModal()">
   <div id="modal">
-    <h2 style="display:flex;align-items:center;gap:7px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a9e6e" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> 제보하기</h2>
-    <p>방문하신 구내식당 정보를 알려주시면, 확인 후 빠르게 반영해 드릴게요!</p>
+    <div id="modal-header">
+      <h2 style="display:flex;align-items:center;gap:7px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a9e6e" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> 제보하기</h2>
+      <p>방문하신 구내식당 정보를 알려주시면, 확인 후 빠르게 반영해 드릴게요!</p>
+    </div>
+    <div id="modal-body">
     <div class="fg"><label>식당 이름</label><input type="text" id="fn" placeholder="예: KBS 구내식당"/></div>
     <div class="fg"><label>외부인 이용 가격</label><input type="text" id="fp" placeholder="예: 5,500원"/></div>
     <div class="fg"><label>외부인 이용 운영시간</label><input type="text" id="fh" placeholder="예: 11:30~14:00"/></div>
@@ -429,6 +437,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
     <div class="mbtns">
       <button class="mcancel" onclick="closeModal()">취소</button>
       <button class="msubmit" onclick="submitReport()">제보하기</button>
+    </div>
     </div>
   </div>
 </div>
@@ -835,10 +844,13 @@ function selectCrowd(btn, val) {
 
 function openModal(){
   document.getElementById('moverlay').classList.add('open');
+  const modal = document.getElementById('modal');
+  modal.classList.remove('error-mode');
   // 신규 제보 모드로 초기화
-  document.querySelector('#modal h2').innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a9e6e" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> 제보하기';
-  document.querySelector('#modal > p').textContent = '방문하신 구내식당 정보를 알려주시면, 확인 후 빠르게 반영해 드릴게요!';
+  document.querySelector('#modal-header h2').innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a9e6e" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> 제보하기';
+  document.querySelector('#modal-header > p').textContent = '방문하신 구내식당 정보를 알려주시면, 확인 후 빠르게 반영해 드릴게요!';
   document.querySelector('.msubmit').textContent = '제보하기';
+  document.querySelector('.msubmit').style.background = '';
   const ta = document.querySelector('#modal textarea');
   if(ta) ta.placeholder = '구내식당 주의사항을 자유롭게 적어주세요.';
 }
@@ -847,11 +859,14 @@ function closeModal(){ document.getElementById('moverlay').classList.remove('ope
 function reportError() {
   if(!currentCafe) return;
   openModal();
+  const modal = document.getElementById('modal');
+  modal.classList.add('error-mode');
   document.getElementById('fn').value = currentCafe.name;
   // 오류 제보 모드 UI 변경
-  document.querySelector('#modal h2').innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> 오류 제보';
-  document.querySelector('#modal > p').textContent = '잘못된 정보가 있다면 알려주세요. 확인 후 빠르게 수정할게요!';
+  document.querySelector('#modal-header h2').innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5" style="flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> 오류 제보';
+  document.querySelector('#modal-header > p').textContent = '잘못된 정보가 있다면 알려주세요. 확인 후 빠르게 수정할게요!';
   document.querySelector('.msubmit').textContent = '오류 제보';
+  document.querySelector('.msubmit').style.background = '#f59e0b';
   document.querySelector('#modal textarea').placeholder = '어떤 부분이 잘못됐는지 알려주세요!';
 }
 
