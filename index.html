@@ -835,6 +835,10 @@ function selectCrowd(btn, val) {
 
 function openModal(){
   document.getElementById('moverlay').classList.add('open');
+  // 신규 제보 모드로 초기화
+  document.querySelector('#modal h2').innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a9e6e" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> 제보하기';
+  document.querySelector('#modal > p').textContent = '방문하신 구내식당 정보를 알려주시면, 확인 후 빠르게 반영해 드릴게요!';
+  document.querySelector('.msubmit').textContent = '제보하기';
   const ta = document.querySelector('#modal textarea');
   if(ta) ta.placeholder = '구내식당 주의사항을 자유롭게 적어주세요.';
 }
@@ -844,7 +848,11 @@ function reportError() {
   if(!currentCafe) return;
   openModal();
   document.getElementById('fn').value = currentCafe.name;
-  document.querySelector('#modal textarea').placeholder = '잘못된 정보가 있다면 알려주세요!';
+  // 오류 제보 모드 UI 변경
+  document.querySelector('#modal h2').innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> 오류 제보';
+  document.querySelector('#modal > p').textContent = '잘못된 정보가 있다면 알려주세요. 확인 후 빠르게 수정할게요!';
+  document.querySelector('.msubmit').textContent = '오류 제보';
+  document.querySelector('#modal textarea').placeholder = '어떤 부분이 잘못됐는지 알려주세요!';
 }
 
 async function submitReport(){
