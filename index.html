@@ -350,8 +350,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
     </div>
     <div id="menu-btn-wrap" style="display:none;margin-bottom:12px;">
       <button onclick="openMenu()" style="width:100%;background:var(--green-light);color:var(--green-text);border:none;border-radius:12px;padding:11px;font-size:14px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="15" y2="17"></line></svg>
-        오늘의 식단표 보기
+        식단표 페이지로 이동
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
       </button>
     </div>
 
@@ -613,14 +613,11 @@ function openMenu() {
   const type = c.menuType;
 
   if(type === 'kakao') {
-    if(confirm('이 식당은 카카오 오픈채팅에서 식단을 공유해요. 입장하시겠어요?')) {
+    if(confirm('이 식당은 오픈채팅에서 메뉴를 안내해요. 이동할까요?')) {
       window.open(c.menuLink, '_blank');
     }
   } else if(type === 'app') {
-    const appName = c.menuAppName || '앱';
-    const note = c.menuAppNote ? ` (${c.menuAppNote})` : '';
-    const msg = `이 식당은 '${appName}' 앱에서 메뉴를 안내해요${note}.\n앱스토어로 이동할까요?`;
-    if(confirm(msg)) {
+    if(confirm('이 식당은 전용 앱에서 메뉴를 안내해요. 스토어로 이동할까요?')) {
       const isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
       const isAndroid = /Android/i.test(navigator.userAgent);
       if(isIos && c.menuLinkIos) {
@@ -629,12 +626,13 @@ function openMenu() {
         window.open(c.menuLinkAndroid, '_blank');
       } else {
         // PC인 경우 둘 다 보여주기
-        const choice = confirm('iOS는 확인, Android는 취소를 눌러주세요.');
+        const choice = confirm('iOS는 [확인], Android는 [취소]를 눌러주세요.');
         if(choice && c.menuLinkIos) window.open(c.menuLinkIos, '_blank');
         else if(!choice && c.menuLinkAndroid) window.open(c.menuLinkAndroid, '_blank');
       }
     }
   } else {
+    // URL 타입: 별도 얼럿 없이 바로 이동
     if(c.menuLink) window.open(c.menuLink, '_blank');
   }
 }
