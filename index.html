@@ -583,6 +583,11 @@ function openPanel(id) {
     crowdLabel.innerHTML = `<span style="width:8px;height:8px;border-radius:50%;background:${cc};display:inline-block;"></span> <span style="color:${cc};">${cl}</span>`;
   }
 
+  // 식단표 버튼
+  const menuBtn = document.getElementById('menu-btn-wrap');
+  const hasMenu = c.menuType && c.menuType !== 'none' && (c.menuLink || c.menuLinkIos || c.menuLinkAndroid);
+  menuBtn.style.display = hasMenu ? 'block' : 'none';
+
   document.getElementById('panel').classList.add('open');
   document.getElementById('bottom-nav').style.display = 'none';
   document.getElementById('my-location-btn').style.display = 'none';
