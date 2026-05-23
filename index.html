@@ -348,6 +348,12 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       </div>
       <span id="pcrowd-label" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;"></span>
     </div>
+    <div id="menu-btn-wrap" style="display:none;margin-bottom:12px;">
+      <button onclick="openMenu()" style="width:100%;background:var(--green-light);color:var(--green-text);border:none;border-radius:12px;padding:11px;font-size:14px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="15" y2="17"></line></svg>
+        오늘의 식단표 보기
+      </button>
+    </div>
 
     <div class="divider"></div>
     <div class="comment-section">
@@ -419,13 +425,13 @@ const SUPABASE_URL = 'https://gokynemjexaigmcbmqkq.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_PnEIiBPZEipsAxGTcxgi_A_P6iXS4GI';
 
 const cafeterias = [
-  { id:1,  keyword:"KBS 본관 여의도", name:"KBS 본관 식당", price:5000, pl:"5,000원", crowd:60, open:true, hours:"11:30~14:00", address:"서울 영등포구 여의공원로 13" },
-  { id:2,  keyword:"KBS 여의도 신관", name:"KBS 신관 식당", price:5000, pl:"5,000원", crowd:55, open:true, hours:"11:20~14:00", address:"서울 영등포구 여의공원로 13" },
-  { id:3,  keyword:"한국교직원공제회 여의도", name:"교직원공제회 식당", price:8500, pl:"8,500원", crowd:40, open:true, hours:"11:00~14:00", address:"서울 영등포구 여의나루로 50" },
-  { id:4,  keyword:"전국경제인연합회 여의도", name:"전경련회관 식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~13:00", address:"서울 영등포구 여의대로 24" },
-  { id:5,  keyword:"국회도서관 여의도", name:"국회도서관 식당", price:5500, pl:"5,500원", crowd:25, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1" },
-  { id:6,  keyword:"국회박물관 여의도", name:"국회박물관 식당", price:5500, pl:"5,500원", crowd:20, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1" },
-  { id:7,  keyword:"일신빌딩 여의도", name:"일신빌딩 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 영등포구 은행로 11 지하1층" },
+  { id:1,  keyword:"KBS 본관 여의도", name:"KBS 본관 식당", price:5000, pl:"5,000원", crowd:60, open:true, hours:"11:30~14:00", address:"서울 영등포구 여의공원로 13", menuType:"url", menuLink:"https://kbsg.co.kr/?page_id=19" },
+  { id:2,  keyword:"KBS 여의도 신관", name:"KBS 신관 식당", price:5000, pl:"5,000원", crowd:55, open:true, hours:"11:20~14:00", address:"서울 영등포구 여의공원로 13", menuType:"url", menuLink:"https://kbsg.co.kr/?page_id=19#tab-1525151991-2-86" },
+  { id:3,  keyword:"한국교직원공제회 여의도", name:"교직원공제회 식당", price:8500, pl:"8,500원", crowd:40, open:true, hours:"11:00~14:00", address:"서울 영등포구 여의나루로 50", menuType:"app", menuAppName:"프레시밀", menuAppNote:"한국교직원공제회 검색", menuLinkIos:"https://apps.apple.com/kr/app/%ED%94%84%EB%A0%88%EC%8B%9C%EB%B0%80/id1594764668", menuLinkAndroid:"https://play.google.com/store/apps/details?id=com.cjfreshway.fs.freshmeal" },
+  { id:4,  keyword:"전국경제인연합회 여의도", name:"전경련회관 식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~13:00", address:"서울 영등포구 여의대로 24", menuType:"app", menuAppName:"프레시밀", menuAppNote:"FKI타워 검색", menuLinkIos:"https://apps.apple.com/kr/app/%ED%94%84%EB%A0%88%EC%8B%9C%EB%B0%80/id1594764668", menuLinkAndroid:"https://play.google.com/store/apps/details?id=com.cjfreshway.fs.freshmeal" },
+  { id:5,  keyword:"국회도서관 여의도", name:"국회도서관 식당", price:5500, pl:"5,500원", crowd:25, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1", menuType:"url", menuLink:"https://www.nanet.go.kr/usermadang/notice/noticeList.do?pageIndex=1&searchListGbn=&searchKeycode=ticon&searchKeyword=&searchNoSeq=8341" },
+  { id:6,  keyword:"국회박물관 여의도", name:"국회박물관 식당", price:5500, pl:"5,500원", crowd:20, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1", menuType:"url", menuLink:"https://www.nanet.go.kr/usermadang/notice/noticeList.do?pageIndex=1&searchListGbn=&searchKeycode=ticon&searchKeyword=&searchNoSeq=8341" },
+  { id:7,  keyword:"일신빌딩 여의도", name:"일신빌딩 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 영등포구 은행로 11 지하1층", menuType:"url", menuLink:"https://map.naver.com/p/entry/place/1397161473" },
   { id:8,  keyword:"태영빌딩 여의도", name:"태영빌딩 식당", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 영등포구 여의공원로 111" },
   { id:9,  keyword:"금융투자협회 여의도", name:"한국금융투자협회 식당", price:7700, pl:"7,700원", crowd:65, open:true, hours:"11:30~13:00", address:"서울 영등포구 의사당대로 143 지하 1층" },
   { id:10, keyword:"KT 여의도지사", name:"KT그룹희망나눔재단 식당", price:6500, pl:"6,500원", crowd:50, open:true, hours:"11:40~13:30", address:"서울 영등포구 여의대로 14" },
@@ -594,6 +600,38 @@ function startNav() {
   if(!currentCafe) return;
   const url = `https://map.kakao.com/link/to/${encodeURIComponent(currentCafe.name)},${currentCafe.lat},${currentCafe.lng}`;
   window.open(url, '_blank');
+}
+
+function openMenu() {
+  if(!currentCafe) return;
+  const c = currentCafe;
+  const type = c.menuType;
+
+  if(type === 'kakao') {
+    if(confirm('이 식당은 카카오 오픈채팅에서 식단을 공유해요. 입장하시겠어요?')) {
+      window.open(c.menuLink, '_blank');
+    }
+  } else if(type === 'app') {
+    const appName = c.menuAppName || '앱';
+    const note = c.menuAppNote ? ` (${c.menuAppNote})` : '';
+    const msg = `이 식당은 '${appName}' 앱에서 메뉴를 안내해요${note}.\n앱스토어로 이동할까요?`;
+    if(confirm(msg)) {
+      const isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      if(isIos && c.menuLinkIos) {
+        window.open(c.menuLinkIos, '_blank');
+      } else if(isAndroid && c.menuLinkAndroid) {
+        window.open(c.menuLinkAndroid, '_blank');
+      } else {
+        // PC인 경우 둘 다 보여주기
+        const choice = confirm('iOS는 확인, Android는 취소를 눌러주세요.');
+        if(choice && c.menuLinkIos) window.open(c.menuLinkIos, '_blank');
+        else if(!choice && c.menuLinkAndroid) window.open(c.menuLinkAndroid, '_blank');
+      }
+    }
+  } else {
+    if(c.menuLink) window.open(c.menuLink, '_blank');
+  }
 }
 
 function shareLink() {
