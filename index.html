@@ -311,11 +311,14 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 <div id="panel">
   <div class="panel-handle" onclick="closePanel()"></div>
   <div class="panel-body">
-    <div class="panel-top">
+    <div class="panel-top" style="display:flex;justify-content:space-between;align-items:flex-start;">
       <div class="panel-left" style="display:flex;align-items:baseline;gap:8px;flex:1;flex-wrap:wrap;">
         <h2 id="pname"></h2>
         <div class="panel-price" id="pprice"></div>
       </div>
+      <button onclick="reportError()" style="background:none;border:none;cursor:pointer;color:var(--slate-300);padding:2px;margin-right:4px;" title="오류 제보">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      </button>
       <button class="close-btn" onclick="closePanel()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
@@ -402,7 +405,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
     <h2 style="display:flex;align-items:center;gap:7px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a9e6e" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> 제보하기</h2>
     <p>방문하신 구내식당 정보를 알려주시면, 확인 후 빠르게 반영해 드릴게요!</p>
     <div class="fg"><label>식당 이름</label><input type="text" id="fn" placeholder="예: KBS 구내식당"/></div>
-    <div class="fg"><label>가격</label><input type="text" id="fp" placeholder="예: 5,500원"/></div>
+    <div class="fg"><label>외부인 이용 가격</label><input type="text" id="fp" placeholder="예: 5,500원"/></div>
+    <div class="fg"><label>외부인 이용 운영시간</label><input type="text" id="fh" placeholder="예: 11:30~14:00"/></div>
     <div class="fg"><label>혼잡도</label>
       <div id="fc-wrap" style="display:flex;gap:8px;">
         <button type="button" data-color="#059669" onclick="selectCrowd(this,'여유')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">여유</button>
@@ -411,7 +415,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       </div>
       <input type="hidden" id="fc" value=""/>
     </div>
-    <div class="fg"><label>추가 정보 (선택)</label><textarea placeholder="외부인이 출입 가능한 운영시간과 주의사항 등 자유롭게 적어주세요!"></textarea></div>
+    <div class="fg"><label>추가 정보 (선택)</label><textarea placeholder="구내식당 주의사항을 자유롭게 적어주세요."></textarea></div>
     <div class="mbtns">
       <button class="mcancel" onclick="closeModal()">취소</button>
       <button class="msubmit" onclick="submitReport()">제보하기</button>
@@ -425,30 +429,67 @@ const SUPABASE_URL = 'https://gokynemjexaigmcbmqkq.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_PnEIiBPZEipsAxGTcxgi_A_P6iXS4GI';
 
 const cafeterias = [
+  // 여의도
   { id:1,  keyword:"KBS 본관 여의도", name:"KBS 본관 식당", price:5000, pl:"5,000원", crowd:60, open:true, hours:"11:30~14:00", address:"서울 영등포구 여의공원로 13", menuType:"url", menuLink:"https://kbsg.co.kr/?page_id=19" },
   { id:2,  keyword:"KBS 여의도 신관", name:"KBS 신관 식당", price:5000, pl:"5,000원", crowd:55, open:true, hours:"11:20~14:00", address:"서울 영등포구 여의공원로 13", menuType:"url", menuLink:"https://kbsg.co.kr/?page_id=19#tab-1525151991-2-86" },
   { id:3,  keyword:"한국교직원공제회 여의도", name:"교직원공제회 식당", price:8500, pl:"8,500원", crowd:40, open:true, hours:"11:00~14:00", address:"서울 영등포구 여의나루로 50", menuType:"app", menuAppName:"프레시밀", menuAppNote:"한국교직원공제회 검색", menuLinkIos:"https://apps.apple.com/kr/app/%ED%94%84%EB%A0%88%EC%8B%9C%EB%B0%80/id1594764668", menuLinkAndroid:"https://play.google.com/store/apps/details?id=com.cjfreshway.fs.freshmeal" },
   { id:4,  keyword:"전국경제인연합회 여의도", name:"전경련회관 식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~13:00", address:"서울 영등포구 여의대로 24", menuType:"app", menuAppName:"프레시밀", menuAppNote:"FKI타워 검색", menuLinkIos:"https://apps.apple.com/kr/app/%ED%94%84%EB%A0%88%EC%8B%9C%EB%B0%80/id1594764668", menuLinkAndroid:"https://play.google.com/store/apps/details?id=com.cjfreshway.fs.freshmeal" },
-  { id:5,  keyword:"국회도서관 여의도", name:"국회도서관 식당", price:5500, pl:"5,500원", crowd:25, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1", menuType:"url", menuLink:"https://www.nanet.go.kr/usermadang/notice/noticeList.do?pageIndex=1&searchListGbn=&searchKeycode=ticon&searchKeyword=&searchNoSeq=8341" },
-  { id:6,  keyword:"국회박물관 여의도", name:"국회박물관 식당", price:5500, pl:"5,500원", crowd:20, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1", menuType:"url", menuLink:"https://www.nanet.go.kr/usermadang/notice/noticeList.do?pageIndex=1&searchListGbn=&searchKeycode=ticon&searchKeyword=&searchNoSeq=8341" },
+  { id:5,  keyword:"국회도서관 여의도", name:"국회도서관 식당", price:6000, pl:"6,000원", crowd:25, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1", menuType:"url", menuLink:"https://www.nanet.go.kr/usermadang/notice/noticeList.do?pageIndex=1&searchListGbn=&searchKeycode=ticon&searchKeyword=&searchNoSeq=8341" },
+  { id:6,  keyword:"국회박물관 여의도", name:"국회박물관 식당", price:6000, pl:"6,000원", crowd:20, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1", menuType:"url", menuLink:"https://www.nanet.go.kr/usermadang/notice/noticeList.do?pageIndex=1&searchListGbn=&searchKeycode=ticon&searchKeyword=&searchNoSeq=8341" },
   { id:7,  keyword:"일신빌딩 여의도", name:"일신빌딩 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 영등포구 은행로 11 지하1층", menuType:"url", menuLink:"https://map.naver.com/p/entry/place/1397161473" },
   { id:8,  keyword:"태영빌딩 여의도", name:"태영빌딩 식당", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 영등포구 여의공원로 111" },
   { id:9,  keyword:"금융투자협회 여의도", name:"한국금융투자협회 식당", price:7700, pl:"7,700원", crowd:65, open:true, hours:"11:30~13:00", address:"서울 영등포구 의사당대로 143 지하 1층" },
-  { id:10, keyword:"KT 여의도지사", name:"KT그룹희망나눔재단 식당", price:6500, pl:"6,500원", crowd:50, open:true, hours:"11:40~13:30", address:"서울 영등포구 여의대로 14" },
+  { id:10, keyword:"KT 여의도지사", name:"KT그룹희망나눔재단 식당", price:6500, pl:"6,500원", crowd:50, open:true, hours:"11:40~13:30", address:"서울 영등포구 여의대로 14", menuType:"kakao", menuLink:"https://pf.kakao.com/_bwyrs" },
   { id:11, keyword:"하나증권 여의도", name:"하나증권 식당", price:8300, pl:"8,300원", crowd:60, open:true, hours:"12:00~13:00", address:"서울 영등포구 의사당대로 82 23층" },
-  { id:12, keyword:"국민연금공단 강남지사", name:"국민연금 강남사옥 식당", price:10000, pl:"10,000원", crowd:50, open:true, hours:"11:30~13:30", address:"서울 강남구 도산대로 128 국민연금강남사옥 1-3층" },
-  { id:13, keyword:"포스코타워 역삼", name:"포스코타워 역삼 식당", price:7500, pl:"7,500원", crowd:60, open:true, hours:"11:30~13:00", address:"서울 강남구 테헤란로 134" },
-  { id:14, keyword:"카이트타워 강남", name:"카이트타워 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:10~13:00", address:"서울 강남구 테헤란로 306" },
-  { id:15, keyword:"강남구청", name:"강남구청 식당", price:8000, pl:"8,000원", crowd:45, open:true, hours:"11:00~14:00", address:"서울 강남구 학동로 411" },
-  { id:16, keyword:"오크우드 프리미어 코엑스 센터", name:"코엑스 식당", price:7500, pl:"7,500원", crowd:60, open:true, hours:"10:50~14:30", address:"서울 강남구 테헤란로87길 58" },
-  { id:17, keyword:"캠코양재타워", name:"캠코양재타워 식당", price:9000, pl:"9,000원", crowd:50, open:true, hours:"11:10~14:00", address:"서울 강남구 강남대로 262 캠코양재타워 지하2층" },
-  { id:18, keyword:"삼성화재 본사 서초", name:"삼성화재 본사 식당", price:9000, pl:"9,000원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 서초구 서초대로74길 14" },
-  { id:19, keyword:"롯데카드 본사 새문안로", name:"롯데카드 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:00~13:30", address:"서울 종로구 새문안로 76" },
-  { id:20, keyword:"서울신문사 광화문", name:"서울신문사 식당", price:7000, pl:"7,000원", crowd:50, open:true, hours:"11:00~13:30", address:"서울 중구 세종대로 124" },
-  { id:21, keyword:"예금보험공사 청계천로", name:"예금보험공사 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:10~13:15", address:"서울 중구 청계천로 30" },
-  { id:22, keyword:"케이트윈타워 종로구청", name:"종로구청 식당", price:6000, pl:"6,000원", crowd:50, open:true, hours:"12:30~13:30", address:"서울 종로구 종로1길 50 케이트윈타워B동" },
-  { id:23, keyword:"부영그룹 본사 세종대로", name:"부영그룹 식당", price:9500, pl:"9,500원", crowd:50, open:true, hours:"11:00~14:00", address:"서울 중구 세종대로9길 42 지하1층" },
-  { id:24, keyword:"광화문우체국", name:"광화문우체국 식당", price:5800, pl:"5,800원", crowd:55, open:true, hours:"12:00~13:00", address:"서울 종로구 종로 6 광화문우체국" },
+  { id:12, keyword:"C.C.M.M빌딩 여의도", name:"C.C.M.M빌딩 식당", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 영등포구 여의공원로 101 지하 3층" },
+
+  // 강남/서초
+  { id:13, keyword:"국민연금공단 강남사옥", name:"국민연금 강남사옥 식당", price:10000, pl:"10,000원", crowd:50, open:true, hours:"11:30~13:30", address:"서울 강남구 도산대로 128 국민연금강남사옥 1-3층" },
+  { id:14, keyword:"포스코타워 역삼", name:"포스코타워 역삼 식당", price:7500, pl:"7,500원", crowd:60, open:true, hours:"11:30~13:00", address:"서울 강남구 테헤란로 134" },
+  { id:15, keyword:"카이트타워 강남", name:"카이트타워 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:10~13:00", address:"서울 강남구 테헤란로 306" },
+  { id:16, keyword:"강남구청", name:"강남구청 식당", price:6700, pl:"6,700원", crowd:45, open:true, hours:"12:30~13:00", address:"서울 강남구 학동로 426" },
+  { id:17, keyword:"오크우드 프리미어 코엑스 센터", name:"코엑스 식당", price:7500, pl:"7,500원", crowd:60, open:true, hours:"10:50~14:30", address:"서울 강남구 테헤란로87길 58" },
+  { id:18, keyword:"캠코양재타워", name:"캠코양재타워 식당", price:9000, pl:"9,000원", crowd:50, open:true, hours:"11:10~14:00", address:"서울 강남구 강남대로 262 캠코양재타워 지하2층" },
+  { id:19, keyword:"삼성화재 본사 서초", name:"삼성화재 본사 식당", price:9000, pl:"9,000원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 서초구 서초대로74길 14" },
+  { id:20, keyword:"강남세무서", name:"강남세무서 식당", price:6000, pl:"6,000원", crowd:50, open:true, hours:"12:20~13:00", address:"서울 강남구 학동로 425" },
+
+  // 광화문
+  { id:21, keyword:"LX광화문빌딩", name:"LX광화문빌딩 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:20~13:30", address:"서울 종로구 새문안로5길 13 LX광화문빌딩" },
+  { id:22, keyword:"롯데카드 본사 새문안로", name:"롯데카드 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:00~13:30", address:"서울 종로구 새문안로 76" },
+  { id:23, keyword:"서울신문사 광화문", name:"서울신문사 식당", price:7000, pl:"7,000원", crowd:50, open:true, hours:"11:00~13:30", address:"서울 중구 세종대로 124" },
+  { id:24, keyword:"예금보험공사 청계천로", name:"예금보험공사 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:10~13:15", address:"서울 중구 청계천로 30" },
+  { id:25, keyword:"케이트윈타워 종로구청", name:"종로구청 식당", price:6000, pl:"6,000원", crowd:50, open:true, hours:"12:30~13:30", address:"서울 종로구 종로1길 50 케이트윈타워B동" },
+  { id:26, keyword:"부영그룹 본사 세종대로", name:"부영그룹 식당", price:9500, pl:"9,500원", crowd:50, open:true, hours:"11:00~14:00", address:"서울 중구 세종대로9길 42 지하1층" },
+  { id:27, keyword:"광화문우체국", name:"광화문우체국 식당", price:5800, pl:"5,800원", crowd:55, open:true, hours:"12:00~13:00", address:"서울 종로구 종로 6 광화문우체국" },
+
+  // 판교
+  { id:28, keyword:"판교세븐벤처밸리", name:"판교세븐벤처밸리 식당", price:5500, pl:"5,500원", crowd:55, open:true, hours:"11:30~13:10", address:"경기 성남시 분당구 판교로228번길 15" },
+  { id:29, keyword:"판교도서관", name:"판교도서관 식당", price:6000, pl:"6,000원", crowd:50, open:true, hours:"11:30~14:00", address:"경기 성남시 분당구 운중로 227" },
+  { id:30, keyword:"경기창조경제혁신센터", name:"경기창조경제혁신센터 식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"11:30~13:30", address:"경기 성남시 분당구 대왕판교로645번길 12" },
+  { id:31, keyword:"미래에셋벤처타워 판교", name:"미래에셋벤처타워 식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:30~13:30", address:"경기 성남시 분당구 판교역로241번길 20" },
+  { id:32, keyword:"코리아바이오파크 판교", name:"코리아바이오파크 식당", price:6500, pl:"6,500원", crowd:50, open:true, hours:"11:20~13:30", address:"경기 성남시 분당구 대왕판교로 700" },
+  { id:33, keyword:"판교 이노밸리", name:"판교 이노밸리 식당", price:5600, pl:"5,600원", crowd:55, open:true, hours:"11:30~14:00", address:"경기 성남시 분당구 판교로 255", menuType:"kakao", menuLink:"https://pf.kakao.com/_LCxlxlxb" },
+  { id:34, keyword:"판교제2테크노밸리 기업지원허브", name:"판교제2테크노밸리 식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:40~13:30", address:"경기 성남시 수정구 대왕판교로 815" },
+
+  // 상암
+  { id:35, keyword:"KBS미디어센터 상암", name:"밥플러스 KBS미디어센터점", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 마포구 매봉산로 45 KBS미디어센터 지하 1층", menuType:"kakao", menuLink:"https://pf.kakao.com/_FxcUxcG" },
+  { id:36, keyword:"누리꿈스퀘어 상암", name:"밥플러스 누리꿈스퀘어점", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 마포구 월드컵북로 396 지하1층", menuType:"kakao", menuLink:"https://pf.kakao.com/_aZJxon" },
+  { id:37, keyword:"DMC첨단산업센터", name:"DMC 첨단산업센터 식당", price:5500, pl:"5,500원", crowd:50, open:true, hours:"11:30~13:30", address:"서울 마포구 성암로 330 DMC첨단산업센터 8층", menuType:"kakao", menuLink:"https://pf.kakao.com/_TjxmYT" },
+  { id:38, keyword:"JTBC 상암", name:"JTBC 식당", price:7500, pl:"7,500원", crowd:60, open:true, hours:"12:00~13:30", address:"서울 마포구 상암산로 38" },
+  { id:39, keyword:"에스플렉스센터 상암", name:"에스플렉스센터 식당", price:6900, pl:"6,900원", crowd:55, open:true, hours:"10:50~14:00", address:"서울 마포구 매봉산로 31 에스플렉스센터 시너지움 지하 1층" },
+
+  // 구디 (구로디지털단지)
+  { id:40, keyword:"대륭포스트타워 7차 구로", name:"대륭포스트타워 7차 알찬푸드", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 구로구 디지털로33길 48 대륭포스트7차 지하1층", menuType:"insta", menuLink:"https://www.instagram.com/your_table__" },
+  { id:41, keyword:"지하이시티 구로", name:"지하이시티 갓한밥", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:30~14:00", address:"서울 구로구 디지털로 243 지하이시티", menuType:"insta", menuLink:"https://www.instagram.com/god1bab" },
+  { id:42, keyword:"이앤씨벤처드림타워 2차 구로", name:"이앤씨벤처드림타워 2차 윤쉐프", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:20~13:45", address:"서울 구로구 디지털로33길 55", menuType:"kakao", menuLink:"https://pf.kakao.com/_mWmPs" },
+  { id:43, keyword:"코오롱싸이언스밸리 1차", name:"코오롱싸이언스밸리 1차 윤쉐프코오롱", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 구로구 디지털로34길 43", menuType:"kakao", menuLink:"https://pf.kakao.com/_Xxhxkhs" },
+  { id:44, keyword:"벽산디지털밸리 1차 구로", name:"벽산디지털밸리 1차 더이룸", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 구로구 디지털로27길 24 지하1층", menuType:"url", menuLink:"https://naver.me/GI3Jwc4m" },
+  { id:45, keyword:"한신아이티타워 구로", name:"한신아이티타워 식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 구로구 디지털로 272" },
+  { id:46, keyword:"대륭포스트타워 1차 구로", name:"대륭포스트타워 1차 더이츠푸드", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:00~13:40", address:"서울 구로구 디지털로 288 지하1층" },
+  { id:47, keyword:"벽산디지털밸리 7차 구로", name:"벽산디지털밸리 7차 자연푸드", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 구로구 디지털로33길 50" },
+  { id:48, keyword:"대륭포스트타워 3차 구로", name:"대륭포스트타워 3차 온정", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 구로구 디지털로34길 27", menuType:"kakao", menuLink:"https://pf.kakao.com/_BdwNn" },
+  { id:49, keyword:"삼성IT밸리 구로", name:"삼성IT밸리 푸드라운지", price:8200, pl:"8,200원", crowd:55, open:true, hours:"11:10~15:00", address:"서울 구로구 디지털로33길 27 삼성IT밸리 지하1층", menuType:"insta", menuLink:"https://www.instagram.com/samsungit_foodlounge" },
+  { id:50, keyword:"에이스테크노타워8차 구로", name:"에이스테크노타워8차 봄봄", price:9000, pl:"9,000원", crowd:55, open:true, hours:"11:10~15:00", address:"서울 구로구 디지털로33길 11 지하1층", menuType:"url", menuLink:"https://naver.me/GXgASOz1" },
 ];
 
 let filter='all', map, overlays=[], resolvedData=[], currentCafe=null, userLat=null, userLng=null;
@@ -616,6 +657,10 @@ function openMenu() {
     if(confirm('이 식당은 오픈채팅에서 메뉴를 안내해요. 이동할까요?')) {
       window.open(c.menuLink, '_blank');
     }
+  } else if(type === 'insta') {
+    if(confirm('이 식당은 인스타그램에서 메뉴를 안내해요. 이동할까요?')) {
+      window.open(c.menuLink, '_blank');
+    }
   } else if(type === 'app') {
     if(confirm('이 식당은 전용 앱에서 메뉴를 안내해요. 스토어로 이동할까요?')) {
       const isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -759,27 +804,41 @@ function selectCrowd(btn, val) {
   document.getElementById('fc').value = val;
 }
 
-function openModal(){ document.getElementById('moverlay').classList.add('open'); }
+function openModal(){
+  document.getElementById('moverlay').classList.add('open');
+  const ta = document.querySelector('#modal textarea');
+  if(ta) ta.placeholder = '구내식당 주의사항을 자유롭게 적어주세요.';
+}
 function closeModal(){ document.getElementById('moverlay').classList.remove('open'); }
+
+function reportError() {
+  if(!currentCafe) return;
+  openModal();
+  document.getElementById('fn').value = currentCafe.name;
+  document.querySelector('#modal textarea').placeholder = '잘못된 정보가 있다면 알려주세요!';
+}
 
 async function submitReport(){
   const name = document.getElementById('fn').value;
   const price = document.getElementById('fp').value;
+  const hours = document.getElementById('fh').value;
   const crowd = document.getElementById('fc').value;
   const comment = document.querySelector('#modal textarea').value;
   if(!name){ alert('식당 이름은 필수예요!'); return; }
   const btn = document.querySelector('.msubmit');
   btn.textContent = '제보 중...'; btn.disabled = true;
   try {
+    const fullComment = (hours ? '운영시간:' + hours + ' / ' : '') + comment;
     const res = await fetch(SUPABASE_URL+'/rest/v1/reports', {
       method:'POST',
       headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'},
-      body: JSON.stringify({ cafeteria_name:name, price, crowd, comment:comment })
+      body: JSON.stringify({ cafeteria_name:name, price, crowd, comment:fullComment })
     });
     if(res.ok||res.status===201){
       showToast('제보해주셔서 감사해요!');
       document.getElementById('fn').value='';
       document.getElementById('fp').value='';
+      document.getElementById('fh').value='';
       document.getElementById('fc').value='';
       document.querySelector('#modal textarea').value='';
       closeModal();
