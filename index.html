@@ -1379,10 +1379,10 @@ kakao.maps.load(function(){
     center: new kakao.maps.LatLng(37.5255, 126.9200),
     level: 4
   });
-  const ps = new kakao.maps.services.Places();
+  const geocoder = new kakao.maps.services.Geocoder();
   let done = 0;
   cafeterias.forEach(cafe => {
-    ps.keywordSearch(cafe.keyword, function(result, status){
+    geocoder.addressSearch(cafe.address, function(result, status){
       done++;
       if(status === kakao.maps.services.Status.OK && result.length > 0){
         cafe.lat = parseFloat(result[0].y);
