@@ -632,7 +632,7 @@ function showAppPopup(appName, searchNote, iosLink, androidLink) {
   overlay.style.display = 'flex';
 }
 
-
+function customConfirm(msg) {
   return new Promise((resolve) => {
     const overlay = document.getElementById('confirm-overlay');
     const msgEl = document.getElementById('confirm-msg');
