@@ -207,8 +207,6 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
 #modal.error-mode .msubmit{background:#f59e0b;box-shadow:0 4px 12px rgba(245,158,11,0.35);}
 #modal.error-mode .msubmit:active{background:#d97706;}
 
-/* 혼잡도 버튼 선택 상태 */
-#fc-wrap button{transition:all .15s;}
 </style>
 </head>
 <body>
@@ -357,8 +355,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       </button>
     </div>
 
-    <div id="p-rating-wrap" style="margin-bottom:10px;font-size:13px;color:var(--slate-500);"></div>
-    <div style="display:flex;align-items:center;gap:4px;margin-bottom:6px;font-size:12px;color:var(--slate-500);">
+    <div id="p-rating-wrap" style="margin-bottom:12px;font-size:13px;color:var(--slate-500);"></div>
+    <div style="display:flex;align-items:center;gap:4px;margin-bottom:10px;font-size:12px;color:var(--slate-500);">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="flex-shrink:0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
       <span id="paddr" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;"></span>
       <button onclick="copyAddress()" style="background:none;border:none;cursor:pointer;color:var(--slate-400);font-size:11px;font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:2px;flex-shrink:0;">
@@ -366,7 +364,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
         복사
       </button>
     </div>
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:12px;color:var(--slate-500);">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;font-size:12px;color:var(--slate-500);">
       <span style="display:flex;align-items:center;gap:3px;">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
         운영시간: <span id="phours" style="color:var(--slate-800);font-weight:700;"></span>
@@ -375,14 +373,6 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
         현재거리: <span id="pdist" style="color:var(--slate-800);font-weight:700;">계산 중...</span>
       </span>
-    </div>
-
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;line-height:1;">
-      <span style="font-size:12px;color:var(--slate-500);white-space:nowrap;flex-shrink:0;">혼잡도</span>
-      <div class="crowd-bar-track" style="flex:1;height:8px;display:flex;align-items:center;">
-        <div class="crowd-bar-fill" id="pcrowd-bar" style="height:100%;"></div>
-      </div>
-      <span id="pcrowd-label" style="font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;"></span>
     </div>
     <div id="menu-btn-wrap" style="display:none;margin-bottom:12px;">
       <button onclick="openMenu()" style="width:100%;background:var(--green-light);color:var(--green-text);border:none;border-radius:12px;padding:11px;font-size:14px;font-family:'Nanum Gothic',sans-serif;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
@@ -447,14 +437,6 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--slate-50);color:var(
       <div class="fg"><label>식당 이름</label><input type="text" id="fn" placeholder="예: KBS 구내식당"/></div>
       <div class="fg"><label>외부인 이용 가격</label><input type="text" id="fp" placeholder="예: 5,500원"/></div>
       <div class="fg"><label>외부인 이용 운영시간</label><input type="text" id="fh" placeholder="예: 11:30~14:00"/></div>
-      <div class="fg"><label>혼잡도</label>
-        <div id="fc-wrap" style="display:flex;gap:8px;">
-          <button type="button" data-color="#059669" onclick="selectCrowd(this,'여유')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">여유</button>
-          <button type="button" data-color="#f97316" onclick="selectCrowd(this,'보통')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">보통</button>
-          <button type="button" data-color="#ef4444" onclick="selectCrowd(this,'혼잡')" style="flex:1;padding:10px;border:1.5px solid var(--slate-200);border-radius:12px;background:var(--white);font-size:13px;font-family:'Nanum Gothic',sans-serif;font-weight:700;color:var(--slate-500);cursor:pointer;">혼잡</button>
-        </div>
-        <input type="hidden" id="fc" value=""/>
-      </div>
       <div class="fg"><label>추가 정보 (선택)</label><textarea id="fcomment" placeholder="구내식당 주의사항을 자유롭게 적어주세요."></textarea></div>
       <div class="mbtns">
         <button class="mcancel" onclick="closeModal()">취소</button>
@@ -745,17 +727,6 @@ function openPanel(id) {
   document.getElementById('phours').textContent = c.hours;
   updateDist(c);
 
-  const crowdColor = getCrowdColor(c.crowd);
-  document.getElementById('pcrowd-bar').style.width = c.crowd+'%';
-  document.getElementById('pcrowd-bar').style.background = crowdColor;
-
-  const crowdLabel = document.getElementById('pcrowd-label');
-  if(crowdLabel) {
-    const cl = c.crowd < 40 ? '쾌적' : c.crowd < 70 ? '보통' : '혼잡';
-    const cc = c.crowd < 40 ? '#059669' : c.crowd < 70 ? '#f97316' : '#ef4444';
-    crowdLabel.innerHTML = `<span style="width:8px;height:8px;border-radius:50%;background:${cc};display:inline-block;"></span> <span style="color:${cc};">${cl}</span>`;
-  }
-
   const menuBtn = document.getElementById('menu-btn-wrap');
   const hasMenu = c.menuType && c.menuType !== 'none' && (c.menuLink || c.menuLinkIos || c.menuLinkAndroid);
   menuBtn.style.display = hasMenu ? 'block' : 'none';
@@ -906,20 +877,6 @@ function copyAddress() {
   });
 }
 
-let selectedCrowdBtn = null;
-function selectCrowd(btn, val) {
-  document.querySelectorAll('#fc-wrap button').forEach(b => {
-    b.style.background = 'var(--white)';
-    b.style.color = 'var(--slate-500)';
-    b.style.borderColor = 'var(--slate-200)';
-  });
-  const color = btn.dataset.color;
-  btn.style.background = color;
-  btn.style.color = '#fff';
-  btn.style.borderColor = color;
-  document.getElementById('fc').value = val;
-}
-
 // ===== 모달 열기/닫기 =====
 function openModal() {
   const modal = document.getElementById('modal');
@@ -954,7 +911,6 @@ async function submitReport() {
   const name = document.getElementById('fn').value.trim();
   const price = document.getElementById('fp').value.trim();
   const hours = document.getElementById('fh').value.trim();
-  const crowd = document.getElementById('fc').value;
   const comment = document.getElementById('fcomment').value.trim();
   if(!name) { showToast('식당 이름은 필수예요!'); return; }
   const btn = document.getElementById('modal-submit-btn');
@@ -969,20 +925,14 @@ async function submitReport() {
         'Authorization': 'Bearer ' + SUPABASE_KEY,
         'Prefer': 'return=minimal'
       },
-      body: JSON.stringify({ cafeteria_name: name, price, hours, crowd, comment })
+      body: JSON.stringify({ cafeteria_name: name, price, hours, comment })
     });
     if(res.ok || res.status === 201 || res.status === 204) {
       showToast('제보해주셔서 감사해요! 🙏');
       document.getElementById('fn').value = '';
       document.getElementById('fp').value = '';
       document.getElementById('fh').value = '';
-      document.getElementById('fc').value = '';
       document.getElementById('fcomment').value = '';
-      document.querySelectorAll('#fc-wrap button').forEach(b => {
-        b.style.background = 'var(--white)';
-        b.style.color = 'var(--slate-500)';
-        b.style.borderColor = 'var(--slate-200)';
-      });
       closeModal();
     } else {
       const errText = await res.text();
