@@ -600,7 +600,39 @@ function goMyLocation() {
   );
 }
 
-function customConfirm(msg) {
+function showAppPopup(appName, searchNote, iosLink, androidLink) {
+  const overlay = document.getElementById('confirm-overlay');
+  const box = document.getElementById('confirm-box');
+  box.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <div style="width:40px;height:40px;border-radius:10px;background:#ecfdf5;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+      </div>
+      <div style="text-align:left;">
+        <div style="font-size:14px;font-weight:700;color:var(--slate-900);">이 식당은 ${appName} 앱에서 메뉴를 안내해요.</div>
+        ${searchNote ? `<div style="font-size:12px;color:var(--slate-500);margin-top:2px;">앱에서 아래 이름으로 검색하면 확인할 수 있어요.</div>` : ''}
+      </div>
+    </div>
+    ${searchNote ? `<div style="background:#f1f5f9;border-radius:10px;padding:8px 12px;font-size:13px;color:#475569;display:flex;align-items:center;gap:6px;margin-bottom:14px;text-align:left;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      ${searchNote}
+    </div>` : '<div style="margin-bottom:14px;"></div>'}
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${iosLink ? `<button onclick="window.open('${iosLink}','_blank');document.getElementById('confirm-overlay').style.display='none';" style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;border:1.5px solid #e2e8f0;background:#fff;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;width:100%;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4H8a4 4 0 0 1 4-4z"/><rect x="4" y="8" width="16" height="13" rx="2"/></svg>
+        App Store에서 받기
+      </button>` : ''}
+      ${androidLink ? `<button onclick="window.open('${androidLink}','_blank');document.getElementById('confirm-overlay').style.display='none';" style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;border:1.5px solid #e2e8f0;background:#fff;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;width:100%;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2"><polygon points="3 3 21 12 3 21 3 3"/></svg>
+        Google Play에서 받기
+      </button>` : ''}
+      <button onclick="document.getElementById('confirm-overlay').style.display='none';" style="padding:10px;border:none;background:none;font-size:13px;color:#94a3b8;cursor:pointer;">닫기</button>
+    </div>
+  `;
+  overlay.style.display = 'flex';
+}
+
+
   return new Promise((resolve) => {
     const overlay = document.getElementById('confirm-overlay');
     const msgEl = document.getElementById('confirm-msg');
@@ -742,21 +774,8 @@ async function openMenu() {
     if(ok) window.open(c.menuLink, '_blank');
   } else if(type === 'app') {
     const appNote = c.menuAppNote ? c.menuAppNote.replace(/\s*검색$/, '') : '';
-    const searchNote = appNote ? `\n앱 설치 후 '${appNote}'으로 검색하세요!` : '';
-    const ok = await customConfirm(`이 식당은 ${c.menuAppName || '전용 앱'}에서 메뉴를 안내해요.${searchNote}\n스토어로 이동할까요?`);
-    if(ok) {
-      const isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-      const isAndroid = /Android/i.test(navigator.userAgent);
-      if(isIos && c.menuLinkIos) {
-        window.open(c.menuLinkIos, '_blank');
-      } else if(isAndroid && c.menuLinkAndroid) {
-        window.open(c.menuLinkAndroid, '_blank');
-      } else {
-        const choice = await customConfirm('iOS는 [확인], Android는 [취소]를 눌러주세요.');
-        if(choice && c.menuLinkIos) window.open(c.menuLinkIos, '_blank');
-        else if(!choice && c.menuLinkAndroid) window.open(c.menuLinkAndroid, '_blank');
-      }
-    }
+    showAppPopup(c.menuAppName || '전용 앱', appNote, c.menuLinkIos, c.menuLinkAndroid);
+    return;
   } else {
     if(c.menuLink) window.open(c.menuLink, '_blank');
   }
