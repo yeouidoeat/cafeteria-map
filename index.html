@@ -481,7 +481,7 @@ const cafeterias = [
   { id:8,  keyword:"태영빌딩 여의도", name:"태영빌딩 식당", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 영등포구 여의공원로 111" },
   { id:9,  keyword:"금융투자협회 여의도", name:"한국금융투자협회 식당", price:7700, pl:"7,700원", crowd:65, open:true, hours:"11:30~13:00", address:"서울 영등포구 의사당대로 143 지하 1층" },
   { id:10, keyword:"KT 여의도지사", name:"KT그룹희망나눔재단 식당", price:6500, pl:"6,500원", crowd:50, open:true, hours:"11:40~13:30", address:"서울 영등포구 여의대로 14", menuType:"kakao", menuLink:"https://pf.kakao.com/_bwyrs" },
-  { id:11, keyword:"하나증권 여의도", name:"하나증권 식당", price:8300, pl:"8,300원", crowd:60, open:true, hours:"12:00~13:00", address:"서울 영등포구 의사당대로 82 23층" },
+  { id:11, keyword:"하나증권 여의도", name:"하나증권 식당", price:8300, pl:"8,300원", crowd:60, open:true, hours:"12:00~13:00", address:"서울 영등포구 의사당대로 82 23층", menuType:"app", menuAppName:"밀케어", menuAppNote:"하나증권점 검색", menuLinkIos:"https://apps.apple.com/kr/app/meal-care/id1182175084", menuLinkAndroid:"https://play.google.com/store/search?q=%EB%B0%80%EC%BC%80%EC%96%B4&c=apps&hl=ko&gl=KR&utm_source=apac_med" },
   { id:12, keyword:"C.C.M.M빌딩 여의도", name:"C.C.M.M빌딩 식당", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 영등포구 여의공원로 101 지하 3층" },
 
   // 강남/서초
@@ -554,6 +554,17 @@ const cafeterias = [
   { id:65, keyword:"서울역 코레일 한국철도공사", name:"철도공사 서울역점 구내식당", price:6500, pl:"6,500원", crowd:55, open:true, hours:"12:15~14:00", address:"서울 용산구 한강대로 405 서울역 역사 4층", menuType:"kakao", menuLink:"https://pf.kakao.com/_PxlVxhG/108312379" },
   { id:66, keyword:"롯데마트 서울역점", name:"롯데마트 서울역점 구내식당", price:6300, pl:"6,300원", crowd:55, open:true, hours:"11:50~14:00", address:"서울 중구 한강대로 405 롯데마트 서울역점 지하1층" },
   { id:67, keyword:"LG서울역빌딩", name:"LG서울역빌딩 구내식당", price:8500, pl:"8,500원", crowd:55, open:true, hours:"12:30~13:30", address:"서울 중구 후암로 98 LG서울역빌딩 지하1층", menuType:"app", menuAppName:"밀케어", menuAppNote:"LG서울역빌딩점 검색", menuLinkIos:"https://apps.apple.com/kr/app/meal-care/id1182175084", menuLinkAndroid:"https://play.google.com/store/search?q=%EB%B0%80%EC%BC%80%EC%96%B4&c=apps&hl=ko&gl=KR&utm_source=apac_med" },
+
+  // 을지로
+  { id:68, keyword:"한진빌딩 을지로 중구", name:"한진빌딩 구내식당", price:6500, pl:"6,500원", crowd:55, open:true, hours:"11:30~13:30", address:"서울 중구 남대문로 63 한진빌딩 본관 26층" },
+  { id:69, keyword:"신한L타워 을지로", name:"신한L타워 구내식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 중구 삼일대로 358 신한L Tower 지하2층" },
+  { id:70, keyword:"유안타증권 을지로", name:"유안타증권 구내식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:50~13:30", address:"서울 중구 을지로 76 유안타증권빌딩 지하" },
+
+  // 가산디지털단지
+  { id:71, keyword:"에이스테크노타워 10차 가산", name:"에이스테크노타워 10차 더푸드스케치", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:10~14:00", address:"서울 금천구 가산디지털1로 196 에이스테크노타워10차 지하1층" },
+  { id:72, keyword:"에이스가산타워 금천구", name:"에이스가산타워 윤셰프 갤러리", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 금천구 가산디지털1로 128 에이스가산타워 지하1층" },
+  { id:73, keyword:"SJ테크노빌 가산", name:"SJ테크노빌 에스제이", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:10~14:00", address:"서울 금천구 벚꽃로 278 SJ테크노빌 지하1층", menuType:"insta", menuLink:"https://www.instagram.com/s_j_food_278" },
+  { id:74, keyword:"대륭포스트타워 5차 가산", name:"대륭포스트타워 5차 쿡플러스", price:7500, pl:"7,500원", crowd:55, open:true, hours:"10:50~13:50", address:"서울 금천구 디지털로9길 68 대륭포스트타워5차 지하1층" },
 ];
 
 let filter='all', map, overlays=[], resolvedData=[], currentCafe=null, userLat=null, userLng=null;
