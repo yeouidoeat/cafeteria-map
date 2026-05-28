@@ -553,7 +553,7 @@ const cafeterias = [
   // 서울역/용산
   { id:65, keyword:"서울역 코레일 한국철도공사", name:"철도공사 서울역점 구내식당", price:6500, pl:"6,500원", crowd:55, open:true, hours:"12:15~14:00", address:"서울 용산구 한강대로 405 서울역 역사 4층", menuType:"kakao", menuLink:"https://pf.kakao.com/_PxlVxhG/108312379" },
   { id:66, keyword:"롯데마트 서울역점", name:"롯데마트 서울역점 구내식당", price:6300, pl:"6,300원", crowd:55, open:true, hours:"11:50~14:00", address:"서울 중구 한강대로 405 롯데마트 서울역점 지하1층" },
-  { id:67, keyword:"LG서울역빌딩", name:"LG서울역빌딩 구내식당", price:8500, pl:"8,500원", crowd:55, open:true, hours:"12:30~13:30", address:"서울 중구 후암로 98 LG서울역빌딩 지하1층", menuType:"app", menuAppName:"밀케어(Meal Care)", menuAppNote:"LG서울역빌딩점 검색", menuLinkIos:"https://apps.apple.com/kr/app/meal-care/id1182175084", menuLinkAndroid:"https://play.google.com/store/search?q=%EB%B0%80%EC%BC%80%EC%96%B4&c=apps&hl=ko&gl=KR&utm_source=apac_med" },
+  { id:67, keyword:"LG서울역빌딩", name:"LG서울역빌딩 구내식당", price:8500, pl:"8,500원", crowd:55, open:true, hours:"12:30~13:30", address:"서울 중구 후암로 98 LG서울역빌딩 지하1층", menuType:"app", menuAppName:"밀케어", menuAppNote:"LG서울역빌딩점 검색", menuLinkIos:"https://apps.apple.com/kr/app/meal-care/id1182175084", menuLinkAndroid:"https://play.google.com/store/search?q=%EB%B0%80%EC%BC%80%EC%96%B4&c=apps&hl=ko&gl=KR&utm_source=apac_med" },
 ];
 
 let filter='all', map, overlays=[], resolvedData=[], currentCafe=null, userLat=null, userLng=null;
@@ -741,7 +741,8 @@ async function openMenu() {
     const ok = await customConfirm('이 식당은 인스타그램에서 메뉴를 안내해요.\n이동할까요?');
     if(ok) window.open(c.menuLink, '_blank');
   } else if(type === 'app') {
-    const searchNote = c.menuAppNote ? `\n앱 설치 후 '${c.menuAppNote}'으로 검색하세요!` : '';
+    const appNote = c.menuAppNote ? c.menuAppNote.replace(/\s*검색$/, '') : '';
+    const searchNote = appNote ? `\n앱 설치 후 '${appNote}'으로 검색하세요!` : '';
     const ok = await customConfirm(`이 식당은 ${c.menuAppName || '전용 앱'}에서 메뉴를 안내해요.${searchNote}\n스토어로 이동할까요?`);
     if(ok) {
       const isIos = /iPhone|iPad|iPod/i.test(navigator.userAgent);
