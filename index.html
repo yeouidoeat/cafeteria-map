@@ -453,12 +453,12 @@ const SUPABASE_KEY = 'sb_publishable_PnEIiBPZEipsAxGTcxgi_A_P6iXS4GI';
 
 const cafeterias = [
   // 여의도
-  { id:1,  keyword:"KBS 본관 여의도", name:"KBS 본관 식당", price:5500, pl:"5,500원", crowd:60, open:true, hours:"11:30~14:00", address:"서울 영등포구 여의공원로 13", lat:37.52157, lng:126.92436, menuType:"url", menuLink:"https://kbsg.co.kr/?page_id=19" },
-  { id:2,  keyword:"KBS 여의도 신관", name:"KBS 신관 식당", price:5500, pl:"5,500원", crowd:55, open:true, hours:"11:20~14:00", address:"서울 영등포구 여의공원로 13", lat:37.52237, lng:126.92378, menuType:"url", menuLink:"https://kbsg.co.kr/?page_id=19#tab-1525151991-2-86" },
+  { id:1,  keyword:"KBS 본관 여의도", useKeyword:true, name:"KBS 본관 식당", price:5500, pl:"5,500원", crowd:60, open:true, hours:"11:30~14:00", address:"서울 영등포구 여의공원로 13", menuType:"url", menuLink:"https://kbsg.co.kr/?page_id=19" },
+  { id:2,  keyword:"KBS 신관 여의도", useKeyword:true, name:"KBS 신관 식당", price:5500, pl:"5,500원", crowd:55, open:true, hours:"11:20~14:00", address:"서울 영등포구 여의공원로 13", menuType:"url", menuLink:"https://kbsg.co.kr/?page_id=19#tab-1525151991-2-86" },
   { id:3,  keyword:"한국교직원공제회 여의도", name:"교직원공제회 식당", price:8500, pl:"8,500원", crowd:40, open:true, hours:"11:00~14:00", address:"서울 영등포구 여의나루로 50", menuType:"app", menuAppName:"프레시밀", menuAppNote:"한국교직원공제회 검색", menuLinkIos:"https://apps.apple.com/kr/app/%ED%94%84%EB%A0%88%EC%8B%9C%EB%B0%80/id1594764668", menuLinkAndroid:"https://play.google.com/store/apps/details?id=com.cjfreshway.fs.freshmeal" },
   { id:4,  keyword:"전국경제인연합회 여의도", name:"전경련회관 식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~13:00", address:"서울 영등포구 여의대로 24", menuType:"app", menuAppName:"프레시밀", menuAppNote:"FKI타워 검색", menuLinkIos:"https://apps.apple.com/kr/app/%ED%94%84%EB%A0%88%EC%8B%9C%EB%B0%80/id1594764668", menuLinkAndroid:"https://play.google.com/store/apps/details?id=com.cjfreshway.fs.freshmeal" },
-  { id:5,  keyword:"국회도서관 여의도", name:"국회도서관 식당", price:6000, pl:"6,000원", crowd:25, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1", lat:37.53048, lng:126.91420, menuType:"url", menuLink:"https://www.nanet.go.kr/usermadang/notice/noticeList.do?pageIndex=1&searchListGbn=&searchKeycode=ticon&searchKeyword=&searchNoSeq=8341" },
-  { id:6,  keyword:"국회박물관 여의도", name:"국회박물관 식당", price:6000, pl:"6,000원", crowd:20, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1", lat:37.53245, lng:126.91768, menuType:"url", menuLink:"https://www.nanet.go.kr/usermadang/notice/noticeList.do?pageIndex=1&searchListGbn=&searchKeycode=ticon&searchKeyword=&searchNoSeq=8341" },
+  { id:5,  keyword:"국회도서관", useKeyword:true, name:"국회도서관 식당", price:6000, pl:"6,000원", crowd:25, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1", menuType:"url", menuLink:"https://www.nanet.go.kr/usermadang/notice/noticeList.do?pageIndex=1&searchListGbn=&searchKeycode=ticon&searchKeyword=&searchNoSeq=8341" },
+  { id:6,  keyword:"국회박물관", useKeyword:true, name:"국회박물관 식당", price:6000, pl:"6,000원", crowd:20, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1", menuType:"url", menuLink:"https://www.nanet.go.kr/usermadang/notice/noticeList.do?pageIndex=1&searchListGbn=&searchKeycode=ticon&searchKeyword=&searchNoSeq=8341" },
   { id:7,  keyword:"일신빌딩 여의도", name:"일신빌딩 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 영등포구 은행로 11 지하1층", menuType:"url", menuLink:"https://map.naver.com/p/entry/place/1397161473" },
   { id:8,  keyword:"태영빌딩 여의도", name:"태영빌딩 식당", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 영등포구 여의공원로 111" },
   { id:9,  keyword:"금융투자협회 여의도", name:"한국금융투자협회 식당", price:7700, pl:"7,700원", crowd:65, open:true, hours:"11:30~13:00", address:"서울 영등포구 의사당대로 143 지하 1층" },
@@ -1362,6 +1362,7 @@ kakao.maps.load(function(){
     level: 4
   });
   const geocoder = new kakao.maps.services.Geocoder();
+  const ps = new kakao.maps.services.Places();
   let done = 0;
   cafeterias.forEach(cafe => {
     if(cafe.lat && cafe.lng) {
@@ -1373,7 +1374,7 @@ kakao.maps.load(function(){
       }
       return;
     }
-    geocoder.addressSearch(cafe.address, function(result, status){
+    const callback = function(result, status) {
       done++;
       if(status === kakao.maps.services.Status.OK && result.length > 0){
         cafe.lat = parseFloat(result[0].y);
@@ -1387,7 +1388,12 @@ kakao.maps.load(function(){
         render(resolvedData);
         setTimeout(checkUrlParam, 300);
       }
-    });
+    };
+    if(cafe.useKeyword) {
+      ps.keywordSearch(cafe.keyword, callback);
+    } else {
+      geocoder.addressSearch(cafe.address, callback);
+    }
   });
 });
 </script>
