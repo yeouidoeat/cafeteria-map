@@ -453,8 +453,8 @@ const SUPABASE_KEY = 'sb_publishable_PnEIiBPZEipsAxGTcxgi_A_P6iXS4GI';
 
 const cafeterias = [
   // 여의도
-  { id:1,  keyword:"KBS 본관 여의도", name:"KBS 본관 식당", price:5000, pl:"5,000원", crowd:60, open:true, hours:"11:30~14:00", address:"서울 영등포구 여의공원로 13", menuType:"url", menuLink:"https://kbsg.co.kr/?page_id=19" },
-  { id:2,  keyword:"KBS 여의도 신관", name:"KBS 신관 식당", price:5000, pl:"5,000원", crowd:55, open:true, hours:"11:20~14:00", address:"서울 영등포구 여의공원로 13", menuType:"url", menuLink:"https://kbsg.co.kr/?page_id=19#tab-1525151991-2-86" },
+  { id:1,  keyword:"KBS 본관 여의도", name:"KBS 본관 식당", price:5500, pl:"5,500원", crowd:60, open:true, hours:"11:30~14:00", address:"서울 영등포구 여의공원로 13", menuType:"url", menuLink:"https://kbsg.co.kr/?page_id=19" },
+  { id:2,  keyword:"KBS 여의도 신관", name:"KBS 신관 식당", price:5500, pl:"5,500원", crowd:55, open:true, hours:"11:20~14:00", address:"서울 영등포구 여의공원로 13", menuType:"url", menuLink:"https://kbsg.co.kr/?page_id=19#tab-1525151991-2-86" },
   { id:3,  keyword:"한국교직원공제회 여의도", name:"교직원공제회 식당", price:8500, pl:"8,500원", crowd:40, open:true, hours:"11:00~14:00", address:"서울 영등포구 여의나루로 50", menuType:"app", menuAppName:"프레시밀", menuAppNote:"한국교직원공제회 검색", menuLinkIos:"https://apps.apple.com/kr/app/%ED%94%84%EB%A0%88%EC%8B%9C%EB%B0%80/id1594764668", menuLinkAndroid:"https://play.google.com/store/apps/details?id=com.cjfreshway.fs.freshmeal" },
   { id:4,  keyword:"전국경제인연합회 여의도", name:"전경련회관 식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~13:00", address:"서울 영등포구 여의대로 24", menuType:"app", menuAppName:"프레시밀", menuAppNote:"FKI타워 검색", menuLinkIos:"https://apps.apple.com/kr/app/%ED%94%84%EB%A0%88%EC%8B%9C%EB%B0%80/id1594764668", menuLinkAndroid:"https://play.google.com/store/apps/details?id=com.cjfreshway.fs.freshmeal" },
   { id:5,  keyword:"국회도서관 여의도", name:"국회도서관 식당", price:6000, pl:"6,000원", crowd:25, open:true, hours:"11:30~13:30", address:"서울 영등포구 의사당대로 1", menuType:"url", menuLink:"https://www.nanet.go.kr/usermadang/notice/noticeList.do?pageIndex=1&searchListGbn=&searchKeycode=ticon&searchKeyword=&searchNoSeq=8341" },
@@ -467,38 +467,37 @@ const cafeterias = [
   { id:12, keyword:"C.C.M.M빌딩 여의도", name:"C.C.M.M빌딩 식당", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 영등포구 여의공원로 101 지하 3층" },
 
   // 강남/서초
-  { id:13, keyword:"국민연금공단 강남사옥", name:"국민연금 강남사옥 식당", price:10000, pl:"10,000원", crowd:50, open:true, hours:"11:30~13:30", address:"서울 강남구 도산대로 128 국민연금강남사옥 1-3층" },
-  { id:14, keyword:"포스코타워 역삼", name:"포스코타워 역삼 식당", price:7500, pl:"7,500원", crowd:60, open:true, hours:"11:30~13:00", address:"서울 강남구 테헤란로 134" },
+  { id:13, keyword:"국민연금공단 강남사옥", name:"국민연금 강남사옥 식당", price:10000, pl:"10,000원", crowd:50, open:true, hours:"11:30~13:30", address:"서울 강남구 도산대로 128 국민연금강남사옥 1-3층", menuType:"kakao", menuLink:"https://pf.kakao.com/_Awxosj" },
   { id:15, keyword:"카이트타워 강남", name:"카이트타워 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:10~13:00", address:"서울 강남구 테헤란로 306" },
   { id:16, keyword:"강남구청", name:"강남구청 식당", price:6700, pl:"6,700원", crowd:45, open:true, hours:"12:30~13:00", address:"서울 강남구 학동로 426" },
-  { id:17, keyword:"오크우드 프리미어 코엑스 센터", name:"코엑스 식당", price:7500, pl:"7,500원", crowd:60, open:true, hours:"10:50~14:30", address:"서울 강남구 테헤란로87길 58" },
-  { id:18, keyword:"캠코양재타워", name:"캠코양재타워 식당", price:9000, pl:"9,000원", crowd:50, open:true, hours:"11:10~14:00", address:"서울 강남구 강남대로 262 캠코양재타워 지하2층" },
+  { id:17, keyword:"오크우드 프리미어 코엑스 센터", name:"코엑스 식당", price:7500, pl:"7,500원", crowd:60, open:true, hours:"10:50~14:30", address:"서울 강남구 테헤란로87길 58 오크우드 프리미어 건물", menuType:"insta", menuLink:"https://www.instagram.com/oakwood_cafeteria_seoul" },
+  { id:18, keyword:"캠코양재타워", name:"캠코양재타워 식당", price:9000, pl:"9,000원", crowd:50, open:true, hours:"11:10~14:00", address:"서울 강남구 강남대로 262 캠코양재타워 지하2층", menuType:"insta", menuLink:"https://www.instagram.com/kamco_food" },
   { id:19, keyword:"삼성화재 본사 서초", name:"삼성화재 본사 식당", price:9000, pl:"9,000원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 서초구 서초대로74길 14" },
-  { id:20, keyword:"강남세무서", name:"강남세무서 식당", price:6000, pl:"6,000원", crowd:50, open:true, hours:"12:20~13:00", address:"서울 강남구 학동로 425" },
+  { id:20, keyword:"강남세무서", name:"강남세무서 식당", price:6700, pl:"6,700원", crowd:50, open:true, hours:"12:00~13:00", address:"서울 강남구 학동로 425" },
 
   // 광화문
-  { id:21, keyword:"LX광화문빌딩", name:"LX광화문빌딩 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:20~13:30", address:"서울 종로구 새문안로5길 13 LX광화문빌딩" },
+  { id:21, keyword:"LX광화문빌딩", name:"LX광화문빌딩 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:20~13:30", address:"서울 종로구 새문안로 58 지하2층", menuType:"app", menuAppName:"밀케어", menuAppNote:"LG광화문빌딩 검색", menuLinkIos:"https://apps.apple.com/kr/app/meal-care/id1182175084", menuLinkAndroid:"https://play.google.com/store/search?q=%EB%B0%80%EC%BC%80%EC%96%B4&c=apps&hl=ko&gl=KR&utm_source=apac_med" },
   { id:22, keyword:"롯데카드 본사 새문안로", name:"롯데카드 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:00~13:30", address:"서울 종로구 새문안로 76" },
   { id:23, keyword:"서울신문사 광화문", name:"서울신문사 식당", price:7000, pl:"7,000원", crowd:50, open:true, hours:"11:00~13:30", address:"서울 중구 세종대로 124" },
-  { id:24, keyword:"예금보험공사 청계천로", name:"예금보험공사 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:10~13:15", address:"서울 중구 청계천로 30" },
-  { id:25, keyword:"케이트윈타워 종로구청", name:"종로구청 식당", price:6000, pl:"6,000원", crowd:50, open:true, hours:"12:30~13:30", address:"서울 종로구 종로1길 50 케이트윈타워B동" },
+  { id:24, keyword:"예금보험공사 청계천로", name:"예금보험공사 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:10~13:15", address:"서울 중구 청계천로 30", menuType:"kakao", menuLink:"https://pf.kakao.com/_CbNsG" },
+  { id:25, keyword:"케이트윈타워 종로구청", name:"종로구청 식당", price:6000, pl:"6,000원", crowd:50, open:true, hours:"12:30~13:30", address:"서울 종로구 종로1길 50 케이트윈타워B동 지하1층" },
   { id:26, keyword:"부영그룹 본사 세종대로", name:"부영그룹 식당", price:9500, pl:"9,500원", crowd:50, open:true, hours:"11:00~14:00", address:"서울 중구 세종대로9길 42 지하1층" },
   { id:27, keyword:"광화문우체국", name:"광화문우체국 식당", price:5800, pl:"5,800원", crowd:55, open:true, hours:"12:00~13:00", address:"서울 종로구 종로 6 광화문우체국" },
 
   // 판교
-  { id:28, keyword:"판교세븐벤처밸리", name:"판교세븐벤처밸리 식당", price:5500, pl:"5,500원", crowd:55, open:true, hours:"11:30~13:10", address:"경기 성남시 분당구 판교로228번길 15" },
-  { id:29, keyword:"판교도서관", name:"판교도서관 식당", price:6000, pl:"6,000원", crowd:50, open:true, hours:"11:30~14:00", address:"경기 성남시 분당구 운중로 227" },
-  { id:30, keyword:"경기창조경제혁신센터", name:"경기창조경제혁신센터 식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"11:30~13:30", address:"경기 성남시 분당구 대왕판교로645번길 12" },
+  { id:28, keyword:"판교세븐벤처밸리", name:"판교세븐벤처밸리 식당", price:5500, pl:"5,500원", crowd:55, open:true, hours:"11:30~13:10", address:"경기 성남시 분당구 판교로228번길 15", menuType:"url", menuLink:"http://pvv.co.kr/bbs/index.php?code=bbs_menu01" },
+  { id:29, keyword:"판교도서관", name:"판교도서관 식당", price:6000, pl:"6,000원", crowd:50, open:true, hours:"11:30~14:00", address:"경기도 성남시 분당구 판교공원로 4길 27", menuType:"url", menuLink:"https://www.snlib.go.kr/pg/menu/10511/bbs/20023/bbsPostList.do" },
+  { id:30, keyword:"경기창조경제혁신센터", name:"경기창조경제혁신센터 식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"11:30~13:30", address:"경기 성남시 분당구 대왕판교로645번길 12", menuType:"url", menuLink:"https://www.pangyotechnovalley.org/base/board/list?boardManagementNo=18&page=1&searchCategory=&searchType=&searchWord=&menuLevel=2&menuNo=55" },
   { id:31, keyword:"미래에셋벤처타워 판교", name:"미래에셋벤처타워 식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:30~13:30", address:"경기 성남시 분당구 판교역로241번길 20" },
   { id:32, keyword:"코리아바이오파크 판교", name:"코리아바이오파크 식당", price:6500, pl:"6,500원", crowd:50, open:true, hours:"11:20~13:30", address:"경기 성남시 분당구 대왕판교로 700" },
   { id:33, keyword:"판교 이노밸리", name:"판교 이노밸리 식당", price:5600, pl:"5,600원", crowd:55, open:true, hours:"11:30~14:00", address:"경기 성남시 분당구 판교로 255", menuType:"kakao", menuLink:"https://pf.kakao.com/_LCxlxlxb" },
-  { id:34, keyword:"판교제2테크노밸리 기업지원허브", name:"판교제2테크노밸리 식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:40~13:30", address:"경기 성남시 수정구 대왕판교로 815" },
+  { id:34, keyword:"판교제2테크노밸리 기업지원허브", name:"판교제2테크노밸리 식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:40~13:30", address:"경기 성남시 수정구 대왕판교로 815", menuType:"url", menuLink:"https://pangyozone.or.kr/usc/bbs/selectBoardList.php?board_id=notice" },
 
   // 상암
   { id:35, keyword:"KBS미디어센터 상암", name:"밥플러스 KBS미디어센터점", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 마포구 매봉산로 45 KBS미디어센터 지하 1층", menuType:"kakao", menuLink:"https://pf.kakao.com/_FxcUxcG" },
   { id:36, keyword:"누리꿈스퀘어 상암", name:"밥플러스 누리꿈스퀘어점", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 마포구 월드컵북로 396 지하1층", menuType:"kakao", menuLink:"https://pf.kakao.com/_aZJxon" },
   { id:37, keyword:"DMC첨단산업센터", name:"DMC 첨단산업센터 식당", price:5500, pl:"5,500원", crowd:50, open:true, hours:"11:30~13:30", address:"서울 마포구 성암로 330 DMC첨단산업센터 8층", menuType:"kakao", menuLink:"https://pf.kakao.com/_TjxmYT" },
-  { id:38, keyword:"JTBC 상암", name:"JTBC 식당", price:7500, pl:"7,500원", crowd:60, open:true, hours:"12:00~13:30", address:"서울 마포구 상암산로 38" },
+  { id:38, keyword:"JTBC 상암", name:"JTBC 식당", price:8500, pl:"8,500원", crowd:60, open:true, hours:"12:00~13:30", address:"서울 마포구 상암산로 38" },
   { id:39, keyword:"에스플렉스센터 상암", name:"에스플렉스센터 식당", price:6900, pl:"6,900원", crowd:55, open:true, hours:"10:50~14:00", address:"서울 마포구 매봉산로 31 에스플렉스센터 시너지움 지하 1층" },
 
   // 구디 (구로디지털단지)
@@ -516,9 +515,9 @@ const cafeterias = [
 
   // 마포
   { id:51, keyword:"마포타워 마포구", name:"마포타워 구내식당", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:10~13:00", address:"서울 마포구 마포대로4다길 41 지하1층" },
-  { id:52, keyword:"일진빌딩 마포", name:"일진빌딩 구내식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:30~13:30", address:"서울 마포구 마포대로 45" },
+  { id:52, keyword:"일진빌딩 마포", name:"일진빌딩 구내식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:30~13:30", address:"서울 마포구 마포대로 45", menuType:"kakao", menuLink:"https://pf.kakao.com/_uFfAX/posts" },
   { id:53, keyword:"마포경찰서", name:"마포경찰서 구내식당", price:6500, pl:"6,500원", crowd:55, open:true, hours:"12:00~13:00", address:"서울 마포구 마포대로 183" },
-  { id:54, keyword:"서울서부지방법원 마포", name:"서울지방법원 구내식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"11:40~13:30", address:"서울 마포구 마포대로 174 서부지방법원 서부지방검찰청" },
+  { id:54, keyword:"서울서부지방법원 마포", name:"서울지방법원 구내식당", price:6800, pl:"6,800원", crowd:55, open:true, hours:"11:40~13:30", address:"서울 마포구 마포대로 174 서부지방법원 서부지방검찰청" },
   { id:55, keyword:"프론트원 마포", name:"프론트원 마포점 구내식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 마포구 마포대로 122", menuType:"app", menuAppName:"밀케어", menuAppNote:"프론트원마포점 검색", menuLinkIos:"https://apps.apple.com/kr/app/meal-care/id1182175084", menuLinkAndroid:"https://play.google.com/store/search?q=%EB%B0%80%EC%BC%80%EC%96%B4&c=apps&hl=ko&gl=KR&utm_source=apac_med" },
   { id:56, keyword:"LG마포빌딩", name:"LG 마포빌딩 구내식당", price:7700, pl:"7,700원", crowd:55, open:true, hours:"12:20~13:00", address:"서울 마포구 마포대로 155", menuType:"app", menuAppName:"밀케어", menuAppNote:"LG마포점 검색", menuLinkIos:"https://apps.apple.com/kr/app/meal-care/id1182175084", menuLinkAndroid:"https://play.google.com/store/search?q=%EB%B0%80%EC%BC%80%EC%96%B4&c=apps&hl=ko&gl=KR&utm_source=apac_med" },
   { id:57, keyword:"서울서부지방검찰청", name:"서울서부지검 구내식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 마포구 마포대로 174 서울서부지방검찰청" },
@@ -530,7 +529,7 @@ const cafeterias = [
   { id:61, keyword:"다올푸드 영등포", name:"다올푸드 구내식당", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 영등포구 양산로 57-5 1층" },
   { id:62, keyword:"우림정 영등포 선유", name:"우림정 구내식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:30~14:00", address:"서울 영등포구 선유서로25길 32" },
   { id:63, keyword:"파인쿡 영등포 선유", name:"파인쿡 구내식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"11:40~13:00", address:"서울 영등포구 선유서로25길 26" },
-  { id:64, keyword:"에이스하이테크시티 3차 영등포", name:"에이스하이테크시티 3차 구내식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 영등포구 선유로 130" },
+  { id:64, keyword:"에이스하이테크시티 3차 영등포", name:"에이스하이테크시티 3차 구내식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 영등포구 선유로 130 지하1층", menuType:"url", menuLink:"https://blog.naver.com/yjm3038/222191646255" },
 
   // 서울역/용산
   { id:65, keyword:"서울역 코레일 한국철도공사", name:"철도공사 서울역점 구내식당", price:6500, pl:"6,500원", crowd:55, open:true, hours:"12:15~14:00", address:"서울 용산구 한강대로 405 서울역 역사 4층", menuType:"kakao", menuLink:"https://pf.kakao.com/_PxlVxhG/108312379" },
@@ -539,14 +538,13 @@ const cafeterias = [
 
   // 을지로
   { id:68, keyword:"한진빌딩 을지로 중구", name:"한진빌딩 구내식당", price:6500, pl:"6,500원", crowd:55, open:true, hours:"11:30~13:30", address:"서울 중구 남대문로 63 한진빌딩 본관 26층" },
-  { id:69, keyword:"신한L타워 을지로", name:"신한L타워 구내식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 중구 삼일대로 358 신한L Tower 지하2층" },
-  { id:70, keyword:"유안타증권 을지로", name:"유안타증권 구내식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:50~13:30", address:"서울 중구 을지로 76 유안타증권빌딩 지하" },
+  { id:69, keyword:"신한L타워 을지로", name:"신한L타워 구내식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 중구 삼일대로 358 신한L Tower 지하2층" },
 
   // 가산디지털단지
-  { id:71, keyword:"에이스테크노타워 10차 가산", name:"에이스테크노타워 10차 더푸드스케치", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:10~14:00", address:"서울 금천구 가산디지털1로 196 에이스테크노타워10차 지하1층" },
+  { id:71, keyword:"에이스테크노타워 10차 가산", name:"에이스테크노타워 10차 더푸드스케치", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:10~14:00", address:"서울 금천구 가산디지털1로 196 에이스테크노타워10차 지하1층", menuType:"kakao", menuLink:"https://pf.kakao.com/_nFfwj" },
   { id:72, keyword:"에이스가산타워 금천구", name:"에이스가산타워 윤셰프 갤러리", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 금천구 가산디지털1로 128 에이스가산타워 지하1층" },
   { id:73, keyword:"SJ테크노빌 가산", name:"SJ테크노빌 에스제이", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:10~14:00", address:"서울 금천구 벚꽃로 278 SJ테크노빌 지하1층", menuType:"insta", menuLink:"https://www.instagram.com/s_j_food_278" },
-  { id:74, keyword:"대륭포스트타워 5차 가산", name:"대륭포스트타워 5차 쿡플러스", price:7500, pl:"7,500원", crowd:55, open:true, hours:"10:50~13:50", address:"서울 금천구 디지털로9길 68 대륭포스트타워5차 지하1층" },
+  { id:74, keyword:"대륭포스트타워 5차 가산", name:"대륭포스트타워 5차 쿡플러스", price:7500, pl:"7,500원", crowd:55, open:true, hours:"10:50~13:50", address:"서울 금천구 디지털로9길 68 대륭포스트타워5차 지하1층", menuType:"kakao", menuLink:"https://pf.kakao.com/_XBiQxj" },
 ];
 
 let filter='all', map, overlays=[], resolvedData=[], currentCafe=null, userLat=null, userLng=null;
