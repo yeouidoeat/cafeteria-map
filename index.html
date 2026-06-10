@@ -526,7 +526,7 @@ const cafeterias = [
   { id:60, keyword:"서울신용보증재단 마포", name:"신용보증재단 구내식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:30~13:30", address:"서울 마포구 마포대로 163 서울신용보증재단 빌딩 지하1층" },
 
   // 영등포
-  { id:61, keyword:"다올푸드 영등포", name:"다올푸드 구내식당", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 영등포구 양산로 57-5 1층" },
+  { id:61, keyword:"다올푸드 영등포", useKeyword:true, name:"다올푸드 구내식당", price:8500, pl:"8,500원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 영등포구 양산로 57-5 1층" },
   { id:62, keyword:"우림정 영등포 선유", name:"우림정 구내식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:30~14:00", address:"서울 영등포구 선유서로25길 32" },
   { id:63, keyword:"파인쿡 영등포 선유", name:"파인쿡 구내식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"11:40~13:00", address:"서울 영등포구 선유서로25길 26" },
   { id:64, keyword:"에이스하이테크시티 3차 영등포", name:"에이스하이테크시티 3차 구내식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 영등포구 선유로 130 지하1층", menuType:"url", menuLink:"https://blog.naver.com/yjm3038/222191646255" },
@@ -560,10 +560,10 @@ const cafeterias = [
   // 강서/마곡
   { id:82, keyword:"강서우체국 서울", name:"강서우체국 구내식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"11:40~13:00", address:"서울 강서구 강서로 448 서울강서우체국" },
   { id:83, keyword:"에이스한식뷔페 강서", name:"에이스한식뷔페", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 강서구 강서로 468 B1" },
-  { id:84, keyword:"더리브골드타워 강서", name:"밥플러스 더리브골드타워", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 강서구 양천로 400-12 201, 202호", menuType:"insta", menuLink:"https://www.instagram.com/babplus_thelivgoldtower" },
+  { id:84, keyword:"더리브골드타워 강서", useKeyword:true, name:"밥플러스 더리브골드타워", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 강서구 양천로 400-12 201, 202호", menuType:"insta", menuLink:"https://www.instagram.com/babplus_thelivgoldtower" },
   { id:85, keyword:"글로벌마케팅센터 강서", name:"글로벌마케팅센터 구내식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"11:30~13:00", address:"서울 강서구 공항대로61길 29 지하1층" },
   { id:86, keyword:"코엑스마곡 에렉스", name:"코엑스마곡 에렉스 카페테리아", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 강서구 마곡중앙로 143 본동 지하1층", menuType:"url", menuLink:"https://naver.me/F8821R2H" },
-  { id:87, keyword:"마곡케이스퀘어 밥플러스", name:"밥플러스 마곡케이스퀘어", price:9000, pl:"9,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 강서구 마곡중앙로 105-7 B동 지하2층 B213-1호", menuType:"kakao", menuLink:"https://pf.kakao.com/_xbSqDn" },
+  { id:87, keyword:"마곡케이스퀘어 밥플러스", useKeyword:true, name:"밥플러스 마곡케이스퀘어", price:9000, pl:"9,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 강서구 마곡중앙로 105-7 B동 지하2층 B213-1호", menuType:"kakao", menuLink:"https://pf.kakao.com/_xbSqDn" },
   { id:88, keyword:"뉴브클라우드힐스 마곡", name:"사랑해밥상 마곡점", price:9000, pl:"9,000원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 강서구 마곡중앙8로1길 81 뉴브클라우드힐스 B1층", menuType:"kakao", menuLink:"https://pf.kakao.com/_xerxkxen" },
   { id:89, keyword:"NH서울타워 강서", name:"밥플러스 NH서울타워", price:9000, pl:"9,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 강서구 양천로 570 2층 212호", menuType:"kakao", menuLink:"https://pf.kakao.com/_xnBcxdG" },
 
@@ -583,8 +583,8 @@ const cafeterias = [
   { id:96, keyword:"메타모르포 성수", name:"런치투데이", price:9000, pl:"9,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 성동구 성수일로 89 메타모르포 1층 104호", menuType:"url", menuLink:"https://m.blog.naver.com/lunchtoday112/223612271278" },
   { id:97, keyword:"성수역SKV1타워", name:"밥플러스 성수역점", price:9000, pl:"9,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 성동구 연무장5가길 25 성수역SKV1타워 2층 202호", menuType:"kakao", menuLink:"https://pf.kakao.com/_hqGbn" },
   { id:98, keyword:"성수 SK V1센터1", name:"프리미엄 직원식당 성수점", price:8900, pl:"8,900원", crowd:55, open:true, hours:"11:00~13:40", address:"서울 성동구 아차산로17길 48 성수 SK V1센터1 지하1층", menuType:"insta", menuLink:"https://www.instagram.com/jikdang_seongsu" },
-  { id:99, keyword:"APEX센터 성수", name:"런치플러스", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 성동구 성수동2가 289-5 APEX센터 1층" },
-  { id:100, keyword:"성수정찬 성동구", name:"성수정찬", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 성동구 성수동2가 227-61 지하1층", menuType:"insta", menuLink:"https://www.instagram.com/seongsu_dining/" },
+  { id:99, keyword:"APEX센터 성수", useKeyword:true, name:"런치플러스", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 성동구 성수동2가 289-5 APEX센터 1층" },
+  { id:100, keyword:"성수정찬 성동구", useKeyword:true, name:"성수정찬", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 성동구 성수동2가 227-61 지하1층", menuType:"insta", menuLink:"https://www.instagram.com/seongsu_dining/" },
   { id:101, keyword:"아크밸리 성수", name:"회사식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"11:20~14:10", address:"서울 성동구 성수이로22길 37 아크밸리 1층" },
 ];
 
