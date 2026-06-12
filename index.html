@@ -863,7 +863,15 @@ function toggleView() {
     iconList.style.display = 'none';
     iconMap.style.display = 'block';
     document.getElementById('my-location-btn').style.display = 'none';
-    renderList(resolvedData);
+    if(!userLat && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        userLat = pos.coords.latitude;
+        userLng = pos.coords.longitude;
+        renderList(resolvedData);
+      }, () => renderList(resolvedData));
+    } else {
+      renderList(resolvedData);
+    }
   } else {
     listEl.style.display = 'none';
     mapEl.style.display = 'block';
