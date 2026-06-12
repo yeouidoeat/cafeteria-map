@@ -1028,7 +1028,7 @@ async function loadComments(cafeId) {
     list.innerHTML = data.map(c => {
       const time = new Date(c.created_at);
       const diff = Math.floor((Date.now() - time) / 60000);
-      const timeStr = diff < 1 ? '방금' : diff < 60 ? diff + '분 전' : Math.floor(diff/60) + '시간 전';
+      const timeStr = diff < 1 ? '방금' : diff < 60 ? diff + '분 전' : diff < 1440 ? Math.floor(diff/60) + '시간 전' : diff < 10080 ? Math.floor(diff/1440) + '일 전' : `${time.getFullYear()}.${String(time.getMonth()+1).padStart(2,'0')}.${String(time.getDate()).padStart(2,'0')}`;
       const isMine = myComments.includes(c.id);
       return `<div class="comment-item" id="comment-${c.id}" style="display:flex;align-items:flex-start;gap:6px;padding:7px 0;border-bottom:0.5px solid var(--slate-100);">
         <div style="flex:1;font-size:13px;color:var(--slate-800);line-height:1.4;">
@@ -1375,7 +1375,7 @@ async function loadFeed() {
       const dotColor = cafe ? getPinColor(cafe) : '#94a3b8';
       const time = new Date(c.created_at);
       const diff = Math.floor((Date.now() - time) / 60000);
-      const timeStr = diff < 1 ? '방금 전' : diff < 60 ? diff + '분 전' : diff < 1440 ? Math.floor(diff/60) + '시간 전' : Math.floor(diff/1440) + '일 전';
+      const timeStr = diff < 1 ? '방금 전' : diff < 60 ? diff + '분 전' : diff < 1440 ? Math.floor(diff/60) + '시간 전' : diff < 10080 ? Math.floor(diff/1440) + '일 전' : `${time.getFullYear()}.${String(time.getMonth()+1).padStart(2,'0')}.${String(time.getDate()).padStart(2,'0')}`;
 
       const myComments = JSON.parse(localStorage.getItem('my_comments') || '[]');
       const isMine = myComments.includes(c.id);
