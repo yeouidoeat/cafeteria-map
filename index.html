@@ -907,8 +907,8 @@ function renderList(data) {
   });
   if(userLat) {
     filtered.sort((a, b) => {
-      const da = getDistance(userLat, userLng, a.lat, a.lng);
-      const db = getDistance(userLat, userLng, b.lat, b.lng);
+      const da = Math.sqrt((a.lat-userLat)**2 + (a.lng-userLng)**2);
+      const db = Math.sqrt((b.lat-userLat)**2 + (b.lng-userLng)**2);
       return da - db;
     });
   }
