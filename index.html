@@ -482,7 +482,7 @@ const cafeterias = [
   { id:24, keyword:"예금보험공사 청계천로", name:"예금보험공사 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:10~13:15", address:"서울 중구 청계천로 30", menuType:"kakao", menuLink:"https://pf.kakao.com/_CbNsG" },
   { id:25, keyword:"케이트윈타워 종로구청", name:"종로구청 식당", price:6000, pl:"6,000원", crowd:50, open:true, hours:"12:30~13:30", address:"서울 종로구 종로1길 50 케이트윈타워B동 지하1층" },
   { id:26, keyword:"부영그룹 본사 세종대로", name:"부영그룹 식당", price:9500, pl:"9,500원", crowd:50, open:true, hours:"11:00~14:00", address:"서울 중구 세종대로9길 42 지하1층" },
-  { id:27, keyword:"광화문우체국", name:"광화문우체국 식당", price:5800, pl:"5,800원", crowd:55, open:true, hours:"12:00~13:00", address:"서울 종로구 종로 6 광화문우체국" },
+  { id:27, keyword:"광화문우체국", name:"광화문우체국 식당", price:5800, pl:"5,800원", crowd:55, open:true, hours:"11:30~14:00", address:"서울 종로구 종로 6 광화문우체국", menuType:"kakao", menuLink:"https://pf.kakao.com/_xjxkxexen/posts" },
 
   // 판교
   { id:28, keyword:"판교세븐벤처밸리", name:"판교세븐벤처밸리 식당", price:5500, pl:"5,500원", crowd:55, open:true, hours:"11:30~13:10", address:"경기 성남시 분당구 판교로228번길 15", menuType:"url", menuLink:"http://pvv.co.kr/bbs/index.php?code=bbs_menu01" },
@@ -589,6 +589,21 @@ const cafeterias = [
 
   // 용산
   { id:102, keyword:"용산역KTX 용산구", name:"용산역KTX 구내식당", price:6500, pl:"6,500원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 용산구 한강대로23길 55 5층" },
+
+  // 서초/강남
+  { id:103, keyword:"국립중앙도서관 서초", name:"국립중앙도서관 북레스토랑", price:6500, pl:"6,500원", crowd:55, open:true, hours:"11:30~14:00", address:"서울 서초구 반포대로 201 국립중앙도서관 사서연수관 1층", menuType:"url", menuLink:"https://www.nl.go.kr/NL/contents/N40501020000.do" },
+  { id:104, keyword:"한전아트센터 서초", name:"한전아트센터 구내식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"11:30~13:12", address:"서울 서초구 효령로72길 60", menuType:"app", menuAppName:"원더풀플러스", menuAppNote:"한전아트센터 검색", menuLinkIos:"https://apps.apple.com/kr/app/원더풀-플러스/id6466249125", menuLinkAndroid:"https://play.google.com/store/search?q=%EC%9B%90%EB%8D%94%ED%92%80%ED%94%8C%EB%9F%AC%EC%8A%A4&c=apps&hl=ko" },
+  { id:105, keyword:"본우리집밥 팁스타운 역삼", name:"본우리집밥 팁스점", price:7700, pl:"7,700원", crowd:55, open:true, hours:"11:20~13:30", address:"서울 강남구 역삼로 169 명우빌딩 팁스타운 1층", menuType:"kakao", menuLink:"https://pf.kakao.com/_QpjXG/posts" },
+
+  // 동대문/성동
+  { id:106, keyword:"청량리역 동대문구", name:"청량리역 구내식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"08:30~15:00", address:"서울 동대문구 왕산로 214 청량리역 3번 출구 4층" },
+  { id:107, keyword:"옥수역 성동구", name:"옥수역 구내식당", price:6500, pl:"6,500원", crowd:55, open:true, hours:"12:00~13:40", address:"서울 성동구 동호로 21 옥수역 3번 출구" },
+
+  // 동작
+  { id:108, keyword:"보라매병원 동작구", name:"보라매병원 구내식당", price:7000, pl:"7,000원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 동작구 보라매로5길 20 보라매병원 지하1층", menuType:"url", menuLink:"https://www.brmh.org/board_manage/list.do?site=001&user_code=003006000" },
+
+  // 중구/광화문
+  { id:109, keyword:"한국전력공사 서울본부 중구", name:"한국전력공사 서울본부 구내식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"12:10~13:00", address:"서울 중구 남대문로 92 지하1층", menuType:"kakao", menuLink:"https://pf.kakao.com/_xdhxcdn/posts" },
 ];
 
 let filter='all', map, overlays=[], resolvedData=[], currentCafe=null, userLat=null, userLng=null;
