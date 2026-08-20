@@ -602,7 +602,7 @@ const cafeterias = [
 
   // 중구/광화문
   { id:109, keyword:"한국전력공사 서울본부 중구", name:"한국전력공사 서울본부 구내식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"12:10~13:00", address:"서울 중구 남대문로 92 지하1층", menuType:"kakao", menuLink:"https://pf.kakao.com/_xdhxcdn/posts" },
-];
+  //추가
   { id:110, keyword:"동작우체국", name:"동작우체국 식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"11:00~14:30", address:"서울 동작구 여의대방로22길 77" },
   { id:111, keyword:"영등포구청", name:"영등포구청 식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"12:30~13:30", address:"서울 영등포구 당산로 123", menuType:"url", menuLink:"https://www.ydp.go.kr/www/selectBbsNttList.do?bbsNo=40&&pageUnit=10&searchCnd=SJ&searchKrwd=%EA%B5%AC%EB%82%B4%EC%8B%9D%EB%8B%B9&key=2848&pageIndex=1" },
   { id:112, keyword:"영등포세무서", name:"영등포세무서 식당", price:6300, pl:"6,300원", crowd:55, open:true, hours:"12:00~13:00", address:"서울 영등포구 선유로 243" },
@@ -625,7 +625,8 @@ const cafeterias = [
   { id:129, keyword:"금천구청 시흥대로73길", name:"금천구청 식당", price:5500, pl:"5,500원", crowd:55, open:true, hours:"12:20~13:00", address:"서울 금천구 시흥대로73길 70" },
   { id:130, keyword:"소담푸드 하우스디비즈 영등포 선유로3길", name:"소담푸드3호점", price:0, pl:"변동", crowd:55, open:true, hours:"11:00~14:00", address:"서울 영등포구 선유로3길 10 하우스디비즈 지하1층", menuType:"url", menuLink:"https://blog.naver.com/sodam_food/224384228338" },
   { id:131, keyword:"그래도집밥 금천 디지털로9길", name:"그래도 집밥", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~13:40", address:"서울 금천구 디지털로9길 46 지하1층", menuType:"kakao", menuLink:"https://pf.kakao.com/_xgxlXKG/posts" },
-let filter='all', map, overlays=[], resolvedData=[], currentCafe=null, userLat=null, userLng=null;
+];
+  let filter='all', map, overlays=[], resolvedData=[], currentCafe=null, userLat=null, userLng=null;
 
 if(navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(pos => {
