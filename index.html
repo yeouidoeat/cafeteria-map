@@ -479,7 +479,7 @@ const cafeterias = [
   { id:23, keyword:"서울신문사 광화문", name:"서울신문사 식당", price:7000, pl:"7,000원", crowd:50, open:true, hours:"11:00~13:30", address:"서울 중구 세종대로 124" },
   { id:24, keyword:"예금보험공사 청계천로", name:"예금보험공사 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:10~13:15", address:"서울 중구 청계천로 30", menuType:"kakao", menuLink:"https://pf.kakao.com/_CbNsG" },
   { id:25, keyword:"케이트윈타워 종로구청", name:"종로구청 식당", price:6000, pl:"6,000원", crowd:50, open:true, hours:"12:30~13:30", address:"서울 종로구 종로1길 50 케이트윈타워B동 지하1층" },
-  { id:26, keyword:"부영그룹 본사 세종대로", name:"부영그룹 식당", price:9500, pl:"9,500원", crowd:50, open:true, hours:"11:00~14:00", address:"서울 중구 세종대로9길 42 지하1층" },
+    { id:26, keyword:"부영그룹 본사 세종대로", name:"부영그룹 식당", price:9500, pl:"9,500원", crowd:50, open:true, hours:"11:00~14:00", address:"서울 중구 세종대로9길 42 지하1층", menuType:"insta", menuLink:"https://www.instagram.com/jungwonsodam/" },
   { id:27, keyword:"광화문우체국", name:"광화문우체국 식당", price:5800, pl:"5,800원", crowd:55, open:true, hours:"11:30~14:00", address:"서울 종로구 종로 6 광화문우체국", menuType:"kakao", menuLink:"https://pf.kakao.com/_xjxkxexen/posts" },
 
   // 판교
@@ -603,7 +603,28 @@ const cafeterias = [
   // 중구/광화문
   { id:109, keyword:"한국전력공사 서울본부 중구", name:"한국전력공사 서울본부 구내식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"12:10~13:00", address:"서울 중구 남대문로 92 지하1층", menuType:"kakao", menuLink:"https://pf.kakao.com/_xdhxcdn/posts" },
 ];
-
+  { id:110, keyword:"동작우체국", name:"동작우체국 식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"11:00~14:30", address:"서울 동작구 여의대방로22길 77" },
+  { id:111, keyword:"영등포구청", name:"영등포구청 식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"12:30~13:30", address:"서울 영등포구 당산로 123", menuType:"url", menuLink:"https://www.ydp.go.kr/www/selectBbsNttList.do?bbsNo=40&&pageUnit=10&searchCnd=SJ&searchKrwd=%EA%B5%AC%EB%82%B4%EC%8B%9D%EB%8B%B9&key=2848&pageIndex=1" },
+  { id:112, keyword:"영등포세무서", name:"영등포세무서 식당", price:6300, pl:"6,300원", crowd:55, open:true, hours:"12:00~13:00", address:"서울 영등포구 선유로 243" },
+  { id:113, keyword:"영등포우체국", name:"영등포우체국 식당", price:6500, pl:"6,500원", crowd:55, open:true, hours:"11:30~13:30", address:"서울 영등포구 선유동2로 6" },
+  { id:114, keyword:"현대해상 강서사옥", name:"현대해상 강서사옥 식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"11:20~14:10", address:"서울 영등포구 당산로 141" },
+  { id:115, keyword:"서울서부지방검찰청 마포", name:"서울 서부지검 식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"11:40~13:00", address:"서울 마포구 마포대로 174" },
+  { id:116, keyword:"용산구청 녹사평", name:"용산구청 식당", price:6500, pl:"6,500원", crowd:55, open:true, hours:"12:10~13:30", address:"서울 용산구 녹사평대로 150 10층" },
+  { id:117, keyword:"한강진역", name:"한강진역 식당", price:8000, pl:"8,000원", crowd:55, open:true, hours:"12:15~13:00", address:"서울 용산구 이태원로 287" },
+  { id:118, keyword:"도봉구청 마들로", name:"도봉구청 식당", price:6500, pl:"6,500원", crowd:55, open:true, hours:"12:30~13:30", address:"서울 도봉구 마들로 656", menuType:"kakao", menuLink:"https://pf.kakao.com/_fdxmTs/posts" },
+  { id:119, keyword:"에스제이 금천 벚꽃로", name:"에스제이 식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:10~14:00", address:"서울 금천구 벚꽃로 278 B1", menuType:"insta", menuLink:"https://www.instagram.com/s_j_food_278" },
+  { id:120, keyword:"마포중앙도서관", name:"마포중앙도서관 식당", price:6500, pl:"6,500원", crowd:55, open:true, hours:"11:00~13:30", address:"서울 마포구 성산로 128" },
+  { id:121, keyword:"용산도서관", name:"용산도서관 식당", price:6500, pl:"6,500원", crowd:55, open:true, hours:"09:40~19:20", address:"서울 용산구 두텁바위로 160" },
+  { id:122, keyword:"백가구내식당 강남대로79길", name:"백가 식당", price:9500, pl:"9,500원", crowd:55, open:true, hours:"11:30~19:40", address:"서울 서초구 강남대로79길 32 제이디빌딩" },
+  { id:123, keyword:"남산도서관", name:"남산도서관 식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"09:30~19:30", address:"서울 용산구 소월로 109" },
+  { id:124, keyword:"더에이스코리아 구로 디지털로31길", name:"더에이스코리아 식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:15~13:30", address:"서울 구로구 디지털로31길 20" },
+  { id:125, keyword:"밥온 금천 가산디지털2로", name:"밥온 식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 금천구 가산디지털2로 143 2층", menuType:"kakao", menuLink:"https://pf.kakao.com/_mYxfen" },
+  { id:126, keyword:"마이푸드 금천 벚꽃로", name:"마이푸드 식당", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~14:00", address:"서울 금천구 벚꽃로 244 B124호" },
+  { id:127, keyword:"성동구청 고산자로", name:"성동구청 식당", price:6000, pl:"6,000원", crowd:55, open:true, hours:"12:10~13:00", address:"서울 성동구 고산자로 270 지하1층" },
+  { id:128, keyword:"프리미엄구내식당 회사원 서초 사평대로", name:"프리미엄 식당 회사원", price:12000, pl:"12,000원", crowd:55, open:true, hours:"11:00~15:00", address:"서울 서초구 사평대로56길 7 지하1층", menuType:"insta", menuLink:"https://www.instagram.com/meditable.s" },
+  { id:129, keyword:"금천구청 시흥대로73길", name:"금천구청 식당", price:5500, pl:"5,500원", crowd:55, open:true, hours:"12:20~13:00", address:"서울 금천구 시흥대로73길 70" },
+  { id:130, keyword:"소담푸드 하우스디비즈 영등포 선유로3길", name:"소담푸드3호점", price:0, pl:"변동", crowd:55, open:true, hours:"11:00~14:00", address:"서울 영등포구 선유로3길 10 하우스디비즈 지하1층", menuType:"url", menuLink:"https://blog.naver.com/sodam_food/224384228338" },
+  { id:131, keyword:"그래도집밥 금천 디지털로9길", name:"그래도 집밥", price:7500, pl:"7,500원", crowd:55, open:true, hours:"11:00~13:40", address:"서울 금천구 디지털로9길 46 지하1층", menuType:"kakao", menuLink:"https://pf.kakao.com/_xgxlXKG/posts" },
 let filter='all', map, overlays=[], resolvedData=[], currentCafe=null, userLat=null, userLng=null;
 
 if(navigator.geolocation) {
