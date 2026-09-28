@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>구내식당 검색 도구</title>
+<style>
+body { font-family: -apple-system, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #f8fafc; }
+h1 { color: #059669; margin-bottom: 8px; }
+.subtitle { color: #64748b; margin-bottom: 24px; font-size: 14px; }
+.section { background: white; padding: 20px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.search-box { display: flex; gap: 8px; margin-bottom: 12px; }
+.search-box input { flex: 1; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 15px; }
+.search-box input:focus { outline: none; border-color: #059669; }
+.search-box button { padding: 12px 24px; background: #059669; color: white; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; font-weight: 500; }
+.search-box button:hover { background: #047857; }
+.search-box button:disabled { background: #94a3b8; cursor: not-allowed; }
+.keywords { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.keyword-chip { padding: 4px 10px; background: #f0fdf4; color: #059669; border: 1px solid #86efac; border-radius: 20px; font-size: 12px; cursor: pointer; }
+.keyword-chip:hover { background: #dcfce7; }
+.status { padding: 12px; background: #f0fdf4; border-left: 4px solid #059669; border-radius: 4px; margin-bottom: 12px; font-size: 14px; color: #065f46; }
+.results { max-height: 500px; overflow-y: auto; }
+.result-item { padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+.result-item:hover { background: #f8fafc; }
+.result-info { flex: 1; }
+.result-name { font-weight: 500; color: #0f172a; margin-bottom: 4px; }
+.result-addr { font-size: 13px; color: #64748b; margin-bottom: 4px; }
+.result-coord { font-size: 11px; color: #94a3b8; font-family: monospace; }
+.result-check { margin-left: 12px; }
+.result-check input { transform: scale(1.4); cursor: pointer; }
+.actions { display: flex; gap: 8px; margin-top: 16px; }
+.actions button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
+.btn-primary { background: #059669; color: white; }
+.btn-primary:hover { background: #047857; }
+.btn-primary:disabled { background: #94a3b8; }
+.btn-secondary { background: #f1f5f9; color: #475569; }
+.btn-secondary:hover { background: #e2e8f0; }
+.summary { background: #eff6ff; padding: 12px; border-radius: 8px; margin-top: 12px; font-size: 14px; color: #1e40af; }
+.hidden { display: none; }
+#log { background: #1e293b; color: #10b981; padding: 12px; border-radius: 8px; height: 100px; overflow-y: auto; font-size: 11px; font-family: monospace; margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<h1>🔍 구내식당 자동 검색 도구</h1>
+<p class="subtitle">카카오맵에서 지역별 구내식당을 검색하고, 좌표와 함께 자동으로 정보를 수집합니다.</p>
+
+<div class="section">
+  <h3 style="margin-top:0;">1. 검색어 입력</h3>
+  <div class="search-box">
+    <input type="text" id="query" placeholder="예: 관악구 구내식당" onkeypress="if(event.key==='Enter') search()"/>
+    <button id="searchBtn" onclick="search()">검색</button>
+  </div>
+  
+  <div style="font-size:13px; color:#64748b; margin-bottom:8px;">빠른 검색:</div>
+  <div class="keywords">
+    <span class="keyword-chip" onclick="quickSearch('관악구 구내식당')">관악구 구내식당</span>
+    <span class="keyword-chip" onclick="quickSearch('서대문구 구내식당')">서대문구 구내식당</span>
+    <span class="keyword-chip" onclick="quickSearch('성북구 구내식당')">성북구 구내식당</span>
+    <span class="keyword-chip" onclick="quickSearch('은평구 구내식당')">은평구 구내식당</span>
+    <span class="keyword-chip" onclick="quickSearch('강북구 구내식당')">강북구 구내식당</span>
+    <span class="keyword-chip" onclick="quickSearch('노원구 구내식당')">노원구 구내식당</span>
+    <span class="keyword-chip" onclick="quickSearch('광진구 구내식당')">광진구 구내식당</span>
+    <span class="keyword-chip" onclick="quickSearch('중랑구 구내식당')">중랑구 구내식당</span>
+    <span class="keyword-chip" onclick="quickSearch('강동구 구내식당')">강동구 구내식당</span>
+    <span class="keyword-chip" onclick="quickSearch('수원 구내식당')">수원 구내식당</span>
+    <span class="keyword-chip" onclick="quickSearch('용인 구내식당')">용인 구내식당</span>
+    <span class="keyword-chip" onclick="quickSearch('화성 구내식당')">화성 구내식당</span>
+  </div>
+</div>
+
+<div class="section hidden" id="resultsSection">
+  <h3 style="margin-top:0;">2. 검색 결과</h3>
+  <div id="status" class="status"></div>
+  <div class="results" id="results"></div>
+  <div class="summary" id="summary"></div>
+  <div class="actions">
+    <button class="btn-secondary" onclick="selectAll()">전체 선택</button>
+    <button class="btn-secondary" onclick="deselectAll()">전체 해제</button>
+    <button class="btn-primary" id="downloadBtn" onclick="download()">선택한 항목 JSON 다운로드</button>
+  </div>
+</div>
+
+<div class="section hidden" id="logSection">
+  <h3 style="margin-top:0;">🔧 개발자 로그</h3>
+  <div id="log"></div>
+</div>
+
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=979537335115a57fb498aaaab5f482eb&libraries=services&autoload=false"></script>
+<script>
+let ps;
+let allResults = [];
+
+kakao.maps.load(function() {
+  ps = new kakao.maps.services.Places();
+  log('✅ 카카오맵 API 준비 완료');
+});
+
+function log(msg) {
+  const l = document.getElementById('log');
+  l.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${msg}</div>`;
+  l.scrollTop = l.scrollHeight;
+  document.getElementById('logSection').classList.remove('hidden');
+}
+
+function quickSearch(q) {
+  document.getElementById('query').value = q;
+  search();
+}
+
+function search() {
+  const query = document.getElementById('query').value.trim();
+  if (!query) {
+    alert('검색어를 입력하세요');
+    return;
+  }
+  
+  document.getElementById('searchBtn').disabled = true;
+  document.getElementById('resultsSection').classList.remove('hidden');
+  document.getElementById('status').textContent = `"${query}" 검색 중...`;
+  document.getElementById('results').innerHTML = '';
+  allResults = [];
+  
+  log(`🔍 검색 시작: ${query}`);
+  
+  // 카카오맵은 최대 45개 결과 (3페이지 × 15개)
+  searchPage(query, 1);
+}
+
+function searchPage(query, page) {
+  ps.keywordSearch(query, function(data, status, pagination) {
+    if (status === kakao.maps.services.Status.OK) {
+      log(`✅ 페이지 ${page}: ${data.length}개 결과`);
+      
+      data.forEach(place => {
+        allResults.push({
+          id: place.id,
+          name: place.place_name,
+          category: place.category_name,
+          address: place.address_name,
+          roadAddress: place.road_address_name,
+          phone: place.phone,
+          lat: parseFloat(place.y),
+          lng: parseFloat(place.x)
+        });
+      });
+      
+      // 다음 페이지 있으면 자동으로 가져옴
+      if (pagination.hasNextPage && page < 3) {
+        pagination.nextPage();
+      } else {
+        finishSearch(query);
+      }
+    } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+      finishSearch(query);
+    } else {
+      log(`❌ 검색 실패: ${status}`);
+      document.getElementById('searchBtn').disabled = false;
+      document.getElementById('status').textContent = '검색 실패. 다시 시도해주세요.';
+    }
+  }, { page: page });
+}
+
+function finishSearch(query) {
+  document.getElementById('searchBtn').disabled = false;
+  document.getElementById('status').textContent = `"${query}" 검색 완료: 총 ${allResults.length}개`;
+  log(`✅ 최종: ${allResults.length}개 결과`);
+  
+  // 결과 렌더링
+  renderResults();
+  updateSummary();
+}
+
+function renderResults() {
+  const container = document.getElementById('results');
+  container.innerHTML = '';
+  
+  allResults.forEach((r, idx) => {
+    const div = document.createElement('div');
+    div.className = 'result-item';
+    div.innerHTML = `
+      <div class="result-info">
+        <div class="result-name">${r.name}</div>
+        <div class="result-addr">${r.roadAddress || r.address || '주소 없음'}</div>
+        <div class="result-coord">위도: ${r.lat.toFixed(6)}, 경도: ${r.lng.toFixed(6)} ${r.phone ? '| ☎ ' + r.phone : ''}</div>
+        <div style="font-size:10px; color:#94a3b8;">${r.category}</div>
+      </div>
+      <div class="result-check">
+        <input type="checkbox" id="check_${idx}" checked onchange="updateSummary()"/>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function updateSummary() {
+  const checks = document.querySelectorAll('.result-check input');
+  const selected = Array.from(checks).filter(c => c.checked).length;
+  document.getElementById('summary').textContent = 
+    `총 ${allResults.length}개 중 ${selected}개 선택됨`;
+}
+
+function selectAll() {
+  document.querySelectorAll('.result-check input').forEach(c => c.checked = true);
+  updateSummary();
+}
+
+function deselectAll() {
+  document.querySelectorAll('.result-check input').forEach(c => c.checked = false);
+  updateSummary();
+}
+
+function download() {
+  const selected = [];
+  document.querySelectorAll('.result-check input').forEach((c, idx) => {
+    if (c.checked) {
+      selected.push(allResults[idx]);
+    }
+  });
+  
+  if (selected.length === 0) {
+    alert('선택된 항목이 없습니다');
+    return;
+  }
+  
+  const query = document.getElementById('query').value;
+  const filename = `cafeterias_${query.replace(/\s+/g, '_')}_${Date.now()}.json`;
+  
+  const blob = new Blob([JSON.stringify(selected, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  
+  log(`💾 ${selected.length}개 다운로드: ${filename}`);
+}
+</script>
+
+</body>
+</html>
