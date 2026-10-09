@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "kr.cafeteria_map.twa",
+      "sha256_cert_fingerprints": [
+        "FB:32:DE:88:4C:0C:05:95:36:3D:41:6E:99:3D:67:AC:29:42:36:63:76:E3:A1:D2:E5:E7:D2:F6:AD:88:69:89",
+        "C7:05:15:D1:D2:69:95:BC:7E:7C:E8:54:F2:3E:F3:48:BB:0D:C1:87:C1:93:9D:CA:DB:8A:AC:CE:FE:A6:A6:36"
+      ]
+    }
+  }
+]
