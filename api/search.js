@@ -27,6 +27,9 @@ module.exports = async (req, res) => {
         }
         const data = await r.json();
         for (const d of data.documents || []) {
+          // 카페(CE7)와 음식점(FD6)이 아닌 곳(주차장, 회사 등)은 제외
+          if (d.category_group_code === 'CE7') continue;
+          if (d.category_group_code && d.category_group_code !== 'FD6') continue;
           if (!found.has(d.id)) {
             found.set(d.id, {
               kakaoId: d.id,
@@ -49,5 +52,9 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: '검색 중 오류: ' + e.message });
   }
 
-  return res.status(200).json({ region, candidates: [...found.values()] });
+  // 카테고리에 '구내식당'·'뷔페'가 들어간 곳을 위로
+  const score = c => (/구내식당/.test(c.category) ? 2 : /뷔페/.test(c.category) ? 1 : 0);
+  const candidates = [...found.values()].sort((a, b) => score(b) - score(a));
+
+  return res.status(200).json({ region, candidates });
 };
