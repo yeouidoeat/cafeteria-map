@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="robots" content="noindex, nofollow"/>
+<title>구내식당맵 관리자</title>
+<style>
+:root{--green:#059669;--green-dark:#047857;--green-light:#ecfdf5;--green-text:#065f46;--s50:#f8fafc;--s100:#f1f5f9;--s200:#e2e8f0;--s400:#94a3b8;--s500:#64748b;--s700:#334155;--s900:#0f172a;--red:#dc2626;--red-light:#fef2f2;--amber:#b45309;--amber-light:#fffbeb;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nanum Gothic',-apple-system,sans-serif;background:var(--s50);color:var(--s900);font-size:14px;line-height:1.5;}
+header{background:#fff;border-bottom:1px solid var(--s200);padding:14px 16px;position:sticky;top:0;z-index:5;}
+header h1{font-size:17px;color:var(--green-text);}
+header p{font-size:12px;color:var(--s500);}
+main{max-width:860px;margin:0 auto;padding:16px;}
+.box{background:#fff;border:1px solid var(--s200);border-radius:14px;padding:16px;margin-bottom:14px;}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+input,select{font:inherit;border:1px solid var(--s200);border-radius:10px;padding:9px 11px;background:#fff;min-width:0;}
+input:focus,select:focus{outline:2px solid var(--green);border-color:transparent;}
+button{font:inherit;font-weight:700;border:none;border-radius:10px;padding:9px 14px;cursor:pointer;background:var(--green);color:#fff;white-space:nowrap;}
+button:hover{background:var(--green-dark);}
+button.ghost{background:var(--green-light);color:var(--green-text);}
+button.ghost:hover{background:#d1fae5;}
+button:disabled{opacity:.5;cursor:default;}
+.grow{flex:1;}
+.muted{color:var(--s500);font-size:12px;}
+.status{margin-top:8px;font-size:13px;color:var(--s700);}
+.status.err{color:var(--red);}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:4px 0 12px;}
+.card{background:#fff;border:1px solid var(--s200);border-radius:14px;padding:14px;margin-bottom:10px;}
+.card.done{border-color:#a7f3d0;}
+.card.exists{opacity:.6;}
+.card-head{display:flex;gap:10px;align-items:flex-start;}
+.card-head input[type=checkbox]{width:18px;height:18px;margin-top:3px;accent-color:var(--green);flex-shrink:0;}
+.card-title{font-weight:800;font-size:15px;}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:middle;}
+.b-exists{background:var(--s100);color:var(--s500);}
+.b-ok{background:var(--green-light);color:var(--green-text);}
+.b-no{background:var(--red-light);color:var(--red);}
+.b-unk{background:var(--amber-light);color:var(--amber);}
+.links{display:flex;gap:10px;margin-top:4px;font-size:12px;}
+.links a{color:var(--green);}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px;}
+.fields label{display:flex;flex-direction:column;gap:3px;font-size:11px;font-weight:700;color:var(--s500);}
+.fields .full{grid-column:1/-1;}
+.ai{margin-top:10px;background:var(--s50);border-radius:10px;padding:10px;font-size:12px;color:var(--s700);}
+.ai a{color:var(--green);word-break:break-all;}
+.ai ul{margin:4px 0 0 16px;}
+textarea{width:100%;min-height:180px;font:12px/1.5 ui-monospace,Menlo,monospace;border:1px solid var(--s200);border-radius:10px;padding:10px;margin-top:10px;}
+.warn{background:var(--amber-light);color:var(--amber);border-radius:10px;padding:10px;font-size:12px;margin-top:10px;}
+.hidden{display:none !important;}
+@media (max-width:560px){.fields{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<header>
+  <h1>구내식당맵 관리자</h1>
+  <p>지역으로 후보를 찾고, AI로 정보를 채운 뒤, index.html에 붙여 넣을 코드를 만들어요.</p>
+</header>
+
+<main>
+  <!-- 1. 로그인 -->
+  <section class="box" id="loginBox">
+    <div class="row">
+      <input id="pw" type="password" class="grow" placeholder="관리자 비밀번호" autocomplete="current-password"/>
+      <button id="loginBtn">시작</button>
+    </div>
+    <div class="status" id="loginStatus"></div>
+  </section>
+
+  <div id="app" class="hidden">
+    <!-- 2. 지역 검색 -->
+    <section class="box">
+      <div class="row">
+        <input id="region" class="grow" placeholder="지역 입력 (예: 마포구, 을지로, 성수동)"/>
+        <button id="searchBtn">후보 찾기</button>
+      </div>
+      <div class="status" id="searchStatus"><span class="muted" id="existInfo">기존 데이터를 불러오는 중…</span></div>
+    </section>
+
+    <!-- 3. 후보 목록 -->
+    <section id="resultArea" class="hidden">
+      <div class="toolbar">
+        <label class="muted"><input type="checkbox" id="hideExists" checked/> 이미 등록된 곳 숨기기</label>
+        <div class="row">
+          <button class="ghost" id="aiSelectedBtn">선택한 곳 AI 조회</button>
+          <button id="makeCodeBtn">선택한 곳 코드 만들기</button>
+        </div>
+      </div>
+      <div id="list"></div>
+    </section>
+
+    <!-- 4. 결과 코드 -->
+    <section class="box hidden" id="codeBox">
+      <div class="row" style="justify-content:space-between">
+        <strong>index.html에 붙여 넣을 코드</strong>
+        <button id="copyBtn">복사</button>
+      </div>
+      <p class="muted" style="margin-top:6px">GitHub에서 index.html을 열고, 식당 목록 맨 끝의 <code>];</code> 바로 위 줄에 붙여 넣은 뒤 Commit 하세요.</p>
+      <div id="codeWarn"></div>
+      <textarea id="code" readonly></textarea>
+    </section>
+  </div>
+</main>
+
+<script>
+let PW = '';
+let existing = [];      // 기존 식당 {id, name, address}
+let maxId = 0;
+let candidates = [];    // 검색 결과 + 편집 상태
+
+const $ = id => document.getElementById(id);
+const norm = s => String(s || '').replace(/\s+/g, '').replace(/(구내식당|직원식당|식당|구내|본관|별관)/g, '').toLowerCase();
+const normAddr = s => String(s || '').replace(/\s+/g, '').replace(/(지하|지상)?\d+층.*$/, '');
+
+function ssGet(k){ try { return sessionStorage.getItem(k); } catch(e){ return null; } }
+function ssSet(k,v){ try { sessionStorage.setItem(k,v); } catch(e){} }
+
+async function api(path, body) {
+  const r = await fetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-password': PW },
+    body: JSON.stringify(body),
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || ('요청 실패 ' + r.status));
+  return data;
+}
+
+// ---------- 로그인 ----------
+async function login() {
+  PW = $('pw').value.trim();
+  if (!PW) return;
+  $('loginStatus').textContent = '확인 중…';
+  $('loginStatus').className = 'status';
+  try {
+    // 빈 지역으로 호출해 비밀번호만 확인 (400이면 비밀번호는 맞음)
+    const r = await fetch('/api/search', { method:'POST', headers:{'Content-Type':'application/json','x-admin-password':PW}, body:'{}' });
+    if (r.status === 401) throw new Error('비밀번호가 맞지 않아요.');
+    if (r.status === 404) throw new Error('/api/search를 찾을 수 없어요. api 폴더가 배포됐는지 확인해 주세요.');
+    ssSet('cm_admin_pw', PW);
+    $('loginBox').classList.add('hidden');
+    $('app').classList.remove('hidden');
+    loadExisting();
+  } catch (e) {
+    $('loginStatus').textContent = e.message;
+    $('loginStatus').className = 'status err';
+  }
+}
+$('loginBtn').onclick = login;
+$('pw').onkeydown = e => { if (e.key === 'Enter') login(); };
+const saved = ssGet('cm_admin_pw');
+if (saved) { $('pw').value = saved; login(); }
+
+// ---------- 기존 데이터 ----------
+async function loadExisting() {
+  try {
+    const html = await (await fetch('/index.html?ts=' + Date.now())).text();
+    const lines = html.match(/\{\s*id:\s*\d+[^\n]*\}/g) || [];
+    existing = lines.map(l => ({
+      id: +(l.match(/id:\s*(\d+)/) || [])[1],
+      name: (l.match(/name:"([^"]*)"/) || [])[1] || '',
+      address: (l.match(/address:"([^"]*)"/) || [])[1] || '',
+    }));
+    maxId = Math.max(0, ...existing.map(e => e.id || 0));
+    $('existInfo').textContent = `기존 식당 ${existing.length}곳 · 다음 id는 ${maxId + 1}부터`;
+  } catch (e) {
+    $('existInfo').textContent = '기존 데이터를 못 불러왔어요. 중복 표시와 id 번호를 직접 확인해 주세요.';
+  }
+}
+
+function findExisting(c) {
+  const n = norm(c.name), a = normAddr(c.address);
+  return existing.find(e => {
+    const en = norm(e.name), ea = normAddr(e.address);
+    return (a && ea && (ea === a || ea.startsWith(a) || a.startsWith(ea))) ||
+           (n.length >= 2 && en.length >= 2 && (en === n || en.includes(n) || n.includes(en)));
+  });
+}
+
+// ---------- 지역 검색 ----------
+async function search() {
+  const region = $('region').value.trim();
+  if (!region) return;
+  $('searchBtn').disabled = true;
+  $('searchStatus').innerHTML = '카카오에서 후보를 찾는 중…';
+  $('searchStatus').className = 'status';
+  try {
+    const data = await api('/api/search', { region });
+    candidates = data.candidates.map(c => {
+      const ex = findExisting(c);
+      return { ...c, exists: ex ? ex.name : null, checked: false,
+               price: '', hours: '', menuType: '', menuLink: '', ai: null, aiLoading: false };
+    });
+    const newCount = candidates.filter(c => !c.exists).length;
+    $('searchStatus').innerHTML = `후보 ${candidates.length}곳 (새 후보 ${newCount}곳) · <span class="muted">카테고리를 보고 구내식당이 아닌 곳은 건너뛰세요.</span>`;
+    $('resultArea').classList.remove('hidden');
+    $('codeBox').classList.add('hidden');
+    render();
+  } catch (e) {
+    $('searchStatus').textContent = e.message;
+    $('searchStatus').className = 'status err';
+  }
+  $('searchBtn').disabled = false;
+}
+$('searchBtn').onclick = search;
+$('region').onkeydown = e => { if (e.key === 'Enter') search(); };
+$('hideExists').onchange = render;
+
+// ---------- 목록 그리기 ----------
+function esc(s){ return String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function outsiderBadge(v) {
+  if (v === '가능') return '<span class="badge b-ok">외부인 가능</span>';
+  if (v === '불가') return '<span class="badge b-no">외부인 불가</span>';
+  return '<span class="badge b-unk">외부인 이용 확인 필요</span>';
+}
+
+function render() {
+  const hide = $('hideExists').checked;
+  $('list').innerHTML = candidates.map((c, i) => {
+    if (hide && c.exists) return '';
+    const ai = c.ai;
+    return `
+    <div class="card ${c.exists ? 'exists' : ''} ${ai ? 'done' : ''}">
+      <div class="card-head">
+        <input type="checkbox" data-i="${i}" class="chk" ${c.checked ? 'checked' : ''}/>
+        <div class="grow">
+          <div class="card-title">${esc(c.name)}
+            ${c.exists ? `<span class="badge b-exists">이미 등록됨: ${esc(c.exists)}</span>` : ''}
+            ${ai ? outsiderBadge(ai.outsider) : ''}
+          </div>
+          <div class="muted">${esc(c.address)} · ${esc(c.category || '')}</div>
+          <div class="links">
+            <a href="${esc(c.placeUrl)}" target="_blank" rel="noopener">카카오맵에서 보기</a>
+            <a href="https://search.naver.com/search.naver?query=${encodeURIComponent(c.name + ' 구내식당')}" target="_blank" rel="noopener">네이버 검색</a>
+          </div>
+        </div>
+        <button class="ghost aiBtn" data-i="${i}" ${c.aiLoading ? 'disabled' : ''}>${c.aiLoading ? '조회 중…' : (ai ? '다시 조회' : 'AI 정보 찾기')}</button>
+      </div>
+
+      <div class="fields">
+        <label>이름<input data-i="${i}" data-f="name" value="${esc(c.name)}"/></label>
+        <label>주소<input data-i="${i}" data-f="address" value="${esc(c.address)}"/></label>
+        <label>가격 (원, 숫자)<input data-i="${i}" data-f="price" inputmode="numeric" value="${esc(c.price)}" placeholder="예: 7000"/></label>
+        <label>운영시간<input data-i="${i}" data-f="hours" value="${esc(c.hours)}" placeholder="예: 11:00~13:30"/></label>
+        <label>메뉴 확인 방법
+          <select data-i="${i}" data-f="menuType">
+            <option value="" ${!c.menuType ? 'selected' : ''}>없음</option>
+            <option value="url" ${c.menuType === 'url' ? 'selected' : ''}>웹페이지 (url)</option>
+            <option value="insta" ${c.menuType === 'insta' ? 'selected' : ''}>인스타그램 (insta)</option>
+            <option value="kakao" ${c.menuType === 'kakao' ? 'selected' : ''}>카카오 (kakao)</option>
+          </select>
+        </label>
+        <label>메뉴 링크<input data-i="${i}" data-f="menuLink" value="${esc(c.menuLink)}" placeholder="https://"/></label>
+      </div>
+
+      ${ai ? `
+      <div class="ai">
+        ${ai.note ? `<div><b>AI 메모:</b> ${esc(ai.note)}</div>` : ''}
+        ${ai.error ? `<div style="color:var(--red)">${esc(ai.error)}</div>` : ''}
+        ${ai.sources && ai.sources.length ? `<div style="margin-top:4px"><b>출처</b> (꼭 한 번 열어서 확인하세요)<ul>${ai.sources.map(s => `<li><a href="${esc(s.uri)}" target="_blank" rel="noopener">${esc(s.title)}</a></li>`).join('')}</ul></div>` : '<div class="muted">출처를 찾지 못했어요. 정보를 직접 확인해 주세요.</div>'}
+      </div>` : ''}
+    </div>`;
+  }).join('') || '<p class="muted">표시할 후보가 없어요.</p>';
+}
+
+// 입력 변경 → 상태 저장
+$('list').addEventListener('input', e => {
+  const i = e.target.dataset.i, f = e.target.dataset.f;
+  if (i != null && f) candidates[i][f] = e.target.value;
+});
+$('list').addEventListener('change', e => {
+  if (e.target.classList.contains('chk')) candidates[e.target.dataset.i].checked = e.target.checked;
+  const i = e.target.dataset.i, f = e.target.dataset.f;
+  if (i != null && f) candidates[i][f] = e.target.value;
+});
+$('list').addEventListener('click', e => {
+  if (e.target.classList.contains('aiBtn')) enrich(+e.target.dataset.i);
+});
+
+// ---------- AI 조회 ----------
+async function enrich(i) {
+  const c = candidates[i];
+  c.aiLoading = true; render();
+  try {
+    const data = await api('/api/enrich', { name: c.name, address: c.address });
+    const info = data.info || {};
+    c.ai = { outsider: info.outsider || '모름', note: info.note || '', sources: data.sources || [] };
+    if (!info.price && !info.hours && data.raw) c.ai.error = 'AI 응답을 정리하지 못했어요: ' + data.raw;
+    if (info.price && !c.price) c.price = String(info.price).replace(/[^\d]/g, '');
+    if (info.hours && !c.hours) c.hours = info.hours;
+    if (info.menuType && !c.menuType && ['url','insta','kakao'].includes(info.menuType)) c.menuType = info.menuType;
+    if (info.menuLink && !c.menuLink) c.menuLink = info.menuLink;
+    c.checked = true;
+  } catch (e) {
+    c.ai = { outsider: '모름', error: e.message, sources: [] };
+  }
+  c.aiLoading = false; render();
+}
+
+$('aiSelectedBtn').onclick = async () => {
+  const idx = candidates.map((c, i) => c.checked ? i : -1).filter(i => i >= 0);
+  if (!idx.length) return alertMsg('먼저 체크박스로 식당을 선택해 주세요.');
+  $('aiSelectedBtn').disabled = true;
+  for (const i of idx) await enrich(i);
+  $('aiSelectedBtn').disabled = false;
+};
+
+function alertMsg(m){ $('searchStatus').textContent = m; $('searchStatus').className = 'status err'; window.scrollTo({top:0,behavior:'smooth'}); }
+
+// ---------- 코드 만들기 ----------
+$('makeCodeBtn').onclick = () => {
+  const picked = candidates.filter(c => c.checked);
+  if (!picked.length) return alertMsg('코드로 만들 식당을 체크해 주세요.');
+  let id = maxId;
+  const warns = [];
+  const lines = picked.map(c => {
+    id++;
+    const price = parseInt(String(c.price).replace(/[^\d]/g, ''), 10) || 0;
+    const gu = (c.address.split(' ').find(t => /[구시군]$/.test(t)) || '');
+    const parts = [
+      `id:${id}`,
+      `lat:${c.lat}`, `lng:${c.lng}`,
+      `keyword:${JSON.stringify((c.name + ' ' + gu).trim())}`,
+      `name:${JSON.stringify(c.name)}`,
+      `price:${price}`,
+      `pl:${JSON.stringify(price ? price.toLocaleString('ko-KR') + '원' : '가격 미정')}`,
+      `crowd:55`, `open:true`,
+      `hours:${JSON.stringify(c.hours || '')}`,
+      `address:${JSON.stringify(c.address)}`,
+    ];
+    if (c.menuType && c.menuLink) parts.push(`menuType:${JSON.stringify(c.menuType)}`, `menuLink:${JSON.stringify(c.menuLink)}`);
+    if (!price) warns.push(`${c.name}: 가격이 비어 있어요`);
+    if (!c.hours) warns.push(`${c.name}: 운영시간이 비어 있어요`);
+    if (c.exists) warns.push(`${c.name}: 이미 등록된 것 같아요 (${c.exists})`);
+    if (!c.ai || c.ai.outsider !== '가능') warns.push(`${c.name}: 외부인 이용 가능 여부를 확인하지 못했어요`);
+    return `  { ${parts.join(', ')} },`;
+  });
+  $('code').value = lines.join('\n');
+  $('codeWarn').innerHTML = warns.length ? `<div class="warn"><b>붙여 넣기 전에 확인하세요</b><br>${warns.map(esc).join('<br>')}</div>` : '';
+  $('codeBox').classList.remove('hidden');
+  $('codeBox').scrollIntoView({ behavior: 'smooth' });
+};
+
+$('copyBtn').onclick = async () => {
+  try { await navigator.clipboard.writeText($('code').value); }
+  catch (e) { $('code').select(); document.execCommand('copy'); }
+  $('copyBtn').textContent = '복사됨!';
+  setTimeout(() => $('copyBtn').textContent = '복사', 1500);
+};
+</script>
+</body>
+</html>
