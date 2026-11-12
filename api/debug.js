@@ -1,9 +1,5 @@
 // 환경변수 디버깅용 (임시)
 export default async function handler(req, res) {
-  const token = req.headers['x-admin-token'];
-  if (!token) {
-    return res.status(401).json({ error: '인증 필요' });
-  }
 
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_KEY;
