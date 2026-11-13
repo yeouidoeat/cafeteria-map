@@ -59,6 +59,32 @@ export default async function handler(req, res) {
       newFileContent = result.content;
       commitMessage = `Update cafeteria id:${update.id} (${update.name})`;
       
+    } else if (op === 'bulkUpdate' && req.body.bulkUpdate && Array.isArray(req.body.bulkUpdate)) {
+      // 일괄 수정: 여러 식당을 한 번의 커밋으로
+      const updates = req.body.bulkUpdate;
+      let updatedContent = currentContent;
+      const succeeded = [];
+      const failed = [];
+      
+      for (const upd of updates) {
+        const result = updateCafeteria(updatedContent, upd);
+        if (result.success) {
+          updatedContent = result.content;
+          succeeded.push(upd.id);
+        } else {
+          failed.push({ id: upd.id, error: result.error });
+        }
+      }
+      
+      if (succeeded.length === 0) {
+        return res.status(500).json({ error: '모두 수정 실패', failed });
+      }
+      
+      newFileContent = updatedContent;
+      commitMessage = succeeded.length === 1
+        ? `Update cafeteria id:${succeeded[0]}`
+        : `Update ${succeeded.length} cafeterias (bulk)`;
+      
     } else if (op === 'delete' && deleteIds && Array.isArray(deleteIds)) {
       // 삭제: 여러 id의 객체들 제거
       const result = deleteCafeterias(currentContent, deleteIds);
@@ -203,7 +229,17 @@ function formatCafeteriaEntry(id, cafe) {
   const crowd = cafe.crowd !== undefined ? cafe.crowd : 50;
   const open = cafe.open !== undefined ? cafe.open : true;
   
-  let entry = `  { id:${id}, lat:${cafe.lat || 0}, lng:${cafe.lng || 0}, keyword:"${keyword}", name:"${name}", price:${price}, pl:"${priceDisplay}", crowd:${crowd}, open:${open}, hours:"${hours}", address:"${address}"`;
+  // 좌표가 있는 경우 (숫자이고 0이 아닌 경우)
+  const hasLat = cafe.lat !== undefined && cafe.lat !== null && cafe.lat !== 0;
+  const hasLng = cafe.lng !== undefined && cafe.lng !== null && cafe.lng !== 0;
+  
+  let entry = `  { id:${id}`;
+  
+  if (hasLat && hasLng) {
+    entry += `, lat:${cafe.lat}, lng:${cafe.lng}`;
+  }
+  
+  entry += `, keyword:"${keyword}", name:"${name}", price:${price}, pl:"${priceDisplay}", crowd:${crowd}, open:${open}, hours:"${hours}", address:"${address}"`;
   
   if (menuType && menuType !== 'none' && menuLink) {
     entry += `, menuType:"${menuType}", menuLink:"${menuLink.replace(/"/g, '\\"')}"`;
