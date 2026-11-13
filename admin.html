@@ -702,6 +702,9 @@
             <input type="number" step="0.0000001" class="form-input" id="dLng" required>
           </div>
         </div>
+        <div style="margin-top: -8px; margin-bottom: 12px;">
+          <button type="button" onclick="verifyKakaoMapDirect()" style="font-size: 12px;">카카오맵에서 확인</button>
+        </div>
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">가격 (원)</label>
@@ -1120,6 +1123,9 @@ function renderResultCard(c) {
                 <label class="form-label">경도</label>
                 <input type="number" step="0.0000001" class="form-input" value="${c.lng}" onchange="updateResult(${c.id}, 'lng', parseFloat(this.value))">
               </div>
+            </div>
+            <div style="margin-top: -8px; margin-bottom: 12px;">
+              <button type="button" onclick="verifyKakaoMapResearch(${c.id})" style="font-size: 12px;">카카오맵에서 확인</button>
             </div>
             <div class="form-row">
               <div class="form-group">
@@ -1592,6 +1598,9 @@ function renderEditForm(c) {
           <input type="number" step="0.0000001" class="form-input" id="ec-lng-${c.id}" value="${c.lng !== undefined ? c.lng : ''}">
         </div>
       </div>
+      <div style="margin-top: -8px; margin-bottom: 12px;">
+        <button type="button" onclick="verifyKakaoMapManage(${c.id})" style="font-size: 12px;">카카오맵에서 확인</button>
+      </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">가격 (원)</label>
@@ -1707,6 +1716,17 @@ async function deleteCafeteria(id, name) {
 }
 
 // ============ GEOCODING ============
+function openKakaoByCoords(lat, lng, name) {
+  if (!lat || !lng) {
+    showToast('좌표가 없습니다', true);
+    return;
+  }
+  const label = name || '위치';
+  // 카카오맵 좌표 기반 URL (핀 표시)
+  const url = `https://map.kakao.com/link/map/${encodeURIComponent(label)},${lat},${lng}`;
+  window.open(url, '_blank');
+}
+
 async function findCoords(address, latInputId, lngInputId) {
   if (!address || !address.trim()) {
     showToast('주소를 먼저 입력해주세요', true);
@@ -1825,6 +1845,27 @@ async function findCoordsForDirect() {
   }
   
   await findCoords(searchText, 'dLat', 'dLng');
+}
+
+// 카카오맵에서 확인 (각 폼별)
+function verifyKakaoMapDirect() {
+  const lat = parseFloat(document.getElementById('dLat').value);
+  const lng = parseFloat(document.getElementById('dLng').value);
+  const name = document.getElementById('dName').value || '위치';
+  openKakaoByCoords(lat, lng, name);
+}
+
+function verifyKakaoMapManage(id) {
+  const lat = parseFloat(document.getElementById(`ec-lat-${id}`).value);
+  const lng = parseFloat(document.getElementById(`ec-lng-${id}`).value);
+  const name = document.getElementById(`ec-name-${id}`).value || '위치';
+  openKakaoByCoords(lat, lng, name);
+}
+
+function verifyKakaoMapResearch(id) {
+  const item = researchData.find(c => c.id === id);
+  if (!item) return;
+  openKakaoByCoords(item.lat, item.lng, item.name || '위치');
 }
 
 // ============ UTIL ============
