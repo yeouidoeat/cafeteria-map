@@ -1,487 +1,151 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>구내식당맵 CMS</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', sans-serif; background: #fafafa; color: #333; font-size: 14px; line-height: 1.5; }
-  .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f5f5f7; }
-  .login-box { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 320px; }
-  .login-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; text-align: center; color: #222; }
-  .login-input { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; margin-bottom: 12px; font-family: inherit; }
-  .login-btn { width: 100%; padding: 10px; background: #333; color: white; border: none; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; }
-  .login-btn:hover { background: #222; }
-  .login-error { color: #c53030; font-size: 12px; margin-top: 8px; text-align: center; display: none; }
-  .layout { display: flex; min-height: 100vh; }
-  .sidebar { width: 220px; background: white; border-right: 1px solid #e5e5e5; padding: 20px 0; }
-  .sidebar-title { padding: 0 20px 20px; font-size: 15px; font-weight: 600; color: #222; border-bottom: 1px solid #f0f0f0; margin-bottom: 12px; }
-  .nav-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; color: #555; cursor: pointer; font-size: 13px; border-left: 3px solid transparent; }
-  .nav-item:hover { background: #f8f8f8; }
-  .nav-item.active { background: #f5f5f5; border-left-color: #333; color: #111; font-weight: 500; }
-  .nav-badge { background: #eee; color: #666; padding: 1px 7px; border-radius: 10px; font-size: 11px; }
-  .nav-badge.alert { background: #fff4f4; color: #c53030; }
-  .logout-btn { margin: 20px; padding: 8px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; font-size: 12px; color: #666; width: calc(100% - 40px); }
-  .main { flex: 1; padding: 24px 32px; overflow-x: auto; }
-  .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e5e5e5; }
-  .page-title { font-size: 18px; font-weight: 600; color: #111; }
-  .page-meta { font-size: 12px; color: #888; }
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
-  .stat-card { background: white; border: 1px solid #e5e5e5; border-radius: 6px; padding: 16px; }
-  .stat-label { font-size: 12px; color: #888; margin-bottom: 4px; }
-  .stat-value { font-size: 24px; font-weight: 600; color: #111; }
-  .stat-value.alert { color: #c53030; }
-  .section { background: white; border: 1px solid #e5e5e5; border-radius: 6px; margin-bottom: 20px; }
-  .section-header { padding: 14px 20px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
-  .section-title { font-size: 14px; font-weight: 600; color: #222; }
-  .section-body { padding: 20px; }
-  .form-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-  .input { flex: 1; min-width: 200px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; font-family: inherit; }
-  .input:focus { outline: none; border-color: #333; }
-  .select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; background: white; min-width: 100px; }
-  .btn { padding: 8px 16px; border: 1px solid #ddd; background: white; border-radius: 4px; font-size: 13px; cursor: pointer; font-family: inherit; color: #333; }
-  .btn:hover { background: #f8f8f8; }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn-primary { background: #333; border-color: #333; color: white; }
-  .btn-primary:hover { background: #222; }
-  .btn-sm { padding: 6px 12px; font-size: 12px; }
-  .btn-danger { color: #c53030; border-color: #e5a5a5; }
-  .btn-danger:hover { background: #fff4f4; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #f0f0f0; }
-  th { background: #fafafa; color: #666; font-weight: 500; font-size: 12px; }
-  td.label { color: #888; width: 100px; }
-  td.value { font-weight: 500; }
-  td.missing { color: #c53030; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 500; border: 1px solid; }
-  .badge-new { background: #f8fafb; color: #2c5282; border-color: #cbd5e0; }
-  .list-item { padding: 14px 20px; border-bottom: 1px solid #f0f0f0; }
-  .list-item:last-child { border: none; }
-  .list-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .list-item-meta { font-size: 11px; color: #888; }
-  .list-item-name { font-weight: 600; color: #222; margin-bottom: 4px; }
-  .list-item-info { font-size: 12px; color: #666; }
-  .list-item-comment { font-size: 12px; color: #555; margin-top: 6px; padding: 6px 10px; background: #f8f8f8; border-radius: 4px; }
-  .actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
-  .toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; background: #333; color: white; border-radius: 4px; font-size: 13px; z-index: 1000; opacity: 0; transition: opacity 0.3s; max-width: 400px; }
-  .toast.show { opacity: 1; }
-  .toast.error { background: #c53030; }
-  .toast.success { background: #2d7a2d; }
-  .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; align-items: center; justify-content: center; }
-  .modal-bg.show { display: flex; }
-  .modal { background: white; padding: 24px; border-radius: 8px; max-width: 480px; width: 90%; max-height: 80vh; overflow-y: auto; }
-  .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
-  .modal-body { font-size: 13px; color: #555; margin-bottom: 20px; line-height: 1.6; }
-  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
-  .confidence-bar { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: #f8f8f8; border-radius: 4px; font-size: 12px; margin-top: 12px; }
-  .bar-track { width: 120px; height: 4px; background: #e5e5e5; border-radius: 2px; overflow: hidden; }
-  .bar-fill { height: 100%; background: #a0620e; }
-  .loading { text-align: center; padding: 40px; color: #888; font-size: 13px; }
-  .empty { text-align: center; padding: 40px; color: #888; font-size: 13px; }
-  @media (max-width: 768px) { .layout { flex-direction: column; } .sidebar { width: 100%; } .stats { grid-template-columns: repeat(2, 1fr); } .main { padding: 16px; } }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-</style>
-</head>
-<body>
-
-<div class="login-screen" id="loginScreen">
-  <div class="login-box">
-    <div class="login-title">구내식당맵 CMS</div>
-    <input type="password" class="login-input" id="passwordInput" placeholder="비밀번호" onkeypress="if(event.key==='Enter')login()">
-    <button class="login-btn" onclick="login()">로그인</button>
-    <div class="login-error" id="loginError">비밀번호가 틀렸습니다</div>
-  </div>
-</div>
-
-<div class="layout" id="mainLayout" style="display:none">
-  <aside class="sidebar">
-    <div class="sidebar-title">구내식당맵 CMS</div>
-    <div class="nav-item active" onclick="switchTab('dashboard', this)">대시보드</div>
-    <div class="nav-item" onclick="switchTab('reports', this)">사용자 제보 <span class="nav-badge alert" id="reportsBadge">0</span></div>
-    <div class="nav-item" onclick="switchTab('ai', this)">AI 식당 조사</div>
-    <div class="nav-item" onclick="switchTab('add', this)">직접 추가</div>
-    <button class="logout-btn" onclick="logout()">로그아웃</button>
-  </aside>
-
-  <main class="main">
-    <div class="page-header">
-      <div class="page-title" id="pageTitle">대시보드</div>
-      <div class="page-meta">이수나 · <span id="currentDate"></span></div>
-    </div>
-
-    <div class="tab-content active" id="tab-dashboard">
-      <div class="stats">
-        <div class="stat-card"><div class="stat-label">대기 중 제보</div><div class="stat-value alert" id="statReports">-</div></div>
-        <div class="stat-card"><div class="stat-label">전체 식당</div><div class="stat-value" id="statCafeterias">210</div></div>
-        <div class="stat-card"><div class="stat-label">오늘 처리</div><div class="stat-value" id="statProcessed">0</div></div>
-        <div class="stat-card"><div class="stat-label">API 호출</div><div class="stat-value" id="statApi">0</div></div>
-      </div>
-      <div class="section">
-        <div class="section-header"><div class="section-title">빠른 작업</div></div>
-        <div class="section-body">
-          <div class="form-row">
-            <button class="btn btn-primary" onclick="switchTab('reports', document.querySelectorAll('.nav-item')[1])">사용자 제보 처리</button>
-            <button class="btn" onclick="switchTab('ai', document.querySelectorAll('.nav-item')[2])">AI로 식당 조사</button>
-            <button class="btn" onclick="switchTab('add', document.querySelectorAll('.nav-item')[3])">직접 추가</button>
-          </div>
-        </div>
-      </div>
-      <div class="section">
-        <div class="section-header"><div class="section-title">최근 제보 (최대 5건)</div></div>
-        <div id="recentReports"><div class="loading">로딩 중...</div></div>
-      </div>
-    </div>
-
-    <div class="tab-content" id="tab-reports">
-      <div class="section">
-        <div class="section-header">
-          <div class="section-title">사용자 제보 리스트</div>
-          <button class="btn btn-sm" onclick="loadReports()">새로고침</button>
-        </div>
-        <div id="reportsList"><div class="loading">로딩 중...</div></div>
-      </div>
-    </div>
-
-    <div class="tab-content" id="tab-ai">
-      <div class="section">
-        <div class="section-header"><div class="section-title">AI 식당 조사 (Gemini)</div></div>
-        <div class="section-body">
-          <div class="form-row">
-            <input class="input" type="text" id="aiInput" placeholder="식당 이름 또는 건물명 (예: 트리노타워 여의도)">
-            <button class="btn btn-primary" onclick="searchWithAI()" id="aiBtn">조사</button>
-          </div>
-          <div style="font-size:12px; color:#888; margin-top:8px">AI가 웹에서 자동 조사합니다. 결과는 검토 후 승인하세요.</div>
-          <div id="aiResult" style="margin-top:16px; display:none"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="tab-content" id="tab-add">
-      <div class="section">
-        <div class="section-header"><div class="section-title">식당 직접 추가</div></div>
-        <div class="section-body">
-          <div class="form-row"><input class="input" type="text" id="addName" placeholder="식당 이름 *"></div>
-          <div class="form-row"><input class="input" type="text" id="addAddress" placeholder="주소 *"></div>
-          <div class="form-row">
-            <input class="input" type="number" id="addPrice" placeholder="가격 (숫자만, 예: 7500)">
-            <input class="input" type="text" id="addHours" placeholder="운영시간 (예: 11:30~13:30)">
-          </div>
-          <div class="form-row">
-            <input class="input" type="number" step="any" id="addLat" placeholder="위도 (lat) *">
-            <input class="input" type="number" step="any" id="addLng" placeholder="경도 (lng) *">
-          </div>
-          <div class="form-row">
-            <select class="select" id="addMenuType">
-              <option value="">식단표 종류 (선택)</option>
-              <option value="kakao">카카오톡</option>
-              <option value="insta">인스타</option>
-              <option value="url">홈페이지</option>
-            </select>
-            <input class="input" type="text" id="addMenuLink" placeholder="식단표 URL (선택)">
-          </div>
-          <div class="form-row"><input class="input" type="text" id="addKeyword" placeholder="검색 키워드 (예: 트리노타워 여의도)"></div>
-          <div style="font-size:12px; color:#888; margin-bottom:12px">좌표를 모르면 <a href="https://map.kakao.com" target="_blank" style="color:#2c5282">카카오맵</a>에서 확인하세요.</div>
-          <button class="btn btn-primary" onclick="addRestaurant()">식당 추가</button>
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<div class="modal-bg" id="modalBg">
-  <div class="modal">
-    <div class="modal-title" id="modalTitle">확인</div>
-    <div class="modal-body" id="modalBody"></div>
-    <div class="modal-actions">
-      <button class="btn" onclick="closeModal()">취소</button>
-      <button class="btn btn-primary" onclick="confirmModal()" id="modalConfirm">확인</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-let apiCallCount = 0;
-let processedCount = 0;
-let modalCallback = null;
-
-async function login() {
-  const pw = document.getElementById('passwordInput').value;
-  try {
-    const res = await fetch('/api/auth', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({password: pw})
-    });
-    const data = await res.json();
-    if (data.success) {
-      sessionStorage.setItem('admin_token', data.token);
-      showMain();
-    } else {
-      document.getElementById('loginError').style.display = 'block';
-    }
-  } catch (err) {
-    document.getElementById('loginError').style.display = 'block';
-    document.getElementById('loginError').textContent = '서버 오류: ' + err.message;
+// GitHub에 식당 추가 (단건 + 일괄)
+export default async function handler(req, res) {
+  const token = req.headers['x-admin-token'];
+  if (!token) {
+    return res.status(401).json({ error: '인증 필요' });
   }
-}
 
-function logout() {
-  sessionStorage.removeItem('admin_token');
-  location.reload();
-}
-
-function showMain() {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('mainLayout').style.display = 'flex';
-  updateDate();
-  loadReports();
-}
-
-if (sessionStorage.getItem('admin_token')) showMain();
-
-function updateDate() {
-  const now = new Date();
-  document.getElementById('currentDate').textContent = now.toLocaleString('ko-KR', {year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
-}
-
-function getAuthHeaders() {
-  return {'Content-Type':'application/json','X-Admin-Token':sessionStorage.getItem('admin_token')||''};
-}
-
-function switchTab(tabName, element) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + tabName).classList.add('active');
-  if (element) element.classList.add('active');
-  const titles = {dashboard:'대시보드',reports:'사용자 제보',ai:'AI 식당 조사',add:'직접 추가'};
-  document.getElementById('pageTitle').textContent = titles[tabName];
-  if (tabName === 'reports' || tabName === 'dashboard') loadReports();
-}
-
-async function loadReports() {
-  try {
-    const res = await fetch('/api/reports', {headers: getAuthHeaders()});
-    if (!res.ok) throw new Error('인증 실패');
-    const data = await res.json();
-    const reports = data.reports || [];
-    document.getElementById('statReports').textContent = reports.length;
-    document.getElementById('reportsBadge').textContent = reports.length;
-    document.getElementById('statProcessed').textContent = processedCount;
-    document.getElementById('statApi').textContent = apiCallCount;
-    renderReports('reportsList', reports);
-    renderReports('recentReports', reports.slice(0, 5));
-  } catch (err) {
-    showToast('제보 로드 실패: ' + err.message, 'error');
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
-}
 
-function renderReports(containerId, reports) {
-  const container = document.getElementById(containerId);
-  if (!reports || reports.length === 0) {
-    container.innerHTML = '<div class="empty">제보가 없습니다</div>';
-    return;
-  }
-  container.innerHTML = reports.map(r => `
-    <div class="list-item">
-      <div class="list-item-header">
-        <span class="badge badge-new">${escapeHtml(r.type || '신규')}</span>
-        <span class="list-item-meta">ID: ${r.id}</span>
-      </div>
-      <div class="list-item-name">${escapeHtml(r.cafeteria_name || '이름 없음')}</div>
-      <div class="list-item-info">가격: ${escapeHtml(r.price || '-')} · 시간: ${escapeHtml(r.hours || '-')}</div>
-      ${r.comment ? `<div class="list-item-comment">💬 ${escapeHtml(r.comment)}</div>` : ''}
-      <div class="actions">
-        <button class="btn btn-sm" onclick="aiVerifyReport('${escapeAttr(r.cafeteria_name || '')}')">AI 검증</button>
-        <button class="btn btn-sm" onclick="searchKakao('${escapeAttr(r.cafeteria_name || '')}')">카카오맵</button>
-        <div style="flex:1"></div>
-        <button class="btn btn-sm btn-danger" onclick="deleteReport(${r.id})">반려/삭제</button>
-      </div>
-    </div>
-  `).join('');
-}
-
-function aiVerifyReport(name) {
-  if (!name) { showToast('식당 이름 없음', 'error'); return; }
-  document.getElementById('aiInput').value = name;
-  switchTab('ai', document.querySelectorAll('.nav-item')[2]);
-  searchWithAI();
-}
-
-async function searchWithAI() {
-  const input = document.getElementById('aiInput').value.trim();
-  if (!input) { showToast('식당 이름 입력', 'error'); return; }
-  const btn = document.getElementById('aiBtn');
-  const result = document.getElementById('aiResult');
-  btn.disabled = true;
-  btn.textContent = '조사 중...';
-  result.style.display = 'block';
-  result.innerHTML = '<div class="loading">AI가 조사 중입니다... (10~20초)</div>';
-  try {
-    const res = await fetch('/api/gemini', {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({query: input})
-    });
-    const data = await res.json();
-    apiCallCount++;
-    document.getElementById('statApi').textContent = apiCallCount;
-    if (!res.ok || data.error) throw new Error(data.error || 'API 호출 실패');
-    renderAIResult(data.info, input);
-  } catch (err) {
-    result.innerHTML = `<div style="color:#c53030; padding:20px">오류: ${escapeHtml(err.message)}</div>`;
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '조사';
-  }
-}
-
-function renderAIResult(info, originalInput) {
-  const confidence = info.confidence || 0;
-  const result = document.getElementById('aiResult');
-  result.innerHTML = `
-    <table><tbody>
-      <tr><td class="label">이름</td><td class="value">${escapeHtml(info.name || '-')}</td></tr>
-      <tr><td class="label">주소</td><td class="value">${escapeHtml(info.address || '-')}</td></tr>
-      <tr><td class="label">좌표</td><td class="value">${info.lat || '-'}, ${info.lng || '-'}</td></tr>
-      <tr><td class="label">가격</td><td class="value ${!info.price ? 'missing' : ''}">${info.price ? info.price.toLocaleString() + '원' : '정보 없음'}</td></tr>
-      <tr><td class="label">운영시간</td><td class="value">${escapeHtml(info.hours || '-')}</td></tr>
-      <tr><td class="label">외부인</td><td class="value">${escapeHtml(info.external_available || '모름')}</td></tr>
-      <tr><td class="label">식단표</td><td class="value">${info.menu_type !== 'none' ? escapeHtml((info.menu_type || '') + ' / ' + (info.menu_url || '')) : '없음'}</td></tr>
-    </tbody></table>
-    ${info.notes ? `<div class="list-item-comment" style="margin-top:12px">📝 ${escapeHtml(info.notes)}</div>` : ''}
-    <div class="confidence-bar">신뢰도 <div class="bar-track"><div class="bar-fill" style="width:${confidence}%"></div></div><strong>${confidence}%</strong></div>
-    <div class="actions" style="margin-top:16px">
-      <button class="btn btn-sm" onclick="searchKakao('${escapeAttr(info.name || originalInput)}')">카카오맵 확인</button>
-      <div style="flex:1"></div>
-      <button class="btn btn-sm btn-primary" id="copyBtn">직접 추가로 복사</button>
-    </div>
-  `;
-  document.getElementById('copyBtn').onclick = () => fillAddForm(info);
-}
-
-function fillAddForm(info) {
-  document.getElementById('addName').value = info.name || '';
-  document.getElementById('addAddress').value = info.address || '';
-  document.getElementById('addPrice').value = info.price || '';
-  document.getElementById('addHours').value = info.hours || '';
-  document.getElementById('addLat').value = info.lat || '';
-  document.getElementById('addLng').value = info.lng || '';
-  document.getElementById('addMenuType').value = info.menu_type === 'none' ? '' : (info.menu_type || '');
-  document.getElementById('addMenuLink').value = info.menu_url || '';
-  document.getElementById('addKeyword').value = info.name || '';
-  switchTab('add', document.querySelectorAll('.nav-item')[3]);
-  showToast('직접 추가 폼에 복사되었습니다. 확인 후 저장하세요.', 'success');
-}
-
-function searchKakao(name) {
-  if (!name) return;
-  window.open(`https://map.kakao.com/?q=${encodeURIComponent(name)}`, '_blank');
-}
-
-async function addRestaurant() {
-  const name = document.getElementById('addName').value.trim();
-  const address = document.getElementById('addAddress').value.trim();
-  const price = parseInt(document.getElementById('addPrice').value) || 0;
-  const hours = document.getElementById('addHours').value.trim();
-  const lat = parseFloat(document.getElementById('addLat').value);
-  const lng = parseFloat(document.getElementById('addLng').value);
-  const menuType = document.getElementById('addMenuType').value;
-  const menuLink = document.getElementById('addMenuLink').value.trim();
-  const keyword = document.getElementById('addKeyword').value.trim() || name;
+  const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+  const REPO = 'yeouidoeat/cafeteria-map';
+  const FILE_PATH = 'index.html';
   
-  if (!name || !address) { showToast('이름과 주소는 필수', 'error'); return; }
-  if (!lat || !lng) { showToast('좌표(위도/경도) 필요', 'error'); return; }
+  if (!GITHUB_TOKEN) {
+    return res.status(500).json({ error: 'GITHUB_TOKEN 미설정' });
+  }
+
+  // 단건 또는 일괄 처리
+  let cafeterias = [];
+  const { single, bulk } = req.body;
   
-  showModal('식당 추가 확인',
-    `아래 식당을 GitHub에 추가하시겠습니까?<br><br>
-    <strong>${escapeHtml(name)}</strong><br>
-    주소: ${escapeHtml(address)}<br>
-    가격: ${price ? price.toLocaleString() + '원' : '미입력'}<br>
-    시간: ${escapeHtml(hours || '미입력')}<br>
-    좌표: ${lat}, ${lng}<br><br>
-    <small style="color:#888">⚠️ 이 작업은 index.html에 자동 커밋되며,<br>약 1~2분 후 앱에 반영됩니다.</small>`,
-    async () => {
-      try {
-        showToast('GitHub에 커밋 중...', 'info');
-        const res = await fetch('/api/github-commit', {
-          method: 'POST',
-          headers: getAuthHeaders(),
-          body: JSON.stringify({name, address, price, hours, lat, lng, menuType, menuLink, keyword})
-        });
-        const data = await res.json();
-        if (!res.ok || data.error) throw new Error(data.error || '커밋 실패');
-        showToast(`✅ ${name} 추가 완료! (id:${data.newId}) · 2분 후 반영`, 'success');
-        processedCount++;
-        document.getElementById('statProcessed').textContent = processedCount;
-        ['addName','addAddress','addPrice','addHours','addLat','addLng','addMenuLink','addKeyword'].forEach(id => document.getElementById(id).value = '');
-        document.getElementById('addMenuType').value = '';
-      } catch (err) {
-        showToast('오류: ' + err.message, 'error');
+  if (bulk && Array.isArray(bulk)) {
+    cafeterias = bulk;
+  } else if (single) {
+    cafeterias = [single];
+  } else {
+    // Legacy: body itself is a single cafeteria
+    cafeterias = [req.body];
+  }
+  
+  if (cafeterias.length === 0) {
+    return res.status(400).json({ error: '등록할 식당 없음' });
+  }
+
+  try {
+    // 1. 현재 index.html 가져오기
+    const getRes = await fetch(
+      `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`,
+      {
+        headers: {
+          'Authorization': `token ${GITHUB_TOKEN}`,
+          'Accept': 'application/vnd.github.v3+json'
+        }
       }
-    }
-  );
-}
+    );
 
-async function deleteReport(id) {
-  showModal('제보 반려/삭제',
-    `제보 ID ${id}을(를) 반려(삭제)하시겠습니까?<br><br><small style="color:#888">※ Supabase에서 완전히 삭제됩니다.</small>`,
-    async () => {
-      try {
-        const res = await fetch('/api/reports', {
-          method: 'DELETE',
-          headers: getAuthHeaders(),
-          body: JSON.stringify({id})
-        });
-        const data = await res.json();
-        if (!res.ok || data.error) throw new Error(data.error || '삭제 실패');
-        showToast('제보 삭제됨', 'success');
-        processedCount++;
-        document.getElementById('statProcessed').textContent = processedCount;
-        loadReports();
-      } catch (err) {
-        showToast('삭제 실패: ' + err.message, 'error');
+    if (!getRes.ok) {
+      const errData = await getRes.json();
+      return res.status(500).json({ error: 'GitHub 파일 조회 실패: ' + errData.message });
+    }
+
+    const fileData = await getRes.json();
+    const currentContent = Buffer.from(fileData.content, 'base64').toString('utf-8');
+
+    // 2. cafeteriasData 배열 찾기
+    const arrayStart = currentContent.indexOf('const cafeteriasData = [');
+    if (arrayStart === -1) {
+      return res.status(500).json({ error: 'cafeteriasData 배열을 찾을 수 없음' });
+    }
+
+    // 다음 식당 ID 계산 (가장 큰 id + 1)
+    const idMatches = currentContent.match(/id:\s*(\d+)/g);
+    let nextId = 1;
+    if (idMatches) {
+      const ids = idMatches.map(m => parseInt(m.match(/\d+/)[0]));
+      nextId = Math.max(...ids) + 1;
+    }
+
+    // 3. 각 식당을 cafeteriasData 형식으로 변환
+    const newEntries = cafeterias.map((cafe, idx) => {
+      const id = nextId + idx;
+      const external = cafe.external_available || cafe.external || 'unknown';
+      const externalBool = external === '가능';
+      
+      return `    {
+      id: ${id},
+      name: ${JSON.stringify(cafe.name || '')},
+      address: ${JSON.stringify(cafe.address || '')},
+      lat: ${cafe.lat || 0},
+      lng: ${cafe.lng || 0},
+      price: ${cafe.price || 0},
+      hours: ${JSON.stringify(cafe.hours || '')},
+      menuType: ${JSON.stringify(cafe.menu_type || 'none')},
+      menuUrl: ${JSON.stringify(cafe.menu_url || '')},
+      externalAvailable: ${externalBool}
+    }`;
+    }).join(',\n');
+
+    // 4. 배열 끝에 추가 (마지막 ] 전에)
+    // cafeteriasData 배열의 닫는 ]를 찾아야 함
+    // 간단한 접근: const cafeteriasData = [ ... ]; 패턴 매칭
+    const regex = /const cafeteriasData = \[([\s\S]*?)\n\s*\];/;
+    const match = currentContent.match(regex);
+    
+    if (!match) {
+      return res.status(500).json({ error: 'cafeteriasData 배열 패턴을 찾을 수 없음' });
+    }
+    
+    const oldArrayContent = match[1];
+    // 마지막 요소 뒤에 comma 추가
+    const trimmedOld = oldArrayContent.trimEnd();
+    const needsComma = !trimmedOld.endsWith(',');
+    const separator = needsComma ? ',\n' : '\n';
+    
+    const newArrayContent = oldArrayContent + separator + newEntries;
+    const newFileContent = currentContent.replace(
+      regex,
+      `const cafeteriasData = [${newArrayContent}\n  ];`
+    );
+
+    // 5. GitHub에 커밋
+    const commitMessage = cafeterias.length === 1 
+      ? `Add cafeteria: ${cafeterias[0].name}`
+      : `Add ${cafeterias.length} cafeterias (bulk)`;
+
+    const updateRes = await fetch(
+      `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${GITHUB_TOKEN}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: commitMessage,
+          content: Buffer.from(newFileContent, 'utf-8').toString('base64'),
+          sha: fileData.sha
+        })
       }
+    );
+
+    if (!updateRes.ok) {
+      const errData = await updateRes.json();
+      return res.status(500).json({ error: 'GitHub 커밋 실패: ' + errData.message });
     }
-  );
-}
 
-function showModal(title, body, callback) {
-  document.getElementById('modalTitle').textContent = title;
-  document.getElementById('modalBody').innerHTML = body;
-  document.getElementById('modalBg').classList.add('show');
-  modalCallback = callback;
-}
-function closeModal() {
-  document.getElementById('modalBg').classList.remove('show');
-  modalCallback = null;
-}
-function confirmModal() {
-  if (modalCallback) modalCallback();
-  closeModal();
-}
+    const result = await updateRes.json();
+    return res.status(200).json({ 
+      success: true, 
+      count: cafeterias.length,
+      startId: nextId,
+      commit: result.commit?.sha || ''
+    });
 
-function showToast(msg, type = 'info') {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.className = 'toast show ' + type;
-  setTimeout(() => toast.classList.remove('show'), 3000);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
 }
-
-function escapeHtml(str) {
-  if (str === null || str === undefined) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
-function escapeAttr(str) {
-  if (!str) return '';
-  return String(str).replace(/'/g,"\\'").replace(/"/g,'\\"');
-}
-
-setInterval(updateDate, 60000);
-</script>
-
-</body>
-</html>
