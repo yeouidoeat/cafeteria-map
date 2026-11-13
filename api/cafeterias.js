@@ -120,14 +120,49 @@ export default async function handler(req, res) {
       }
     }
 
+    // 각 식당에 region 추가
+    cafeterias.forEach(c => {
+      c.region = extractRegion(c.address);
+    });
+    
+    // 지역별 카운트
+    const regionCounts = {};
+    cafeterias.forEach(c => {
+      regionCounts[c.region] = (regionCounts[c.region] || 0) + 1;
+    });
+    
+    // 지역 정렬 (많은 순)
+    const regionStats = Object.entries(regionCounts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+
     return res.status(200).json({ 
       cafeterias,
-      total: cafeterias.length
+      total: cafeterias.length,
+      regionStats
     });
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
+}
+
+// 주소에서 "구" 또는 "시" 추출
+function extractRegion(address) {
+  if (!address) return '기타';
+  
+  // 서울특별시/서울/경기도/경기/인천/부산 등 제거
+  const cleaned = address.replace(/^(서울특별시|서울|경기도|경기|인천광역시|인천|부산광역시|부산|대전|대구|광주)\s*/, '');
+  
+  // "XX구" 추출 (가장 먼저 나오는 "구")
+  const guMatch = cleaned.match(/^([가-힣]+구)/);
+  if (guMatch) return guMatch[1];
+  
+  // "XX시" 추출 (경기도 지역 등)
+  const siMatch = cleaned.match(/^([가-힣]+시)/);
+  if (siMatch) return siMatch[1];
+  
+  return '기타';
 }
 
 // JavaScript 객체 리터럴을 간단히 파싱
