@@ -373,6 +373,45 @@
   }
   .search-bar input:focus { outline: none; border-color: #1a1a1a; }
   
+  .region-bar {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+  .region-bar-title {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .region-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .region-chip {
+    padding: 6px 12px;
+    background: #f5f5f5;
+    border: 1px solid #e5e5e5;
+    border-radius: 16px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #555;
+    transition: all 0.15s;
+  }
+  .region-chip:hover { background: #e8e8e8; }
+  .region-chip.active {
+    background: #1a1a1a;
+    color: white;
+    border-color: #1a1a1a;
+  }
+  .region-chip .count {
+    font-weight: 600;
+    margin-left: 4px;
+  }
+  
   .result-card {
     background: white;
     border: 1px solid #e5e5e5;
@@ -416,6 +455,7 @@
   .tag-no { background: #ffebee; color: #c62828; }
   .tag-info { background: #e3f2fd; color: #1565c0; }
   .tag-dup { background: #fff3e0; color: #e65100; font-weight: 700; }
+  .tag-modified { background: #e8eaf6; color: #283593; font-weight: 700; }
   
   .result-info {
     display: grid;
@@ -557,6 +597,8 @@
           <div class="stat-value" id="statAdded">0</div>
         </div>
       </div>
+      
+      <div id="dashboardRegionStats"></div>
     </div>
 
     <!-- Reports -->
@@ -703,6 +745,8 @@
         <button onclick="loadManageList()">새로고침</button>
       </div>
       
+      <div id="regionFilter"></div>
+      
       <div id="manageList">
         <div class="empty">"새로고침"을 눌러 식당 리스트를 불러오세요</div>
       </div>
@@ -723,6 +767,8 @@ let stats = { today: 0, added: 0 };
 let allCafeterias = [];
 let filteredCafeterias = [];
 let editingId = null;
+let regionStats = [];
+let selectedRegion = 'all';
 
 // ============ AUTH ============
 async function login() {
@@ -1099,6 +1145,10 @@ function renderResultCard(c) {
                 </select>
               </div>
             </div>
+            <div style="display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0f0f0;">
+              <button class="primary" onclick="confirmEdit(${c.id})">수정 적용</button>
+              <button onclick="toggleEdit(${c.id})">닫기</button>
+            </div>
           </div>
         </div>
       </div>
@@ -1125,7 +1175,50 @@ function toggleEdit(id) {
 
 function updateResult(id, field, value) {
   const item = researchData.find(c => c.id === id);
-  if (item) item[field] = value;
+  if (item) {
+    item[field] = value;
+    item._modified = true;
+    // 카드 상단에 수정 표시 업데이트
+    const nameEl = document.querySelector(`#rcard-${id} .result-name`);
+    if (nameEl && !nameEl.querySelector('.tag-modified')) {
+      nameEl.insertAdjacentHTML('beforeend', '<span class="tag tag-modified">수정됨</span>');
+    }
+    // 가격 표시 실시간 업데이트
+    if (field === 'price' || field === 'hours' || field === 'name' || field === 'address') {
+      updateCardPreview(id);
+    }
+  }
+}
+
+function updateCardPreview(id) {
+  const item = researchData.find(c => c.id === id);
+  if (!item) return;
+  const card = document.getElementById(`rcard-${id}`);
+  if (!card) return;
+  
+  const infoEl = card.querySelector('.result-info');
+  if (infoEl) {
+    infoEl.innerHTML = `
+      <div>주소: ${escapeHtml(item.address || '-')}</div>
+      <div>가격: ${item.price ? item.price.toLocaleString() + '원' : '-'}</div>
+      <div>시간: ${escapeHtml(item.hours || '-')}</div>
+      <div>좌표: ${item.lat}, ${item.lng}</div>
+    `;
+  }
+  
+  const nameEl = card.querySelector('.result-name');
+  if (nameEl) {
+    // 이름 부분만 업데이트 (태그는 유지)
+    const tags = nameEl.querySelectorAll('.tag');
+    const tagsHtml = Array.from(tags).map(t => t.outerHTML).join(' ');
+    nameEl.innerHTML = escapeHtml(item.name || '(이름 없음)') + ' ' + tagsHtml;
+  }
+}
+
+function confirmEdit(id) {
+  const form = document.getElementById(`redit-${id}`);
+  if (form) form.classList.remove('open');
+  showToast('수정 내용이 적용되었습니다');
 }
 
 function removeResult(id) {
@@ -1298,15 +1391,43 @@ async function loadCafeteriasForStats() {
     
     if (data.cafeterias) {
       allCafeterias = data.cafeterias;
+      regionStats = data.regionStats || [];
       document.getElementById('statTotal').textContent = data.total;
+      renderDashboardRegionStats();
     }
   } catch (err) {
     // 조용히 실패 (통계만)
   }
 }
 
+function renderDashboardRegionStats() {
+  const container = document.getElementById('dashboardRegionStats');
+  if (!container || regionStats.length === 0) return;
+  
+  const maxCount = Math.max(...regionStats.map(r => r.count));
+  
+  container.innerHTML = `
+    <div style="background: white; border: 1px solid #e5e5e5; border-radius: 8px; padding: 20px; margin-top: 20px;">
+      <div style="font-size: 14px; font-weight: 600; margin-bottom: 16px;">지역별 식당 분포</div>
+      ${regionStats.map(r => {
+        const pct = Math.round((r.count / maxCount) * 100);
+        return `
+          <div style="display: flex; align-items: center; margin-bottom: 8px; gap: 10px;">
+            <div style="width: 80px; font-size: 13px; color: #555;">${escapeHtml(r.name)}</div>
+            <div style="flex: 1; background: #f5f5f5; border-radius: 4px; height: 20px; position: relative; overflow: hidden;">
+              <div style="width: ${pct}%; height: 100%; background: #1a1a1a; border-radius: 4px;"></div>
+            </div>
+            <div style="width: 50px; text-align: right; font-size: 13px; font-weight: 600;">${r.count}개</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
 async function loadManageList() {
   document.getElementById('manageList').innerHTML = '<div class="loading">전체 식당 리스트를 불러오는 중... (몇 초 걸려요)</div>';
+  document.getElementById('regionFilter').innerHTML = '';
   
   try {
     const res = await fetch('/api/cafeterias', {
@@ -1316,8 +1437,11 @@ async function loadManageList() {
     
     if (data.cafeterias) {
       allCafeterias = data.cafeterias;
+      regionStats = data.regionStats || [];
+      selectedRegion = 'all';
       filteredCafeterias = [...allCafeterias];
       document.getElementById('statTotal').textContent = data.total;
+      renderRegionFilter();
       renderManageList();
     } else {
       document.getElementById('manageList').innerHTML = '<div class="empty">로드 실패: ' + (data.error || '') + '</div>';
@@ -1327,12 +1451,59 @@ async function loadManageList() {
   }
 }
 
-function filterManageList() {
-  const q = document.getElementById('manageSearch').value.trim().toLowerCase();
-  if (!q) {
+function renderRegionFilter() {
+  if (regionStats.length === 0) {
+    document.getElementById('regionFilter').innerHTML = '';
+    return;
+  }
+  
+  const chips = regionStats.map(r => `
+    <div class="region-chip ${selectedRegion === r.name ? 'active' : ''}" 
+         onclick="filterByRegion('${escapeHtml(r.name)}')">
+      ${escapeHtml(r.name)}<span class="count">${r.count}</span>
+    </div>
+  `).join('');
+  
+  document.getElementById('regionFilter').innerHTML = `
+    <div class="region-bar">
+      <div class="region-bar-title">지역별 필터</div>
+      <div class="region-chips">
+        <div class="region-chip ${selectedRegion === 'all' ? 'active' : ''}" 
+             onclick="filterByRegion('all')">
+          전체<span class="count">${allCafeterias.length}</span>
+        </div>
+        ${chips}
+      </div>
+    </div>
+  `;
+}
+
+function filterByRegion(region) {
+  selectedRegion = region;
+  document.getElementById('manageSearch').value = ''; // 검색어 초기화
+  
+  if (region === 'all') {
     filteredCafeterias = [...allCafeterias];
   } else {
-    filteredCafeterias = allCafeterias.filter(c => {
+    filteredCafeterias = allCafeterias.filter(c => c.region === region);
+  }
+  
+  renderRegionFilter();
+  renderManageList();
+}
+
+function filterManageList() {
+  const q = document.getElementById('manageSearch').value.trim().toLowerCase();
+  
+  // 기본 소스 (지역 필터가 적용된 리스트)
+  let base = selectedRegion === 'all' 
+    ? allCafeterias 
+    : allCafeterias.filter(c => c.region === selectedRegion);
+  
+  if (!q) {
+    filteredCafeterias = [...base];
+  } else {
+    filteredCafeterias = base.filter(c => {
       return (c.name || '').toLowerCase().includes(q) ||
              (c.address || '').toLowerCase().includes(q) ||
              (c.keyword || '').toLowerCase().includes(q);
