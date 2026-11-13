@@ -598,7 +598,6 @@
         </div>
       </div>
       
-      <div id="dashboardRegionStats"></div>
     </div>
 
     <!-- Reports -->
@@ -703,7 +702,7 @@
           </div>
         </div>
         <div style="margin-top: -8px; margin-bottom: 12px;">
-          <button type="button" onclick="verifyKakaoMapDirect()" style="font-size: 12px;">카카오맵에서 확인</button>
+          <button type="button" onclick="verifyKakaoMapDirect()" style="font-size: 12px;">좌표 위치 확인 (지도)</button>
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -751,6 +750,8 @@
         <button onclick="loadManageList()">새로고침</button>
       </div>
       
+      <div id="pendingBar"></div>
+      
       <div id="regionFilter"></div>
       
       <div id="manageList">
@@ -775,6 +776,7 @@ let filteredCafeterias = [];
 let editingId = null;
 let regionStats = [];
 let selectedRegion = 'all';
+let pendingUpdates = new Map(); // id -> 수정된 데이터 (대기 중)
 
 // ============ AUTH ============
 async function login() {
@@ -1125,7 +1127,7 @@ function renderResultCard(c) {
               </div>
             </div>
             <div style="margin-top: -8px; margin-bottom: 12px;">
-              <button type="button" onclick="verifyKakaoMapResearch(${c.id})" style="font-size: 12px;">카카오맵에서 확인</button>
+              <button type="button" onclick="verifyKakaoMapResearch(${c.id})" style="font-size: 12px;">좌표 위치 확인 (지도)</button>
             </div>
             <div class="form-row">
               <div class="form-group">
@@ -1405,36 +1407,10 @@ async function loadCafeteriasForStats() {
       allCafeterias = data.cafeterias;
       regionStats = data.regionStats || [];
       document.getElementById('statTotal').textContent = data.total;
-      renderDashboardRegionStats();
     }
   } catch (err) {
     // 조용히 실패 (통계만)
   }
-}
-
-function renderDashboardRegionStats() {
-  const container = document.getElementById('dashboardRegionStats');
-  if (!container || regionStats.length === 0) return;
-  
-  const maxCount = Math.max(...regionStats.map(r => r.count));
-  
-  container.innerHTML = `
-    <div style="background: white; border: 1px solid #e5e5e5; border-radius: 8px; padding: 20px; margin-top: 20px;">
-      <div style="font-size: 14px; font-weight: 600; margin-bottom: 16px;">지역별 식당 분포</div>
-      ${regionStats.map(r => {
-        const pct = Math.round((r.count / maxCount) * 100);
-        return `
-          <div style="display: flex; align-items: center; margin-bottom: 8px; gap: 10px;">
-            <div style="width: 80px; font-size: 13px; color: #555;">${escapeHtml(r.name)}</div>
-            <div style="flex: 1; background: #f5f5f5; border-radius: 4px; height: 20px; position: relative; overflow: hidden;">
-              <div style="width: ${pct}%; height: 100%; background: #1a1a1a; border-radius: 4px;"></div>
-            </div>
-            <div style="width: 50px; text-align: right; font-size: 13px; font-weight: 600;">${r.count}개</div>
-          </div>
-        `;
-      }).join('')}
-    </div>
-  `;
 }
 
 async function loadManageList() {
@@ -1545,12 +1521,16 @@ function renderManageList() {
 
 function renderManageCard(c) {
   const isEditing = editingId === c.id;
+  const isPending = pendingUpdates.has(c.id);
   
   return `
-    <div class="cafe-card" id="cafe-${c.id}">
+    <div class="cafe-card" id="cafe-${c.id}" style="${isPending ? 'border-color: #ffc107; background: #fffdf5;' : ''}">
       <div class="report-header">
         <div>
-          <div class="report-name">${escapeHtml(c.name || '-')}</div>
+          <div class="report-name">
+            ${escapeHtml(c.name || '-')}
+            ${isPending ? '<span class="tag tag-modified" style="margin-left: 6px;">수정 대기</span>' : ''}
+          </div>
           <div class="report-meta">ID: ${c.id} · ${escapeHtml(c.address || '-')}</div>
         </div>
         <div class="report-type">${c.price ? c.price.toLocaleString() + '원' : '-'}</div>
@@ -1561,8 +1541,8 @@ function renderManageCard(c) {
         ${c.menuType ? `<span>메뉴: ${escapeHtml(c.menuType)}</span>` : ''}
       </div>
       <div class="report-actions">
-        <button onclick="openKakao('${escapeHtml(c.name)}')">카카오맵</button>
-        <button onclick="editCafeteria(${c.id})">${isEditing ? '수정 취소' : '수정'}</button>
+        <button onclick="openKakao('${escapeHtml(c.name)}')">카카오맵 정보</button>
+        <button onclick="editCafeteria(${c.id})">수정</button>
         <button class="danger" onclick="deleteCafeteria(${c.id}, '${escapeHtml(c.name)}')">삭제</button>
       </div>
       ${isEditing ? renderEditForm(c) : ''}
@@ -1599,7 +1579,7 @@ function renderEditForm(c) {
         </div>
       </div>
       <div style="margin-top: -8px; margin-bottom: 12px;">
-        <button type="button" onclick="verifyKakaoMapManage(${c.id})" style="font-size: 12px;">카카오맵에서 확인</button>
+        <button type="button" onclick="verifyKakaoMapManage(${c.id})" style="font-size: 12px;">좌표 위치 확인 (지도)</button>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -1640,7 +1620,7 @@ function editCafeteria(id) {
   renderManageList();
 }
 
-async function saveCafeteriaEdit(id) {
+function saveCafeteriaEdit(id) {
   const latVal = document.getElementById(`ec-lat-${id}`).value;
   const lngVal = document.getElementById(`ec-lng-${id}`).value;
   
@@ -1657,7 +1637,67 @@ async function saveCafeteriaEdit(id) {
     menuLink: document.getElementById(`ec-menuLink-${id}`).value
   };
   
-  if (!confirm(`"${update.name}" 정보를 수정합니다. 계속?`)) return;
+  // 대기 목록에 추가 (GitHub 커밋 X)
+  pendingUpdates.set(id, update);
+  
+  // 로컬 데이터 업데이트 (UI 반영용)
+  const idx = allCafeterias.findIndex(c => c.id === id);
+  if (idx >= 0) {
+    allCafeterias[idx] = { ...allCafeterias[idx], ...update };
+  }
+  
+  editingId = null;
+  renderPendingBar();
+  filterManageList();
+  showToast(`수정 대기 목록에 추가되었습니다 (총 ${pendingUpdates.size}개)`);
+}
+
+function renderPendingBar() {
+  const bar = document.getElementById('pendingBar');
+  if (!bar) return;
+  
+  if (pendingUpdates.size === 0) {
+    bar.innerHTML = '';
+    return;
+  }
+  
+  const items = Array.from(pendingUpdates.values()).map(u => 
+    `<div style="font-size: 13px; color: #555; padding: 4px 0;">· ${escapeHtml(u.name)} (id:${u.id})</div>`
+  ).join('');
+  
+  bar.innerHTML = `
+    <div style="background: #fff8e1; border: 1px solid #ffc107; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <div style="font-size: 14px; font-weight: 600;">수정 대기 중 (${pendingUpdates.size}개)</div>
+        <div style="display: flex; gap: 8px;">
+          <button onclick="clearPending()">전체 취소</button>
+          <button class="primary" onclick="saveAllPending()">일괄 저장</button>
+        </div>
+      </div>
+      <div style="max-height: 150px; overflow-y: auto;">${items}</div>
+      <div style="font-size: 12px; color: #999; margin-top: 8px;">* 저장을 눌러야 GitHub에 반영됩니다</div>
+    </div>
+  `;
+}
+
+function clearPending() {
+  if (!confirm(`대기 중인 ${pendingUpdates.size}개 수정사항을 모두 취소하시겠습니까?`)) return;
+  pendingUpdates.clear();
+  renderPendingBar();
+  // 원본 데이터로 복원하려면 새로고침 필요
+  showToast('대기 목록이 비워졌습니다. 새로고침으로 원본 데이터를 복원하세요.');
+}
+
+async function saveAllPending() {
+  if (pendingUpdates.size === 0) {
+    showToast('대기 중인 수정사항이 없습니다', true);
+    return;
+  }
+  
+  const updates = Array.from(pendingUpdates.values());
+  if (!confirm(`${updates.length}개 식당을 GitHub에 일괄 저장합니다.\n2분 후 사이트에 반영됩니다.\n\n계속하시겠습니까?`)) return;
+  
+  showToast(`${updates.length}개 저장 중... 잠시만요`);
   
   try {
     const res = await fetch('/api/github-commit', {
@@ -1666,24 +1706,19 @@ async function saveCafeteriaEdit(id) {
         'Content-Type': 'application/json',
         'X-Admin-Token': adminToken
       },
-      body: JSON.stringify({ action: 'update', update })
+      body: JSON.stringify({ action: 'bulkUpdate', bulkUpdate: updates })
     });
     const data = await res.json();
     
     if (data.success) {
-      showToast('수정 완료! 2분 후 반영됩니다');
-      editingId = null;
-      // 로컬 데이터도 업데이트
-      const idx = allCafeterias.findIndex(c => c.id === id);
-      if (idx >= 0) {
-        allCafeterias[idx] = { ...allCafeterias[idx], ...update };
-      }
-      filterManageList();
+      showToast(`${updates.length}개 저장 완료! 2분 후 반영됩니다`);
+      pendingUpdates.clear();
+      renderPendingBar();
     } else {
-      showToast('수정 실패: ' + (data.error || ''), true);
+      showToast('저장 실패: ' + (data.error || ''), true);
     }
   } catch (err) {
-    showToast('수정 오류: ' + err.message, true);
+    showToast('저장 오류: ' + err.message, true);
   }
 }
 
