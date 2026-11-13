@@ -687,7 +687,10 @@
         </div>
         <div class="form-group">
           <label class="form-label">주소 *</label>
-          <input type="text" class="form-input" id="dAddress" required placeholder="서울특별시 ...">
+          <div style="display: flex; gap: 8px;">
+            <input type="text" class="form-input" id="dAddress" required placeholder="서울특별시 ..." style="flex: 1;">
+            <button type="button" onclick="findCoordsForDirect()" style="flex-shrink: 0;">좌표 자동 찾기</button>
+          </div>
         </div>
         <div class="form-row">
           <div class="form-group">
@@ -1103,7 +1106,10 @@ function renderResultCard(c) {
             </div>
             <div class="form-group">
               <label class="form-label">주소</label>
-              <input type="text" class="form-input" value="${escapeHtml(c.address)}" onchange="updateResult(${c.id}, 'address', this.value)">
+              <div style="display: flex; gap: 8px;">
+                <input type="text" class="form-input" value="${escapeHtml(c.address)}" onchange="updateResult(${c.id}, 'address', this.value)" style="flex: 1;">
+                <button type="button" onclick="findCoordsForResearch(${c.id})" style="flex-shrink: 0;">좌표 찾기</button>
+              </div>
             </div>
             <div class="form-row">
               <div class="form-group">
@@ -1545,7 +1551,7 @@ function renderManageCard(c) {
       </div>
       <div class="report-info">
         <span>시간: ${escapeHtml(c.hours || '-')}</span>
-        <span>좌표: ${c.lat}, ${c.lng}</span>
+        <span>좌표: ${(c.lat !== undefined && c.lng !== undefined) ? `${c.lat}, ${c.lng}` : '키워드 기반'}</span>
         ${c.menuType ? `<span>메뉴: ${escapeHtml(c.menuType)}</span>` : ''}
       </div>
       <div class="report-actions">
@@ -1571,16 +1577,19 @@ function renderEditForm(c) {
       </div>
       <div class="form-group">
         <label class="form-label">주소</label>
-        <input type="text" class="form-input" id="ec-address-${c.id}" value="${escapeHtml(c.address)}">
+        <div style="display: flex; gap: 8px;">
+          <input type="text" class="form-input" id="ec-address-${c.id}" value="${escapeHtml(c.address)}" style="flex: 1;">
+          <button type="button" onclick="findCoordsForManage(${c.id})" style="flex-shrink: 0;">좌표 찾기</button>
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">위도</label>
-          <input type="number" step="0.0000001" class="form-input" id="ec-lat-${c.id}" value="${c.lat}">
+          <label class="form-label">위도 ${c.lat === undefined ? '(키워드 기반)' : ''}</label>
+          <input type="number" step="0.0000001" class="form-input" id="ec-lat-${c.id}" value="${c.lat !== undefined ? c.lat : ''}">
         </div>
         <div class="form-group">
-          <label class="form-label">경도</label>
-          <input type="number" step="0.0000001" class="form-input" id="ec-lng-${c.id}" value="${c.lng}">
+          <label class="form-label">경도 ${c.lng === undefined ? '(키워드 기반)' : ''}</label>
+          <input type="number" step="0.0000001" class="form-input" id="ec-lng-${c.id}" value="${c.lng !== undefined ? c.lng : ''}">
         </div>
       </div>
       <div class="form-row">
@@ -1623,13 +1632,16 @@ function editCafeteria(id) {
 }
 
 async function saveCafeteriaEdit(id) {
+  const latVal = document.getElementById(`ec-lat-${id}`).value;
+  const lngVal = document.getElementById(`ec-lng-${id}`).value;
+  
   const update = {
     id: id,
     name: document.getElementById(`ec-name-${id}`).value,
     keyword: document.getElementById(`ec-keyword-${id}`).value,
     address: document.getElementById(`ec-address-${id}`).value,
-    lat: parseFloat(document.getElementById(`ec-lat-${id}`).value),
-    lng: parseFloat(document.getElementById(`ec-lng-${id}`).value),
+    lat: latVal ? parseFloat(latVal) : null,
+    lng: lngVal ? parseFloat(lngVal) : null,
     price: parseInt(document.getElementById(`ec-price-${id}`).value) || 0,
     hours: document.getElementById(`ec-hours-${id}`).value,
     menuType: document.getElementById(`ec-menuType-${id}`).value,
@@ -1692,6 +1704,127 @@ async function deleteCafeteria(id, name) {
   } catch (err) {
     showToast('삭제 오류: ' + err.message, true);
   }
+}
+
+// ============ GEOCODING ============
+async function findCoords(address, latInputId, lngInputId) {
+  if (!address || !address.trim()) {
+    showToast('주소를 먼저 입력해주세요', true);
+    return;
+  }
+  
+  showToast('좌표 검색 중...');
+  
+  try {
+    const res = await fetch('/api/geocode', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Token': adminToken
+      },
+      body: JSON.stringify({ address: address.trim() })
+    });
+    const data = await res.json();
+    
+    if (data.success) {
+      // 결과 폼에 입력
+      const latInput = document.getElementById(latInputId);
+      const lngInput = document.getElementById(lngInputId);
+      
+      if (latInput) latInput.value = data.lat;
+      if (lngInput) lngInput.value = data.lng;
+      
+      // change 이벤트 트리거 (연구 결과 수정 반영)
+      if (latInput) latInput.dispatchEvent(new Event('change'));
+      if (lngInput) lngInput.dispatchEvent(new Event('change'));
+      
+      const methodText = data.method === 'address' ? '주소' : '키워드';
+      const place = data.placeName ? ` (${data.placeName})` : '';
+      showToast(`좌표 찾음 (${methodText} 검색)${place}: ${data.lat.toFixed(4)}, ${data.lng.toFixed(4)}`);
+    } else {
+      showToast('좌표를 찾을 수 없음: ' + (data.error || ''), true);
+    }
+  } catch (err) {
+    showToast('좌표 검색 오류: ' + err.message, true);
+  }
+}
+
+// 지역 조사 카드의 좌표 찾기 (업데이트도 함께)
+async function findCoordsForResearch(id) {
+  const item = researchData.find(c => c.id === id);
+  if (!item) return;
+  
+  const address = item.address || item.name;
+  if (!address) {
+    showToast('주소나 이름이 필요합니다', true);
+    return;
+  }
+  
+  showToast('좌표 검색 중...');
+  
+  try {
+    const res = await fetch('/api/geocode', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Token': adminToken
+      },
+      body: JSON.stringify({ address })
+    });
+    const data = await res.json();
+    
+    if (data.success) {
+      item.lat = data.lat;
+      item.lng = data.lng;
+      item._modified = true;
+      
+      // UI 업데이트
+      const latInput = document.querySelector(`#redit-${id} input[onchange*="'lat'"]`);
+      const lngInput = document.querySelector(`#redit-${id} input[onchange*="'lng'"]`);
+      if (latInput) latInput.value = data.lat;
+      if (lngInput) lngInput.value = data.lng;
+      
+      updateCardPreview(id);
+      
+      // 수정됨 태그 추가
+      const nameEl = document.querySelector(`#rcard-${id} .result-name`);
+      if (nameEl && !nameEl.querySelector('.tag-modified')) {
+        nameEl.insertAdjacentHTML('beforeend', '<span class="tag tag-modified">수정됨</span>');
+      }
+      
+      const place = data.placeName ? ` (${data.placeName})` : '';
+      showToast(`좌표 찾음${place}`);
+    } else {
+      showToast('좌표를 찾을 수 없음: ' + (data.error || ''), true);
+    }
+  } catch (err) {
+    showToast('오류: ' + err.message, true);
+  }
+}
+
+// 식당 관리 수정 폼의 좌표 찾기
+async function findCoordsForManage(id) {
+  const addressInput = document.getElementById(`ec-address-${id}`);
+  if (!addressInput || !addressInput.value) {
+    showToast('주소를 먼저 입력해주세요', true);
+    return;
+  }
+  
+  await findCoords(addressInput.value, `ec-lat-${id}`, `ec-lng-${id}`);
+}
+
+// 직접 추가 폼의 좌표 찾기
+async function findCoordsForDirect() {
+  const address = document.getElementById('dAddress').value;
+  const name = document.getElementById('dName').value;
+  const searchText = address || name;
+  
+  if (!searchText) {
+    showToast('주소나 이름을 먼저 입력해주세요', true);
+    return;
+  }
+  
+  await findCoords(searchText, 'dLat', 'dLng');
 }
 
 // ============ UTIL ============
