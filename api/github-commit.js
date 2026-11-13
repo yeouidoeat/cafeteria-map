@@ -26,7 +26,6 @@ export default async function handler(req, res) {
   } else if (single) {
     cafeterias = [single];
   } else {
-    // Legacy: body itself is a single cafeteria
     cafeterias = [req.body];
   }
   
@@ -54,63 +53,99 @@ export default async function handler(req, res) {
     const fileData = await getRes.json();
     const currentContent = Buffer.from(fileData.content, 'base64').toString('utf-8');
 
-    // 2. cafeteriasData 배열 찾기
-    const arrayStart = currentContent.indexOf('const cafeteriasData = [');
-    if (arrayStart === -1) {
-      return res.status(500).json({ error: 'cafeteriasData 배열을 찾을 수 없음' });
+    // 2. cafeterias 배열 찾기 (실제 변수명!)
+    const arrayMatch = currentContent.match(/const cafeterias = \[/);
+    if (!arrayMatch) {
+      return res.status(500).json({ error: 'cafeterias 배열을 찾을 수 없음' });
+    }
+    
+    const arrayStart = arrayMatch.index;
+    
+    // 3. 배열의 끝 찾기 (중첩 괄호 고려)
+    let bracketCount = 0;
+    let arrayEnd = -1;
+    let inString = false;
+    let stringChar = null;
+    let i = arrayStart + 'const cafeterias = '.length;
+    
+    for (; i < currentContent.length; i++) {
+      const ch = currentContent[i];
+      const prevCh = i > 0 ? currentContent[i-1] : '';
+      
+      // 문자열 안인지 확인
+      if (!inString && (ch === '"' || ch === "'")) {
+        inString = true;
+        stringChar = ch;
+        continue;
+      }
+      if (inString && ch === stringChar && prevCh !== '\\') {
+        inString = false;
+        stringChar = null;
+        continue;
+      }
+      if (inString) continue;
+      
+      // 괄호 카운팅
+      if (ch === '[') bracketCount++;
+      if (ch === ']') {
+        bracketCount--;
+        if (bracketCount === 0) {
+          arrayEnd = i;
+          break;
+        }
+      }
+    }
+    
+    if (arrayEnd === -1) {
+      return res.status(500).json({ error: '배열 끝을 찾을 수 없음' });
     }
 
-    // 다음 식당 ID 계산 (가장 큰 id + 1)
-    const idMatches = currentContent.match(/id:\s*(\d+)/g);
+    // 4. 다음 식당 ID 계산
+    const arrayContent = currentContent.substring(arrayStart, arrayEnd);
+    const idMatches = arrayContent.match(/id:\s*(\d+)/g);
     let nextId = 1;
     if (idMatches) {
       const ids = idMatches.map(m => parseInt(m.match(/\d+/)[0]));
       nextId = Math.max(...ids) + 1;
     }
 
-    // 3. 각 식당을 cafeteriasData 형식으로 변환
+    // 5. 각 식당을 실제 형식으로 변환
     const newEntries = cafeterias.map((cafe, idx) => {
       const id = nextId + idx;
-      const external = cafe.external_available || cafe.external || 'unknown';
-      const externalBool = external === '가능';
+      const name = (cafe.name || '').replace(/"/g, '\\"');
+      const address = (cafe.address || '').replace(/"/g, '\\"');
+      const hours = (cafe.hours || '').replace(/"/g, '\\"');
+      const keyword = (cafe.keyword || cafe.name || '').replace(/"/g, '\\"');
+      const price = parseInt(cafe.price) || 0;
+      const priceDisplay = price > 0 ? price.toLocaleString() + '원' : '';
+      const menuType = cafe.menu_type || cafe.menuType || 'none';
+      const menuLink = cafe.menu_url || cafe.menuLink || '';
       
-      return `    {
-      id: ${id},
-      name: ${JSON.stringify(cafe.name || '')},
-      address: ${JSON.stringify(cafe.address || '')},
-      lat: ${cafe.lat || 0},
-      lng: ${cafe.lng || 0},
-      price: ${cafe.price || 0},
-      hours: ${JSON.stringify(cafe.hours || '')},
-      menuType: ${JSON.stringify(cafe.menu_type || 'none')},
-      menuUrl: ${JSON.stringify(cafe.menu_url || '')},
-      externalAvailable: ${externalBool}
-    }`;
+      let entry = `  { id:${id}, lat:${cafe.lat || 0}, lng:${cafe.lng || 0}, keyword:"${keyword}", name:"${name}", price:${price}, pl:"${priceDisplay}", crowd:50, open:true, hours:"${hours}", address:"${address}"`;
+      
+      // menuType이 none이 아니면 추가
+      if (menuType && menuType !== 'none' && menuLink) {
+        entry += `, menuType:"${menuType}", menuLink:"${menuLink.replace(/"/g, '\\"')}"`;
+      }
+      
+      entry += ` }`;
+      return entry;
     }).join(',\n');
 
-    // 4. 배열 끝에 추가 (마지막 ] 전에)
-    // cafeteriasData 배열의 닫는 ]를 찾아야 함
-    // 간단한 접근: const cafeteriasData = [ ... ]; 패턴 매칭
-    const regex = /const cafeteriasData = \[([\s\S]*?)\n\s*\];/;
-    const match = currentContent.match(regex);
+    // 6. 배열 끝 "];" 바로 앞에 삽입
+    // 배열의 마지막 요소 뒤에 쉼표가 있는지 확인
+    const beforeEnd = currentContent.substring(0, arrayEnd);
+    const lastChar = beforeEnd.trimEnd().slice(-1);
+    const needsComma = lastChar !== ',' && lastChar !== '[';
     
-    if (!match) {
-      return res.status(500).json({ error: 'cafeteriasData 배열 패턴을 찾을 수 없음' });
-    }
+    const insertion = (needsComma ? ',\n' : '\n') + newEntries + '\n';
     
-    const oldArrayContent = match[1];
-    // 마지막 요소 뒤에 comma 추가
-    const trimmedOld = oldArrayContent.trimEnd();
-    const needsComma = !trimmedOld.endsWith(',');
-    const separator = needsComma ? ',\n' : '\n';
-    
-    const newArrayContent = oldArrayContent + separator + newEntries;
-    const newFileContent = currentContent.replace(
-      regex,
-      `const cafeteriasData = [${newArrayContent}\n  ];`
-    );
+    const newFileContent = 
+      currentContent.substring(0, arrayEnd) + 
+      insertion +
+      currentContent.substring(arrayEnd);
 
-    // 5. GitHub에 커밋
+    // 7. GitHub에 커밋
     const commitMessage = cafeterias.length === 1 
       ? `Add cafeteria: ${cafeterias[0].name}`
       : `Add ${cafeterias.length} cafeterias (bulk)`;
