@@ -13,7 +13,6 @@
     line-height: 1.5;
   }
   
-  /* Login */
   .login-container {
     min-height: 100vh;
     display: flex;
@@ -47,10 +46,7 @@
     font-size: 14px;
     margin-bottom: 12px;
   }
-  .login-input:focus {
-    outline: none;
-    border-color: #1a1a1a;
-  }
+  .login-input:focus { outline: none; border-color: #1a1a1a; }
   .login-btn {
     width: 100%;
     padding: 10px;
@@ -69,7 +65,6 @@
     display: none;
   }
   
-  /* Main Layout */
   .layout {
     display: none;
     min-height: 100vh;
@@ -156,7 +151,6 @@
     font-size: 14px;
   }
   
-  /* Dashboard */
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -181,8 +175,7 @@
     font-weight: 600;
   }
   
-  /* Report cards */
-  .report-card {
+  .report-card, .cafe-card {
     background: white;
     border: 1px solid #e5e5e5;
     border-radius: 8px;
@@ -233,7 +226,6 @@
     margin-top: 10px;
   }
   
-  /* Buttons */
   button {
     padding: 8px 14px;
     border: 1px solid #e5e5e5;
@@ -260,7 +252,6 @@
     cursor: not-allowed;
   }
   
-  /* Form */
   .form-group {
     margin-bottom: 16px;
   }
@@ -295,7 +286,6 @@
     gap: 12px;
   }
   
-  /* Region research */
   .research-intro {
     background: white;
     border: 1px solid #e5e5e5;
@@ -339,7 +329,6 @@
     font-size: 11px;
   }
   
-  /* Result cards */
   .filter-bar {
     background: white;
     border: 1px solid #e5e5e5;
@@ -363,6 +352,27 @@
     flex-wrap: wrap;
   }
   
+  .search-bar {
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .search-bar input {
+    flex: 1;
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+  .search-bar input:focus { outline: none; border-color: #1a1a1a; }
+  
   .result-card {
     background: white;
     border: 1px solid #e5e5e5;
@@ -372,6 +382,7 @@
     transition: border-color 0.15s;
   }
   .result-card.selected { border-color: #1a1a1a; }
+  .result-card.dup { background: #fff8e1; border-color: #ffc107; }
   .result-head {
     display: flex;
     gap: 12px;
@@ -404,6 +415,7 @@
   .tag-warn { background: #fff3e0; color: #e65100; }
   .tag-no { background: #ffebee; color: #c62828; }
   .tag-info { background: #e3f2fd; color: #1565c0; }
+  .tag-dup { background: #fff3e0; color: #e65100; font-weight: 700; }
   
   .result-info {
     display: grid;
@@ -437,7 +449,6 @@
   }
   .edit-area.open { display: block; }
   
-  /* Footer bar */
   .action-bar {
     position: sticky;
     bottom: 20px;
@@ -454,7 +465,6 @@
     gap: 10px;
   }
   
-  /* Toast */
   .toast {
     position: fixed;
     bottom: 30px;
@@ -472,7 +482,6 @@
   .toast.show { opacity: 1; }
   .toast.error { background: #c00; }
   
-  /* Empty state */
   .empty {
     text-align: center;
     padding: 40px 20px;
@@ -480,7 +489,13 @@
     font-size: 14px;
   }
   
-  /* Responsive */
+  .loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+    font-size: 14px;
+  }
+  
   @media (max-width: 768px) {
     .layout.active { flex-direction: column; }
     .sidebar { width: 100%; height: auto; position: static; }
@@ -491,7 +506,6 @@
 </head>
 <body>
 
-<!-- Login -->
 <div class="login-container" id="loginContainer">
   <div class="login-box">
     <div class="login-title">구내식당맵 관리자</div>
@@ -502,7 +516,6 @@
   </div>
 </div>
 
-<!-- Main -->
 <div class="layout" id="mainLayout">
   <aside class="sidebar">
     <div class="sidebar-header">
@@ -514,6 +527,8 @@
     <div class="nav-divider"></div>
     <div class="nav-item" data-page="research" onclick="switchPage(event, 'research')">지역 조사</div>
     <div class="nav-item" data-page="direct" onclick="switchPage(event, 'direct')">직접 추가</div>
+    <div class="nav-divider"></div>
+    <div class="nav-item" data-page="manage" onclick="switchPage(event, 'manage')">식당 관리</div>
     <button class="logout-btn" onclick="logout()">로그아웃</button>
   </aside>
 
@@ -531,7 +546,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-label">전체 식당</div>
-          <div class="stat-value">210</div>
+          <div class="stat-value" id="statTotal">-</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">오늘 처리</div>
@@ -568,12 +583,19 @@
           <li>Claude.ai 채팅에서 아래 프롬프트를 사용해 조사를 요청합니다</li>
           <li>Claude가 응답한 JSON 결과를 복사합니다</li>
           <li>아래 입력창에 붙여넣고 <code>불러오기</code>를 누릅니다</li>
+          <li>이미 등록된 식당은 자동으로 노란색 표시됩니다</li>
           <li>체크박스로 등록할 식당을 선택하고 수정 후 <code>일괄 등록</code>을 누릅니다</li>
         </ol>
         <div class="prompt-box" id="promptBox">다음 지역의 구내식당을 조사해줘.
 
 지역: [여기에 지역명 입력, 예: 을지로]
 개수: 10개 정도
+
+중요 조건:
+- 반드시 외부인 출입 가능한 식당만 조사
+- 사원증 필수이거나 내부 직원 전용은 제외
+- 일반인 방문증 작성 후 이용 가능한 곳은 OK
+- 확실하지 않으면 "조건부"로 표시
 
 아래 JSON 형식으로만 응답해줘. 다른 설명은 빼고 JSON만:
 
@@ -594,7 +616,7 @@
 ]
 
 - confidence: 0~100 (정보 확실성)
-- external: "가능" / "불가" / "조건부"
+- external: "가능" / "조건부"
 - menu_type: "kakao" / "insta" / "url" / "none"
 - 모르는 값은 null, 가격 모르면 0</div>
         <button class="prompt-copy" onclick="copyPrompt()">복사</button>
@@ -656,12 +678,8 @@
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">외부인 이용</label>
-            <select class="form-select" id="dExternal">
-              <option value="unknown">확인 필요</option>
-              <option value="가능">가능</option>
-              <option value="불가">불가</option>
-            </select>
+            <label class="form-label">검색 키워드</label>
+            <input type="text" class="form-input" id="dKeyword" placeholder="비우면 이름 사용">
           </div>
         </div>
         <div class="form-group">
@@ -672,10 +690,26 @@
         <button type="button" onclick="document.getElementById('directForm').reset()">초기화</button>
       </form>
     </div>
+
+    <!-- Manage Cafeterias -->
+    <div class="page" id="page-manage">
+      <div class="page-header">
+        <div class="page-title">식당 관리</div>
+        <div class="page-desc">등록된 식당을 조회, 수정, 삭제할 수 있습니다</div>
+      </div>
+      
+      <div class="search-bar">
+        <input type="text" id="manageSearch" placeholder="이름, 주소, 지역으로 검색..." oninput="filterManageList()">
+        <button onclick="loadManageList()">새로고침</button>
+      </div>
+      
+      <div id="manageList">
+        <div class="empty">"새로고침"을 눌러 식당 리스트를 불러오세요</div>
+      </div>
+    </div>
   </main>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -684,6 +718,11 @@ let reportsData = [];
 let researchData = [];
 let selectedIds = new Set();
 let stats = { today: 0, added: 0 };
+
+// 식당 관리
+let allCafeterias = [];
+let filteredCafeterias = [];
+let editingId = null;
 
 // ============ AUTH ============
 async function login() {
@@ -704,6 +743,7 @@ async function login() {
       document.getElementById('loginContainer').style.display = 'none';
       document.getElementById('mainLayout').classList.add('active');
       loadReports();
+      loadCafeteriasForStats();
     } else {
       document.getElementById('loginError').style.display = 'block';
     }
@@ -725,6 +765,7 @@ window.addEventListener('load', () => {
     document.getElementById('loginContainer').style.display = 'none';
     document.getElementById('mainLayout').classList.add('active');
     loadReports();
+    loadCafeteriasForStats();
   }
 });
 
@@ -736,6 +777,7 @@ function switchPage(evt, page) {
   document.getElementById('page-' + page).classList.add('active');
   
   if (page === 'reports') loadReports();
+  if (page === 'manage' && allCafeterias.length === 0) loadManageList();
 }
 
 // ============ REPORTS ============
@@ -851,7 +893,6 @@ function loadResearch() {
   }
   
   try {
-    // Remove code fences if present
     let cleaned = input.replace(/```json\s*/g, '').replace(/```\s*$/g, '').trim();
     let parsed = JSON.parse(cleaned);
     
@@ -871,15 +912,60 @@ function loadResearch() {
       menu_url: item.menu_url || '',
       external: item.external || item.external_available || 'unknown',
       confidence: parseInt(item.confidence) || 50,
-      notes: item.notes || ''
+      notes: item.notes || '',
+      isDuplicate: false,
+      dupInfo: null
     }));
+    
+    // 중복 체크
+    checkDuplicates();
     
     selectedIds.clear();
     renderResearch();
-    showToast(`${researchData.length}개 식당을 불러왔습니다`);
+    const dupCount = researchData.filter(c => c.isDuplicate).length;
+    const msg = dupCount > 0 
+      ? `${researchData.length}개 불러옴 (${dupCount}개 이미 등록됨)`
+      : `${researchData.length}개 식당을 불러왔습니다`;
+    showToast(msg);
   } catch (err) {
     showToast('JSON 파싱 오류: ' + err.message, true);
   }
+}
+
+// 중복 체크
+async function checkDuplicates() {
+  if (allCafeterias.length === 0) {
+    await loadCafeteriasForStats();
+  }
+  
+  researchData.forEach(item => {
+    // 이름이 비슷하거나 좌표가 매우 가까운 경우 (50m 이내)
+    const dup = allCafeterias.find(existing => {
+      const nameMatch = isNameSimilar(item.name, existing.name) || 
+                        isNameSimilar(item.name, existing.keyword || '');
+      const coordClose = Math.abs(existing.lat - item.lat) < 0.0005 && 
+                        Math.abs(existing.lng - item.lng) < 0.0005;
+      return nameMatch || coordClose;
+    });
+    
+    if (dup) {
+      item.isDuplicate = true;
+      item.dupInfo = `id:${dup.id} ${dup.name}`;
+    }
+  });
+}
+
+function isNameSimilar(a, b) {
+  if (!a || !b) return false;
+  const normA = a.replace(/\s+/g, '').toLowerCase();
+  const normB = b.replace(/\s+/g, '').toLowerCase();
+  if (normA === normB) return true;
+  if (normA.includes(normB) || normB.includes(normA)) {
+    // 짧은 쪽이 3글자 이상이면 포함 관계로 중복 판정
+    const shorter = normA.length < normB.length ? normA : normB;
+    return shorter.length >= 3;
+  }
+  return false;
 }
 
 function clearResearch() {
@@ -898,6 +984,7 @@ function renderResearch() {
   
   const openCount = researchData.filter(c => c.external === '가능').length;
   const highConfCount = researchData.filter(c => c.confidence >= 75).length;
+  const dupCount = researchData.filter(c => c.isDuplicate).length;
   
   container.innerHTML = `
     <div class="filter-bar">
@@ -905,13 +992,14 @@ function renderResearch() {
         전체 <strong>${researchData.length}</strong>개 · 
         선택 <strong id="selCount">0</strong>개 · 
         외부인 가능 <strong>${openCount}</strong>개 · 
-        확실 정보 <strong>${highConfCount}</strong>개
+        확실 정보 <strong>${highConfCount}</strong>개 ·
+        이미 등록 <strong>${dupCount}</strong>개
       </div>
       <div class="filter-actions">
         <button onclick="selectAll(true)">전체 선택</button>
         <button onclick="selectAll(false)">전체 해제</button>
+        <button onclick="selectNonDup()">중복 제외 선택</button>
         <button onclick="selectHighConf()">확실한 것만</button>
-        <button onclick="selectOpen()">외부인 가능만</button>
       </div>
     </div>
     ${researchData.map(c => renderResultCard(c)).join('')}
@@ -936,13 +1024,17 @@ function renderResultCard(c) {
                  c.external === '불가' ? '<span class="tag tag-no">외부인 불가</span>' :
                  '<span class="tag tag-info">외부인 조건부</span>';
   
+  const dupTag = c.isDuplicate ? `<span class="tag tag-dup">이미 등록됨 (${escapeHtml(c.dupInfo)})</span>` : '';
+  const cardClass = c.isDuplicate ? 'result-card dup' : 'result-card';
+  
   return `
-    <div class="result-card" id="rcard-${c.id}">
+    <div class="${cardClass}" id="rcard-${c.id}">
       <div class="result-head">
         <input type="checkbox" class="result-check" id="rcheck-${c.id}" onchange="toggleResult(${c.id})">
         <div class="result-body">
           <div class="result-name">
             ${escapeHtml(c.name || '(이름 없음)')}
+            ${dupTag}
             ${extTag}
             <span class="tag ${confClass}">${confText}</span>
           </div>
@@ -1062,10 +1154,10 @@ function selectAll(select) {
   updateSelectedCount();
 }
 
-function selectHighConf() {
+function selectNonDup() {
   selectAll(false);
   researchData.forEach(c => {
-    if (c.confidence >= 75) {
+    if (!c.isDuplicate) {
       selectedIds.add(c.id);
       const cb = document.getElementById(`rcheck-${c.id}`);
       if (cb) cb.checked = true;
@@ -1075,10 +1167,10 @@ function selectHighConf() {
   updateSelectedCount();
 }
 
-function selectOpen() {
+function selectHighConf() {
   selectAll(false);
   researchData.forEach(c => {
-    if (c.external === '가능') {
+    if (c.confidence >= 75 && !c.isDuplicate) {
       selectedIds.add(c.id);
       const cb = document.getElementById(`rcheck-${c.id}`);
       if (cb) cb.checked = true;
@@ -1113,7 +1205,12 @@ async function bulkAdd() {
   const selected = researchData.filter(c => selectedIds.has(c.id));
   if (selected.length === 0) return;
   
-  if (!confirm(`${selected.length}개 식당을 GitHub에 일괄 등록합니다.\n2분 후 사이트에 반영됩니다.\n\n계속하시겠습니까?`)) return;
+  const dupSelected = selected.filter(c => c.isDuplicate);
+  if (dupSelected.length > 0) {
+    if (!confirm(`선택한 ${selected.length}개 중 ${dupSelected.length}개는 이미 등록된 식당일 수 있습니다.\n그래도 등록하시겠습니까?`)) return;
+  } else {
+    if (!confirm(`${selected.length}개 식당을 GitHub에 일괄 등록합니다.\n2분 후 사이트에 반영됩니다.\n\n계속하시겠습니까?`)) return;
+  }
   
   showToast(`${selected.length}개 등록 중... 잠시만요`);
   
@@ -1124,7 +1221,7 @@ async function bulkAdd() {
         'Content-Type': 'application/json',
         'X-Admin-Token': adminToken
       },
-      body: JSON.stringify({ bulk: selected })
+      body: JSON.stringify({ action: 'add', bulk: selected })
     });
     const data = await res.json();
     
@@ -1138,6 +1235,8 @@ async function bulkAdd() {
       });
       selectedIds.clear();
       renderResearch();
+      // 캐시 무효화 (다음 중복 체크 때 새로 불러옴)
+      allCafeterias = [];
     } else {
       showToast('등록 실패: ' + (data.error || ''), true);
     }
@@ -1152,14 +1251,14 @@ async function addDirect(e) {
   
   const data = {
     name: document.getElementById('dName').value,
+    keyword: document.getElementById('dKeyword').value,
     address: document.getElementById('dAddress').value,
     lat: parseFloat(document.getElementById('dLat').value),
     lng: parseFloat(document.getElementById('dLng').value),
     price: parseInt(document.getElementById('dPrice').value) || 0,
     hours: document.getElementById('dHours').value,
     menu_type: document.getElementById('dMenuType').value,
-    menu_url: document.getElementById('dMenuUrl').value,
-    external_available: document.getElementById('dExternal').value
+    menu_url: document.getElementById('dMenuUrl').value
   };
   
   if (!confirm(`${data.name}을(를) 등록합니다. 계속하시겠습니까?`)) return;
@@ -1171,7 +1270,7 @@ async function addDirect(e) {
         'Content-Type': 'application/json',
         'X-Admin-Token': adminToken
       },
-      body: JSON.stringify({ single: data })
+      body: JSON.stringify({ action: 'add', single: data })
     });
     const result = await res.json();
     
@@ -1180,11 +1279,247 @@ async function addDirect(e) {
       document.getElementById('directForm').reset();
       stats.added++;
       document.getElementById('statAdded').textContent = stats.added;
+      allCafeterias = [];
     } else {
       showToast('등록 실패: ' + (result.error || ''), true);
     }
   } catch (err) {
     showToast('등록 오류: ' + err.message, true);
+  }
+}
+
+// ============ MANAGE ============
+async function loadCafeteriasForStats() {
+  try {
+    const res = await fetch('/api/cafeterias', {
+      headers: { 'X-Admin-Token': adminToken }
+    });
+    const data = await res.json();
+    
+    if (data.cafeterias) {
+      allCafeterias = data.cafeterias;
+      document.getElementById('statTotal').textContent = data.total;
+    }
+  } catch (err) {
+    // 조용히 실패 (통계만)
+  }
+}
+
+async function loadManageList() {
+  document.getElementById('manageList').innerHTML = '<div class="loading">전체 식당 리스트를 불러오는 중... (몇 초 걸려요)</div>';
+  
+  try {
+    const res = await fetch('/api/cafeterias', {
+      headers: { 'X-Admin-Token': adminToken }
+    });
+    const data = await res.json();
+    
+    if (data.cafeterias) {
+      allCafeterias = data.cafeterias;
+      filteredCafeterias = [...allCafeterias];
+      document.getElementById('statTotal').textContent = data.total;
+      renderManageList();
+    } else {
+      document.getElementById('manageList').innerHTML = '<div class="empty">로드 실패: ' + (data.error || '') + '</div>';
+    }
+  } catch (err) {
+    document.getElementById('manageList').innerHTML = '<div class="empty">오류: ' + err.message + '</div>';
+  }
+}
+
+function filterManageList() {
+  const q = document.getElementById('manageSearch').value.trim().toLowerCase();
+  if (!q) {
+    filteredCafeterias = [...allCafeterias];
+  } else {
+    filteredCafeterias = allCafeterias.filter(c => {
+      return (c.name || '').toLowerCase().includes(q) ||
+             (c.address || '').toLowerCase().includes(q) ||
+             (c.keyword || '').toLowerCase().includes(q);
+    });
+  }
+  renderManageList();
+}
+
+function renderManageList() {
+  const list = document.getElementById('manageList');
+  if (filteredCafeterias.length === 0) {
+    list.innerHTML = '<div class="empty">검색 결과가 없습니다</div>';
+    return;
+  }
+  
+  list.innerHTML = `
+    <div class="filter-bar">
+      <div class="filter-info">
+        전체 <strong>${allCafeterias.length}</strong>개 · 
+        표시 <strong>${filteredCafeterias.length}</strong>개
+      </div>
+    </div>
+    ${filteredCafeterias.slice(0, 100).map(c => renderManageCard(c)).join('')}
+    ${filteredCafeterias.length > 100 ? `<div class="empty">상위 100개만 표시합니다. 검색으로 찾아보세요.</div>` : ''}
+  `;
+}
+
+function renderManageCard(c) {
+  const isEditing = editingId === c.id;
+  
+  return `
+    <div class="cafe-card" id="cafe-${c.id}">
+      <div class="report-header">
+        <div>
+          <div class="report-name">${escapeHtml(c.name || '-')}</div>
+          <div class="report-meta">ID: ${c.id} · ${escapeHtml(c.address || '-')}</div>
+        </div>
+        <div class="report-type">${c.price ? c.price.toLocaleString() + '원' : '-'}</div>
+      </div>
+      <div class="report-info">
+        <span>시간: ${escapeHtml(c.hours || '-')}</span>
+        <span>좌표: ${c.lat}, ${c.lng}</span>
+        ${c.menuType ? `<span>메뉴: ${escapeHtml(c.menuType)}</span>` : ''}
+      </div>
+      <div class="report-actions">
+        <button onclick="openKakao('${escapeHtml(c.name)}')">카카오맵</button>
+        <button onclick="editCafeteria(${c.id})">${isEditing ? '수정 취소' : '수정'}</button>
+        <button class="danger" onclick="deleteCafeteria(${c.id}, '${escapeHtml(c.name)}')">삭제</button>
+      </div>
+      ${isEditing ? renderEditForm(c) : ''}
+    </div>
+  `;
+}
+
+function renderEditForm(c) {
+  return `
+    <div class="edit-area open" style="display:block;">
+      <div class="form-group">
+        <label class="form-label">이름</label>
+        <input type="text" class="form-input" id="ec-name-${c.id}" value="${escapeHtml(c.name)}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">검색 키워드</label>
+        <input type="text" class="form-input" id="ec-keyword-${c.id}" value="${escapeHtml(c.keyword || '')}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">주소</label>
+        <input type="text" class="form-input" id="ec-address-${c.id}" value="${escapeHtml(c.address)}">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">위도</label>
+          <input type="number" step="0.0000001" class="form-input" id="ec-lat-${c.id}" value="${c.lat}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">경도</label>
+          <input type="number" step="0.0000001" class="form-input" id="ec-lng-${c.id}" value="${c.lng}">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">가격 (원)</label>
+          <input type="number" class="form-input" id="ec-price-${c.id}" value="${c.price || 0}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">시간</label>
+          <input type="text" class="form-input" id="ec-hours-${c.id}" value="${escapeHtml(c.hours)}">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">메뉴 타입</label>
+          <select class="form-select" id="ec-menuType-${c.id}">
+            <option value="none" ${!c.menuType || c.menuType==='none'?'selected':''}>없음</option>
+            <option value="kakao" ${c.menuType==='kakao'?'selected':''}>카카오맵</option>
+            <option value="insta" ${c.menuType==='insta'?'selected':''}>인스타그램</option>
+            <option value="url" ${c.menuType==='url'?'selected':''}>웹사이트</option>
+            <option value="app" ${c.menuType==='app'?'selected':''}>앱</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">메뉴 URL</label>
+          <input type="text" class="form-input" id="ec-menuLink-${c.id}" value="${escapeHtml(c.menuLink || '')}">
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px; margin-top: 10px;">
+        <button class="primary" onclick="saveCafeteriaEdit(${c.id})">저장</button>
+        <button onclick="editCafeteria(${c.id})">취소</button>
+      </div>
+    </div>
+  `;
+}
+
+function editCafeteria(id) {
+  editingId = editingId === id ? null : id;
+  renderManageList();
+}
+
+async function saveCafeteriaEdit(id) {
+  const update = {
+    id: id,
+    name: document.getElementById(`ec-name-${id}`).value,
+    keyword: document.getElementById(`ec-keyword-${id}`).value,
+    address: document.getElementById(`ec-address-${id}`).value,
+    lat: parseFloat(document.getElementById(`ec-lat-${id}`).value),
+    lng: parseFloat(document.getElementById(`ec-lng-${id}`).value),
+    price: parseInt(document.getElementById(`ec-price-${id}`).value) || 0,
+    hours: document.getElementById(`ec-hours-${id}`).value,
+    menuType: document.getElementById(`ec-menuType-${id}`).value,
+    menuLink: document.getElementById(`ec-menuLink-${id}`).value
+  };
+  
+  if (!confirm(`"${update.name}" 정보를 수정합니다. 계속?`)) return;
+  
+  try {
+    const res = await fetch('/api/github-commit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Token': adminToken
+      },
+      body: JSON.stringify({ action: 'update', update })
+    });
+    const data = await res.json();
+    
+    if (data.success) {
+      showToast('수정 완료! 2분 후 반영됩니다');
+      editingId = null;
+      // 로컬 데이터도 업데이트
+      const idx = allCafeterias.findIndex(c => c.id === id);
+      if (idx >= 0) {
+        allCafeterias[idx] = { ...allCafeterias[idx], ...update };
+      }
+      filterManageList();
+    } else {
+      showToast('수정 실패: ' + (data.error || ''), true);
+    }
+  } catch (err) {
+    showToast('수정 오류: ' + err.message, true);
+  }
+}
+
+async function deleteCafeteria(id, name) {
+  if (!confirm(`"${name}" (id:${id})을(를) 정말 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다 (GitHub 커밋에는 기록 남음).`)) return;
+  
+  try {
+    const res = await fetch('/api/github-commit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Token': adminToken
+      },
+      body: JSON.stringify({ action: 'delete', deleteIds: [id] })
+    });
+    const data = await res.json();
+    
+    if (data.success) {
+      showToast('삭제 완료! 2분 후 반영됩니다');
+      // 로컬에서도 제거
+      allCafeterias = allCafeterias.filter(c => c.id !== id);
+      filterManageList();
+      document.getElementById('statTotal').textContent = allCafeterias.length;
+    } else {
+      showToast('삭제 실패: ' + (data.error || ''), true);
+    }
+  } catch (err) {
+    showToast('삭제 오류: ' + err.message, true);
   }
 }
 
