@@ -1159,6 +1159,10 @@ function renderResultCard(c) {
                 </select>
               </div>
             </div>
+            <div class="form-group">
+              <label class="form-label">메뉴 URL</label>
+              <input type="text" class="form-input" value="${escapeHtml(c.menu_url || '')}" placeholder="https://..." onchange="updateResult(${c.id}, 'menu_url', this.value)">
+            </div>
             <div style="display: flex; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0f0f0;">
               <button class="primary" onclick="confirmEdit(${c.id})">수정 적용</button>
               <button onclick="toggleEdit(${c.id})">닫기</button>
